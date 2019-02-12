@@ -41,22 +41,22 @@ nlohmann::json Config::get_vhosts(nlohmann::json j)
 
 int Config::check_vhost(nlohmann::json j)
 {
-    if (j.find("ip") == j.end())
+    if (j.find("ip") == j.end() || !j.find("ip")->is_string())
     {
         std::cerr << "Invalid json structure: missing ip" << '\n';
         return 0;
     }
-    if (j.find("port") == j.end())
+    if (j.find("port") == j.end() || !j.find("port")->is_number())
     {
         std::cerr << "Invalid json structure: missing port" << '\n';
         return 0;
     }
-    if (j.find("server_name") == j.end())
+    if (j.find("server_name") == j.end() || !j.find("server_name")->is_string())
     {
         std::cerr << "Invalid json structure: missing server_name" << '\n';
         return 0;
     }
-    if (j.find("root") == j.end())
+    if (j.find("root") == j.end() || !j.find("root")->is_string())
     {
         std::cerr << "Invalid json structure: missing root" << '\n';
         return 0;
@@ -94,6 +94,10 @@ void Config::parse_json(nlohmann::json j)
                     std::cerr << "Invalid json" << '\n';
                 }
             }
+        }
+        else
+        {
+            throw std::exception();
         }
     }
 }
