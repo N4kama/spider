@@ -73,20 +73,11 @@ namespace http
          */
         virtual void connect(const sockaddr*, socklen_t) = 0;
 
-        const misc::shared_fd fd_get() const noexcept
-        {
-            return fd_;
-        }
+        const misc::shared_fd fd_get() const noexcept;
 
-        bool is_ipv6() const noexcept
-        {
-            return ipv6_;
-        }
+        bool is_ipv6() const noexcept;
 
-        void ipv6_set(bool ipv6) noexcept
-        {
-            ipv6_ = ipv6;
-        }
+        void ipv6_set(bool ipv6) noexcept;
 
     protected:
         /**

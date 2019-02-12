@@ -4,8 +4,8 @@
  */
 
 #pragma once
-
-#include "misc/socket.hh"
+#include "misc/fd.hh"
+#include "socket.hh"
 #include "socket/socket.hh"
 
 namespace http
