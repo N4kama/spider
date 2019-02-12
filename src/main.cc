@@ -2,11 +2,16 @@
 
 int main(int argc, char *argv[])
 {
-    Config c = Config();
-    nlohmann::json j = c.getJson(argv[1]);
-    nlohmann::json j2 = c.getVHosts(j);
-    c.parse_json(j2);
-
-
-    return 1;
+    try
+    {
+        Config c = Config();
+        nlohmann::json j = c.getJson(argv[1]);
+        nlohmann::json j2 = c.getVHosts(j);
+        c.parse_json(j2);
+    }
+    catch (const std::exception &e)
+    {
+        return 1;
+    }
+    return 0;
 }
