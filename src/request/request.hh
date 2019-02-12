@@ -5,10 +5,19 @@
 
 #pragma once
 
+#include <vector>
 #include "request/types.hh"
 
 namespace http
 {
+    using header = std::pair<std::string, std::string>;
+
+    enum Method : uint16_t
+    {
+        GET,
+        HEAD,
+        POST
+    };
     /**
      * \struct Request
      * \brief Value object representing a request.
@@ -22,5 +31,11 @@ namespace http
         Request& operator=(Request&&) = default;
         ~Request() = default;
         // FIXME: Add members to store the information relative to a request.
+
+        Method method;
+        std::string url;
+        std::string http_version;
+        std::vector<header> headers;
+        std::string message_body;
     };
 } // namespace http
