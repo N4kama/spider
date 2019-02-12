@@ -39,41 +39,26 @@ nlohmann::json Config::getVHosts(nlohmann::json j)
     }
 }
 
+int Config::check_vhost(nlohmann::json j)
+{
+    auto ip_it = j.find("ip");
+    auto port_it = j.find("port");
+    auto serv_it = j.find("server_name");
+    auto root_it = j.find("root");
+    return (ip_it != j.end() && port_it != j.end() &&
+            serv_it != j.end() && root_it != j.end());
+}
+
 void Config::parse_json(nlohmann::json j)
 {
     for (auto vhost = j.begin(); vhost != j.end(); vhost++)
     {
         nlohmann::json cur = *vhost;
-        try
-        {
-            std::string def = cur.at("default_file").get<std::string>();
-            try
-            {
-                Vhost v = Vhost(cur.at("ip").get<std::string>(),
-                                cur.at("port").get<int>(),
-                                cur.at("server_name").get<std::string>(),
-                                cur.at("root").get<std::string>(), def);
-                vhosts_.emplace_back(v);
-            }
-            catch (const std::exception &e)
-            {
-                std::cerr << "Invalid json structure: invalid vhost" << '\n';
-            }
-        }
-        catch (const std::exception &e)
-        {
-            try
-            {
-                Vhost v = Vhost(cur.at("ip").get<std::string>(),
-                                cur.at("port").get<int>(),
-                                cur.at("server_name").get<std::string>(),
-                                cur.at("root").get<std::string>());
-                vhosts_.emplace_back(v);
-            }
-            catch (const std::exception &e)
-            {
-                std::cerr << "Invalid json structure: invalid vhost" << '\n';
-            }
-        }
+        auto it_ip = j.find("ip");
+        std::string ip_s = cur.at("default_file").get<std::string>();
+        int port_i = cur.at("default_file").get<int>();
+        std::string serv_s = cur.at("default_file").get<std::string>();
+        std::string root_s = cur.at("default_file").get<std::string>();
+        std::string ef_s = cur.at("default_file").get<std::string>();
     }
 }
