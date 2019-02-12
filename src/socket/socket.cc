@@ -11,7 +11,7 @@ namespace http
         : fd_{fd}
     {}
 
-    ssize_t Socket::recv(void* dst, size_t len) override
+    ssize_t Socket::recv(void* dst, size_t len) overide
     {
         char *buf = new char[len];
         int fd = *fd_;
@@ -58,13 +58,22 @@ namespace http
     std::shared_ptr<Socket> Socket::accept(sockaddr* addr,
                                                socklen_t* addrlen)
     {
-        int fd = *fd_;
+        if (!addr)
+            return std::nullptr;
 
+        int fd = *fd_;
+        if (accept(fd, addr, addrlen) < 0)
+            return std::nullptr;
+
+        auto res = std::make_shared<Socket>(Socket(fd_));
+        return res;
     }
 
-    void Socket::connect(const sockaddr*, socklen_t)
+    void Socket::connect(const sockaddr* addr, socklen_t l)
     {
-
+        int fd = *fd_;
+        if (connect(fd, addr, l) < 0)
+            std::cerr << std::strerror(errno) << '\n';
     }
 
     const misc::shared_fd Socket::fd_get() const noexcept
