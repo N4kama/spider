@@ -25,7 +25,7 @@ class Config
 {
   public:
 	void print(void);
-	void parse_json(nlohmann::json j);
+	void parse_json(nlohmann::json j, int debug);
 	nlohmann::json get_json(const std::string &s);
 	nlohmann::json get_vhosts(nlohmann::json j);
 	int check_vhost(nlohmann::json j);

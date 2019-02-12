@@ -64,7 +64,7 @@ int Config::check_vhost(nlohmann::json j)
     return 1;
 }
 
-void Config::parse_json(nlohmann::json j)
+void Config::parse_json(nlohmann::json j, int debug)
 {
     for (auto vhost = j.begin(); vhost != j.end(); vhost++)
     {
@@ -87,7 +87,8 @@ void Config::parse_json(nlohmann::json j)
                 {
                     Vhost v = Vhost(ip_s, port_i, serv_s, root_s);
                     vhosts_.emplace_back(v);
-                    v.print();
+                    if (debug)
+                        v.print();
                 }
                 catch (const std::exception &e)
                 {
