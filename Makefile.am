@@ -68,6 +68,7 @@ libspider_la_SOURCES = \
 
 spider_SOURCES = \
                  src/main.cc \
+                 src/parsing/json.cc
                  $(NULL)
 
 spider_LDADD = libspider.la
