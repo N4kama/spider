@@ -41,20 +41,39 @@ nlohmann::json Config::getVHosts(nlohmann::json j)
 
 void Config::parse_json(nlohmann::json j)
 {
-    std::cout << "size array = " << j.size() << "\n";
     for (auto vhost = j.begin(); vhost != j.end(); vhost++)
     {
+        nlohmann::json cur = *vhost;
         try
         {
-            nlohmann::json cur = *vhost;
-            Vhost v = Vhost(cur.at("ip").get<std::string>(), cur.at("port").get<int>(),
-                            cur.at("server_name").get<std::string>(), cur.at("root").get<std::string>());
-            vhosts_.emplace_back(v);
-            v.print();
+            std::string def = cur.at("default_file").get<std::string>();
+            try
+            {
+                Vhost v = Vhost(cur.at("ip").get<std::string>(),
+                                cur.at("port").get<int>(),
+                                cur.at("server_name").get<std::string>(),
+                                cur.at("root").get<std::string>(), def);
+                vhosts_.emplace_back(v);
+            }
+            catch (const std::exception &e)
+            {
+                std::cerr << "Invalid json structure: invalid vhost" << '\n';
+            }
         }
         catch (const std::exception &e)
         {
-            std::cerr << "Invalid json structure: no vhosts" << '\n';
+            try
+            {
+                Vhost v = Vhost(cur.at("ip").get<std::string>(),
+                                cur.at("port").get<int>(),
+                                cur.at("server_name").get<std::string>(),
+                                cur.at("root").get<std::string>());
+                vhosts_.emplace_back(v);
+            }
+            catch (const std::exception &e)
+            {
+                std::cerr << "Invalid json structure: invalid vhost" << '\n';
+            }
         }
     }
 }
