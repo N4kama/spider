@@ -9,12 +9,12 @@ Vhost::Vhost(const std::string &ip, const int port,
 void Vhost::print(void)
 {
     std::cout << "IP:\t\t" << ip_ << "\n"
-              << "PORT:\t\t " << port_ << "\n"
+              << "PORT:\t\t" << port_ << "\n"
               << "SERVER NAME:\t" << server_name_ << "\n"
               << "ROOT: \t\t" << root_ << "\n"
-              << "DEFAULT FILE:\t" << default_file_
-              << '\n';
+              << "DEFAULT FILE:\t" << default_file_ << '\n';
 }
+
 nlohmann::json Config::getJson(const std::string &s)
 {
     std::ifstream ifs(s);
@@ -22,6 +22,7 @@ nlohmann::json Config::getJson(const std::string &s)
         return nullptr;
     nlohmann::json j;
     j << ifs;
+    //j.parse(ifs);
     return j;
 }
 
@@ -46,8 +47,8 @@ void Config::parse_json(nlohmann::json j)
         try
         {
             nlohmann::json cur = *vhost;
-            Vhost v = Vhost(cur.at("ip").dump(), std::stoi(cur.at("port").dump()),
-                            cur.at("server_name").dump(), cur.at("root").dump());
+            Vhost v = Vhost(cur.at("ip").get<std::string>(), cur.at("port").get<int>(),
+                            cur.at("server_name").get<std::string>(), cur.at("root").get<std::string>());
             vhosts_.emplace_back(v);
             v.print();
         }
