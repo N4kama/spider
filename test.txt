@@ -1,0 +1,78 @@
+
+print "GET" + URL
+struct socket sock;
+int port;
+struct host host;
+
+host = gethostbyname(url);
+if(host == nullptr)
+{
+    send(<>erreur 404<>, taille du msg, 0)
+}
+
+sock = 0;
+sock.sin_port = htons(port);
+sock.sin_family = AF_INIT;
+host->addr = sock.sin_adrss.s_addr
+int hostSocket = socket(AF_INITT,socket_stream, iprot_tcp/UDP)
+int new_host = connect(hostSocket,host_addr, taille_struct_sockaddr);
+if(new_host < 0)
+{
+    send(<>erreur 404<>, taille du msg, 0)
+}
+
+char * buffer
+sprints (buffer, "GET %HOST % connection close v_http, url")
+send(new_host, buffer, len_buffer)
+
+--------------------------------------------------------
+
+server_is_running
+
+--------------------------------------------------------
+
+function POST(data)
+print "POST" + URL
+
+traitement de la data car c un POST
+
+char *buffer
+struct socket sock
+struct host host;
+int port
+
+host = gethostbyname(url);
+if(host = nullptr)
+{
+    send(<>erreur 404<>)
+}
+sock = 0;
+sock.sin_port = htons(port);
+sock.sin_family = AF_INIT;
+host->addr = sock.sin_adrss.s_addr
+
+int hostSocket = socket(AF_INITT,socket_stream, iprot_tcp/UDP)
+int connectSocket = connect(hostSocket, host_addr, taille del ala struct)
+if(connectSocket < 0)
+{
+    send(404)
+}
+spsints(bufffer, POST v_http)
+
+n = send(hostSocket, buffer)
+if(n<0)
+{
+    send(AIEAIEOUILLE)
+}
+
+
+TODO :
+
+
+nb sockets = socket deja utilises + 1 libre dans la epool qui attend la nouvelle connexion (recreer une socket dans la pool a chaque nouvelle connexion)
+
+nouvelle connexion : quelle methode ? :
+
+client a envoye GET -> serveur recoi GET -> (creation de nouvelle socket (pas dans epool) pour le renvoi) serveur renvoi la donnee demandee dans le contenu de GET
+
+client a envoye POST -> serveur recoi POST -> traitement du contenue -> (nouvelle socket (pas dans epool) pour le renvoi) envoi de la reponse du sevrer vers client
