@@ -2,7 +2,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-#include "../../lib/json.hpp"
+#include <json.hpp>
 
 
 class Vhost

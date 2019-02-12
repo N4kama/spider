@@ -4,7 +4,7 @@ Vhost::Vhost(const std::string &ip, const int port,
              const std::string &server_name, const std::string &root,
              const std::string &default_file)
     : ip_(ip), port_(port), server_name_(server_name),
-      root_(root), default_file_(default_file){};
+      root_(root), default_file_(default_file){}
 
 void Vhost::print(void)
 {
@@ -20,9 +20,7 @@ nlohmann::json Config::get_json(const std::string &s)
     std::ifstream ifs(s);
     if (!ifs.is_open())
         return nullptr;
-    nlohmann::json j;
-    j << ifs;
-    //j.parse(ifs);
+    nlohmann::json j = nlohmann::json::parse(ifs);
     return j;
 }
 
@@ -37,6 +35,7 @@ nlohmann::json Config::get_vhosts(nlohmann::json j)
     {
         std::cerr << "Invalid json structure: no vhosts" << '\n';
     }
+    return nullptr;
 }
 
 int Config::check_vhost(nlohmann::json j)
@@ -81,7 +80,7 @@ void Config::parse_json(nlohmann::json j, int debug)
                 Vhost v = Vhost(ip_s, port_i, serv_s, root_s, def_s);
                 vhosts_.emplace_back(v);
             }
-            catch (const std::exception &e)
+            catch (const std::exception &e1)
             {
                 try
                 {
@@ -90,7 +89,7 @@ void Config::parse_json(nlohmann::json j, int debug)
                     if (debug)
                         v.print();
                 }
-                catch (const std::exception &e)
+                catch (const std::exception &e2)
                 {
                     std::cerr << "Invalid json" << '\n';
                 }
