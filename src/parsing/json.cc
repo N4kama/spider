@@ -15,7 +15,7 @@ void Vhost::print(void)
               << "DEFAULT FILE:\t" << default_file_ << '\n';
 }
 
-nlohmann::json Config::getJson(const std::string &s)
+nlohmann::json Config::get_json(const std::string &s)
 {
     std::ifstream ifs(s);
     if (!ifs.is_open())
@@ -26,7 +26,7 @@ nlohmann::json Config::getJson(const std::string &s)
     return j;
 }
 
-nlohmann::json Config::getVHosts(nlohmann::json j)
+nlohmann::json Config::get_vhosts(nlohmann::json j)
 {
     try
     {
@@ -41,12 +41,27 @@ nlohmann::json Config::getVHosts(nlohmann::json j)
 
 int Config::check_vhost(nlohmann::json j)
 {
-    auto ip_it = j.find("ip");
-    auto port_it = j.find("port");
-    auto serv_it = j.find("server_name");
-    auto root_it = j.find("root");
-    return (ip_it != j.end() && port_it != j.end() &&
-            serv_it != j.end() && root_it != j.end());
+    if (j.find("ip") == j.end())
+    {
+        std::cerr << "Invalid json structure: missing ip" << '\n';
+        return 0;
+    }
+    if (j.find("port") == j.end())
+    {
+        std::cerr << "Invalid json structure: missing port" << '\n';
+        return 0;
+    }
+    if (j.find("server_name") == j.end())
+    {
+        std::cerr << "Invalid json structure: missing server_name" << '\n';
+        return 0;
+    }
+    if (j.find("root") == j.end())
+    {
+        std::cerr << "Invalid json structure: missing root" << '\n';
+        return 0;
+    }
+    return 1;
 }
 
 void Config::parse_json(nlohmann::json j)
@@ -54,11 +69,31 @@ void Config::parse_json(nlohmann::json j)
     for (auto vhost = j.begin(); vhost != j.end(); vhost++)
     {
         nlohmann::json cur = *vhost;
-        auto it_ip = j.find("ip");
-        std::string ip_s = cur.at("default_file").get<std::string>();
-        int port_i = cur.at("default_file").get<int>();
-        std::string serv_s = cur.at("default_file").get<std::string>();
-        std::string root_s = cur.at("default_file").get<std::string>();
-        std::string ef_s = cur.at("default_file").get<std::string>();
+        if (check_vhost(cur))
+        {
+            std::string ip_s = cur.at("ip").get<std::string>();
+            int port_i = cur.at("port").get<int>();
+            std::string serv_s = cur.at("server_name").get<std::string>();
+            std::string root_s = cur.at("root").get<std::string>();
+            try
+            {
+                std::string def_s = cur.at("default_file").get<std::string>();
+                Vhost v = Vhost(ip_s, port_i, serv_s, root_s, def_s);
+                vhosts_.emplace_back(v);
+            }
+            catch (const std::exception &e)
+            {
+                try
+                {
+                    Vhost v = Vhost(ip_s, port_i, serv_s, root_s);
+                    vhosts_.emplace_back(v);
+                    v.print();
+                }
+                catch (const std::exception &e)
+                {
+                    std::cerr << "Invalid json" << '\n';
+                }
+            }
+        }
     }
 }
