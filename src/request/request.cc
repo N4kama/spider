@@ -7,26 +7,25 @@
 namespace http
 {
 
-std::string& recvLine(DefaultSocket &sock)
+std::string &recvLine(DefaultSocket &sock)
 {
-    std::string data("");
+    std::string data = std::string("");
     char c = ' ';
     while (sock.recv(&c, 1) > 0)
     {
-        data.append(c);
+        data.append(1, c);
         if (c == '\n')
             break;
     }
     return data;
 }
 
-
 void fill_Request(DefaultSocket sock)
 {
     Request req = Request();
 
     //fill info line
-    std::string& line = recvLine(sock);
+    std::string &line = recvLine(sock);
     auto start = line.begin();
     auto end = start;
     end += line.find_first_of(' ', 0);
@@ -42,9 +41,8 @@ void fill_Request(DefaultSocket sock)
     {
         //creating pairs of two string separated by a semicolon and a space
         size_t sep_idx = line.find_first_of(':', 0);
-        req.headers.emplace_back(std::make_pair(std::string(line.begin(),
-        line.begin() + sep_idx),
-        std::string(line.begin + sep_idx + 2, line.end() - 1)));
+        req.headers.emplace_back(std::string(line.begin(), line.begin() + sep_idx),
+        std::string(line.begin() + sep_idx + 2, line.end() - 1));
 
         line = recvLine(sock);
     }
@@ -62,47 +60,45 @@ void fill_Request(DefaultSocket sock)
     request_server(req, sock);
 }
 
-void request_server(struct Request r, DefaultSocket sock)
+void request_server(struct Request r, DefaultSocket socketClient)
 {
 
     /*handling error
     */
 
-    if ((strncmp(r.http_version.c_str(), "HTTP/1.1", 8) != 0)
-    || (strncmp(r.url.c_str(), "http://", 7) != 0))
+    if ((strncmp(r.http_version.c_str(), "HTTP/1.1", 8) != 0) || (strncmp(r.url.c_str(), "http://", 7) != 0))
     {
-        send(socketClient,
+        socketClient.send(
              "<html><h1>http error: 501</h1><h2> There is place for only Head,"
              " Post and Get method allowed in this town cowboy</h2></html>",
-             125, 0);
+             125);
     }
-    if ((strstr(r.message_body.c_str(), "\nHost") == NULL)
-        || (strstr(r.message_body.c_str(), "\nContent-Length") == NULL))
+    if ((strstr(r.message_body.c_str(), "\nHost") == NULL) || (strstr(r.message_body.c_str(), "\nContent-Length") == NULL))
     {
-        send(socketClient,
+        socketClient.send(
              "<html><h1>http error: 400</h1><h2> There is place for only Head,"
              " Post and Get method allowed in this town cowboy</h2></html>",
-             125, 0);
+             125);
     }
 
-    if (r.method == GET)
+    if (strncmp(r.method.c_str(),"GET", 3))
     {
-        http_get(r);
+        http_get(r, socketClient);
     }
-    else if (r.method == HEAD)
+    else if (strncmp(r.method.c_str(),"HEAD", 4))
     {
-        http_head(r);
+        http_head(r, socketClient);
     }
-    else if (r.method == POST)
+    else if (strncmp(r.method.c_str(),"POST", 4))
     {
-        http_post(r);
+        http_post(r, socketClient);
     }
     else
     {
-        sys::send(socketClient,
-                  "<html><h1>http error: 405</h1><h2> There is place for only Head,"
-                  " Post and Get method allowed in this town cowboy</h2></html>",
-                  125 /*len*/, 0);
+        socketClient.send(
+             "<html><h1>http error: 405</h1><h2> There is place for only Head,"
+             " Post and Get method allowed in this town cowboy</h2></html>",
+             125);
     }
 }
 
