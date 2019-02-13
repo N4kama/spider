@@ -34,20 +34,30 @@ void fill_Request(DefaultSocket sock)
     start = end + 1;
     end = line.begin() + line.find_first_of(' ', start - line.begin());
     req.url = std::string(start, end);
-    req.http_version = std::string(end + 1, line.end());
+    req.http_version = std::string(end + 1, line.end() - 1);
 
     //fill headers
     line = recvLine(sock);
     while (line.size() && line.at(0) != '\n')
     {
-        //creating pairs
-        //TODO
+        //creating pairs of two string separated by a semicolon and a space
+        size_t sep_idx = line.find_first_of(':', 0);
+        req.headers.emplace_back(std::make_pair(std::string(line.begin(),
+        line.begin() + sep_idx),
+        std::string(line.begin + sep_idx + 2, line.end() - 1)));
 
         line = recvLine(sock);
     }
 
-    //fill message (don't need to call recvLine her)
-    //TODO
+    //if message exists, it will be initialized
+    if (line.size())
+    {
+        char buf[4096];
+        while (sock.recv(buf, 4096) > 0)
+        {
+            req.message_body.append(buf);
+        }
+    }
 
     request_server(req, sock);
 }
