@@ -32,7 +32,7 @@ void http_get(struct Request r, DefaultSocket socketClient, int port)
 
     std::stringstream str;
     str << "GET / HTTP/1.1\r\nHost: " << r.url.c_str() << " \r\nConnection: close\r\n\r\n";
-    if (socketClient.send(&str, str.str().size()) < 0)
+    if (socketClient.send(&str.str(), str.str().size()) < 0)
     {
         std::cout << "Client disconnected !\n";
         //socketClient.send("<html><h1>http error: 520</h1><h2> Le serv arrive pas a me rep</h2></html>", 67);
@@ -63,15 +63,15 @@ void http_head(struct Request r, DefaultSocket socketClient, int port)
     //std::cout << "connexion done!\n";
 
     std::stringstream str;
-    std::stringstream heads;
+    str << "HEAD / HTTP/1.1\r\nStatus: " << r.status << " Headers: ";
     for (auto it = r.headers.begin(); it < r.headers.end(); it++)
     {
-        heads << it->second << " ";
+        str << it->second << " ";
     }
-    heads << r.headers.end()->second;
+    str << r.headers.end()->second;
+    str << " \r\nConnection: close\r\n\r\n";
 
-    str << "HEAD / HTTP/1.1\r\nStatus: " << r.status << " Headers: " << heads << " \r\nConnection: close\r\n\r\n";
-    if (socketClient.send(&str, str.str().size()) < 0)
+    if (socketClient.send(&str.str(), str.str().size()) < 0)
         std::cout << "Client disconnected !\n";
         //socketClient.send("<html><h1>http error: 520</h1><h2> Le serv arrive pas à m'envoyer</h2></html>", 67);
     std::cout << "HEAD done\n";
@@ -101,7 +101,7 @@ void http_post(struct Request r, DefaultSocket socketClient, int port)
 
     std::stringstream str;
 
-    while (socketClient.recv(&str, 500) >= 0)
+    while (socketClient.recv(&str.str(), 500) >= 0)
     {
         std::cout << str.str();
     }
