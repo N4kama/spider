@@ -5,6 +5,12 @@
 
 #pragma once
 
+#include <iostream>
+#include <vector>
+
+#include "connection.hh"
+#include "vhost-factory.hh"
+#include "vhost-static-file.hh"
 
 namespace http
 {
@@ -25,6 +31,8 @@ namespace http
         /* FIXME: Add members to store the information relative to the
         ** Dispatcher.
         */
+
+       std::vector<VHost> vhosts_;
     };
 
     /**
