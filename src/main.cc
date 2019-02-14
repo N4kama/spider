@@ -1,5 +1,5 @@
 #include "main.hh"
-#include "parsing/json.hh"
+
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
 
@@ -7,10 +7,7 @@ int parsing_json(std::string arg, int debug)
 {
     try
     {
-        Config c = Config();
-        nlohmann::json j = c.get_json(arg);
-        nlohmann::json j2 = c.get_vhosts(j);
-        c.parse_json(j2, debug);
+        ServerConfig s = parse_configuration(arg, debug);
     }
     catch (const std::exception &e)
     {

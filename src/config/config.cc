@@ -73,8 +73,7 @@ int check_vhost(nlohmann::json j)
 struct ServerConfig parse_configuration(const std::string &path)
 {
     ServerConfig c = ServerConfig();
-    nlohmann::json j = get_json(path.c_str());
-    nlohmann::json j2 = get_vhosts(j);
+    nlohmann::json j = get_vhosts(get_json(path.c_str()));
     for (auto vhost = j.begin(); vhost != j.end(); vhost++)
     {
         nlohmann::json cur = *vhost;
