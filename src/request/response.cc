@@ -1,5 +1,6 @@
 #include <request/request.hh>
 #include <socket/socket.hh>
+#include <request/types.hh>
 #include <iostream>
 #include <netdb.h>
 #include <cstring>
@@ -14,11 +15,15 @@ void http_get(struct Request r, DefaultSocket socketClient, int port)
 
     struct sockaddr_in sock;
     struct hostent *host;
+    std::stringstream str;
+    std::pair<STATUS_CODE, const char *> err;
 
     host = gethostbyname(r.url.c_str());
     if (!host)
     {
-        socketClient.send("<html><h1>http error: 404</h1><h2> Ton url pue la merde</h2></html>", 67);
+        err = statusCode(NOT_FOUND);
+        str << "<html><h1>http error: " << err.first << "</h1><h2> " << err.second << "</h2></html>";
+        socketClient.send(&str.str(), str.str().size());
         return;
     }
 
@@ -30,7 +35,7 @@ void http_get(struct Request r, DefaultSocket socketClient, int port)
     //socketServer.connect((sockaddr *) &sock, sizeof(sockaddr));
     //std::cout << "connexion done!\n";
 
-    std::stringstream str;
+    str.str("");
     str << "GET / HTTP/1.1\r\nHost: " << r.url.c_str() << " \r\nConnection: close\r\n\r\n";
     if (socketClient.send(&str.str(), str.str().size()) < 0)
     {
@@ -46,11 +51,15 @@ void http_head(struct Request r, DefaultSocket socketClient, int port)
 
     struct sockaddr_in sock;
     struct hostent *host;
+    std::stringstream str;
+    std::pair<STATUS_CODE, const char *> err;
 
     host = gethostbyname(r.url.c_str());
     if (!host)
     {
-        socketClient.send("<html><h1>http error: 404</h1><h2> Ton url pue la merde</h2></html>", 67);
+        err = statusCode(NOT_FOUND);
+        str << "<html><h1>http error: " << err.first << "</h1><h2> " << err.second << "</h2></html>";
+        socketClient.send(&str.str(), str.str().size());
         return;
     }
 
@@ -62,7 +71,7 @@ void http_head(struct Request r, DefaultSocket socketClient, int port)
     //socketServer.connect((sockaddr *) &sock, sizeof(sockaddr));
     //std::cout << "connexion done!\n";
 
-    std::stringstream str;
+    str.str("");
     str << "HEAD / HTTP/1.1\r\nStatus: " << r.status << " Headers: ";
     for (auto it = r.headers.begin(); it < r.headers.end(); it++)
     {
@@ -83,11 +92,15 @@ void http_post(struct Request r, DefaultSocket socketClient, int port)
 
     struct sockaddr_in sock;
     struct hostent *host;
+    std::stringstream str;
+    std::pair<STATUS_CODE, const char *> err;
 
     host = gethostbyname(r.url.c_str());
     if (!host)
     {
-        socketClient.send("<html><h1>http error: 404</h1><h2> Ton url pue la merde</h2></html>", 67);
+        err = statusCode(NOT_FOUND);
+        str << "<html><h1>http error: " << err.first << "</h1><h2> " << err.second << "</h2></html>";
+        socketClient.send(&str.str(), str.str().size());
         return;
     }
 
@@ -99,8 +112,7 @@ void http_post(struct Request r, DefaultSocket socketClient, int port)
     //socketServer.connect((sockaddr *) &sock, sizeof(sockaddr));
     //std::cout << "connexion done!\n";
 
-    std::stringstream str;
-
+    str.str("");
     while (socketClient.recv(&str.str(), 500) >= 0)
     {
         std::cout << str.str();
