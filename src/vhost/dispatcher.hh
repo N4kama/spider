@@ -27,12 +27,16 @@ namespace http
         Dispatcher(Dispatcher&&) = delete;
         Dispatcher& operator=(Dispatcher&&) = delete;
 
+        void add_vhost(const VHostConfig &vh_config);
+        void dispatch_request(const Request &request);
+
+
     private:
         /* FIXME: Add members to store the information relative to the
         ** Dispatcher.
         */
 
-       std::vector<VHost> vhosts_;
+       std::vector<shared_vhost> vhosts_;
     };
 
     /**

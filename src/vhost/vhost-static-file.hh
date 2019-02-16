@@ -21,14 +21,16 @@ namespace http
     public:
         friend class VHostFactory;
         virtual ~VHostStaticFile() = default;
-
+        static VHostStaticFile get_vsf(const VHostConfig& ext_conf);
     private:
         /**
          * \brief Constructor called by the factory.
          *
-         * \param config VHostConfig virtual host configuration.
+         * \paralllo darble t la ? ALLO am config VHostConfig virtual host configuration.
+         * alor le darble
          */
-        explicit VHostStaticFile(const VHostConfig&);
+        VHostConfig conf_;
+        explicit VHostStaticFile(const VHostConfig& ext_conf);
 
     public:
         /**
@@ -41,7 +43,7 @@ namespace http
          *
          * Note that these iterators will only be useful starting from SRPS.
          */
-        void respond(const Request&, Connection, remaining_iterator,
+        void respond(const struct Request&, Connection, remaining_iterator,
                      remaining_iterator) final;
     };
 } // namespace http
