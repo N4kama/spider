@@ -35,7 +35,7 @@ struct VHostConfig
 {
     VHostConfig(const std::string &ip, const int port,
                 const std::string &server_name, const std::string &root,
-                const std::string &default_file);
+                const std::string &default_file = "index.html");
     //VHostConfig() = default;
     VHostConfig(const VHostConfig &) = default;
     VHostConfig &operator=(const VHostConfig &) = default;
@@ -79,5 +79,5 @@ struct ServerConfig
      * file.
      * \return The server configuration.
      */
-struct ServerConfig parse_configuration(const std::string &path);
+struct ServerConfig parse_configuration(const std::string &path, int debug);
 } // namespace http

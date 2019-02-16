@@ -69,8 +69,7 @@ int check_vhost(nlohmann::json j)
     return 1;
 }
 
-
-struct ServerConfig parse_configuration(const std::string &path)
+struct ServerConfig parse_configuration(const std::string &path, int debug)
 {
     ServerConfig c = ServerConfig();
     nlohmann::json j = get_vhosts(get_json(path.c_str()));
@@ -88,6 +87,10 @@ struct ServerConfig parse_configuration(const std::string &path)
                 std::string def_s = cur.at("default_file").get<std::string>();
                 VHostConfig v = VHostConfig(ip_s, port_i, serv_s, root_s, def_s);
                 c.vhosts_.emplace_back(v);
+                if (debug)
+                {
+                    v.print_VHostConfig();
+                }
             }
             catch (const std::exception &e1)
             {
@@ -95,6 +98,10 @@ struct ServerConfig parse_configuration(const std::string &path)
                 {
                     VHostConfig v = VHostConfig(ip_s, port_i, serv_s, root_s);
                     c.vhosts_.emplace_back(v);
+                    if (debug)
+                    {
+                        v.print_VHostConfig();
+                    }
                 }
                 catch (const std::exception &e2)
                 {
