@@ -54,6 +54,7 @@ libspider_la_SOURCES = \
                        src/misc/unistd.hh \
                        src/request/error.cc \
                        src/request/error.hh \
+                       src/request/request.cc \
                        src/request/response.cc \
                        src/request/request.hh \
                        src/request/response.hh \
