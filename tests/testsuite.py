@@ -3,10 +3,10 @@
 import os
 from subprocess import Popen, PIPE
 
-def test_file(file):
+def test_file(folder, file):
     print("Testing " + file + ": ", end='')
 
-    bash_res = Popen(["./unitary_tests/" + file],
+    bash_res = Popen(["./" + folder + file],
     stdin=PIPE, stdout=PIPE, stderr=PIPE)
     bash_out, bash_err = bash_res.communicate()
     ret_val = bash_res.returncode
@@ -16,11 +16,12 @@ def test_file(file):
     else:
         print("KO")
 
-def run_unitaryTests():
+#Take a string 'folder' as parameter
+def run_unitaryTests(folder):
     print("Running Unitary Tests:")
-    for file in os.listdir("unitary_tests"):
+    for file in os.listdir(folder):
         if "." not in file:
-            test_file(file)
+            test_file(folder, file)
 
 def run_globalTests():
     print("Running Tests:")
@@ -35,7 +36,7 @@ MAIN :
 
 print("\tStarting TestSuite:\n")
 
-run_unitaryTests()
+run_unitaryTests("unitary_tests/")
 print()
 run_globalTests()
 
