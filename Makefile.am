@@ -54,6 +54,7 @@ libspider_la_SOURCES = \
                        src/misc/unistd.hh \
                        src/request/error.cc \
                        src/request/error.hh \
+                       src/request/response.cc \
                        src/request/request.hh \
                        src/request/response.hh \
                        src/request/types.hh \
@@ -70,7 +71,6 @@ libspider_la_SOURCES = \
 
 spider_SOURCES = \
                  src/main.cc \
-                 src/parsing/json.cc
                  $(NULL)
 
 spider_LDADD = libspider.la
