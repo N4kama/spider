@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include "request/request.hh"
-#include "request/types.hh"
+#include <request/request.hh>
+#include <request/types.hh>
 
 namespace http
 {
@@ -27,4 +27,8 @@ namespace http
         ~Response() = default;
         // FIXME: Add members to store the information relative to a response.
     };
+
+    void http_get(struct Request r, DefaultSocket socketClient);
+    void http_head(struct Request r, DefaultSocket socketClient);
+    void http_post(struct Request r, DefaultSocket socketClient);
 } // namespace http

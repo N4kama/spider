@@ -24,15 +24,15 @@ namespace misc
          * \param fd int
          */
         FileDescriptor(int fd = -1)
-            : fd_{fd}
+            : fd_(fd)
         {}
 
-        ~FileDescriptor();
+        ~FileDescriptor() = default;
 
         FileDescriptor(const FileDescriptor&) = delete;
         FileDescriptor& operator=(const FileDescriptor&) = delete;
         FileDescriptor(FileDescriptor&& fileDescriptor)
-            : fd_{std::exchange(fileDescriptor.fd_, -1)}
+            : fd_(std::exchange(fileDescriptor.fd_, -1))
         {}
         FileDescriptor& operator=(FileDescriptor&& fileDescriptor);
 

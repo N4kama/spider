@@ -8,71 +8,76 @@
 
 namespace http
 {
-    DefaultSocket::DefaultSocket(int domain, int type, int protocol)
-        : Socket{std::make_shared<misc::FileDescriptor>(
-              sys::socket(domain, type, protocol))}
-    {}
+DefaultSocket::DefaultSocket(const misc::shared_fd& fd)
+    : Socket(fd)
+{
+}
 
-    void DefaultSocket::listen(int backlog)
-    {
-        sys::listen(*fd_, backlog);
-    }
+DefaultSocket::DefaultSocket(int domain, int type, int protocol)
+    : Socket{std::make_shared<misc::FileDescriptor>(
+          sys::socket(domain, type, protocol))}
+{
+}
 
-    ssize_t DefaultSocket::recv(void* dst, size_t len)
-    {
-        return ::recv(*fd_, dst, len, 0);
-    }
+void DefaultSocket::listen(int backlog)
+{
+    sys::listen(*fd_, backlog);
+}
 
-    ssize_t DefaultSocket::send(const void* src, size_t len)
-    {
-        return ::send(*fd_, src, len, 0);
-    }
+ssize_t DefaultSocket::recv(void *dst, size_t len)
+{
+    return ::recv(*fd_, dst, len, 0);
+}
 
-    ssize_t
-    DefaultSocket::sendfile(misc::shared_fd& in_fd, off_t& offset, size_t c)
-    {
-        int in = *in_fd;
-        return ::sendfile(*fd_, in, &offset, c);
-    }
+ssize_t DefaultSocket::send(const void *src, size_t len)
+{
+    return ::send(*fd_, src, len, 0);
+}
 
-    void DefaultSocket::bind(const sockaddr* addr, socklen_t addrlen)
-    {
-        if (!addr)
-            return;
+ssize_t
+DefaultSocket::sendfile(misc::shared_fd &in_fd, off_t &offset, size_t c)
+{
+    int in = *in_fd;
+    return ::sendfile(*fd_, in, &offset, c);
+}
 
-        int fd = *fd_;
-        if (::bind(fd, addr, addrlen) < 0)
-            std::cerr << std::strerror(errno) << '\n';
-    }
+void DefaultSocket::bind(const sockaddr *addr, socklen_t addrlen)
+{
+    if (!addr)
+        return;
 
-    void DefaultSocket::setsockopt(int level, int optname, int optval)
-    {
-        int fd = *fd_;
-        char *opt_buf = new char[optval];
-        if (::setsockopt(fd, level, optname, opt_buf, optval) < 0)
-            std::cerr << std::strerror(errno) << '\n';
-    }
+    int fd = *fd_;
+    if (::bind(fd, addr, addrlen) < 0)
+        std::cerr << std::strerror(errno) << '\n';
+}
 
-    std::shared_ptr<Socket> DefaultSocket::accept(sockaddr* addr,
-                                               socklen_t* addrlen)
-    {
-        if (!addr)
-            return nullptr;
+void DefaultSocket::setsockopt(int level, int optname, int optval)
+{
+    int fd = *fd_;
+    char *opt_buf = new char[optval];
+    if (::setsockopt(fd, level, optname, opt_buf, optval) < 0)
+        std::cerr << std::strerror(errno) << '\n';
+}
 
-        int fd = *fd_;
-        if (::accept(fd, addr, addrlen) < 0)
-            return nullptr;
+std::shared_ptr<Socket> DefaultSocket::accept(sockaddr *addr,
+                                              socklen_t *addrlen)
+{
+    if (!addr)
+        return nullptr;
 
-        auto res = std::make_shared<DefaultSocket>(DefaultSocket(fd_));
-        return res;
-    }
+    int fd = *fd_;
+    if (::accept(fd, addr, addrlen) < 0)
+        return nullptr;
 
-    void DefaultSocket::connect(const sockaddr* addr, socklen_t l)
-    {
-        int fd = *fd_;
-        if (::connect(fd, addr, l) < 0)
-            std::cerr << std::strerror(errno) << '\n';
-    }
+    auto res = std::make_shared<DefaultSocket>(DefaultSocket(fd_));
+    return res;
+}
 
+void DefaultSocket::connect(const sockaddr *addr, socklen_t l)
+{
+    int fd = *fd_;
+    if (::connect(fd, addr, l) < 0)
+        std::cerr << std::strerror(errno) << '\n';
+}
 
 } // namespace http
