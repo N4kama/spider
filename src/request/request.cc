@@ -1,4 +1,5 @@
 #include <request/request.hh>
+#include <request/response.hh>
 #include <misc/socket.hh>
 #include <netdb.h>
 #include <iostream>
@@ -7,7 +8,7 @@
 namespace http
 {
 
-std::string &recvLine(DefaultSocket &sock)
+std::string recvLine(DefaultSocket &sock)
 {
     std::string data = std::string("");
     char c = ' ';
@@ -20,12 +21,12 @@ std::string &recvLine(DefaultSocket &sock)
     return data;
 }
 
-void fill_Request(DefaultSocket sock)
+void fill_Request(DefaultSocket sock, VHostConfig& config)
 {
     Request req = Request();
 
     //fill info line
-    std::string &line = recvLine(sock);
+    std::string line = recvLine(sock);
     auto start = line.begin();
     auto end = start;
     end += line.find_first_of(' ', 0);
@@ -57,15 +58,11 @@ void fill_Request(DefaultSocket sock)
         }
     }
 
-    request_server(req, sock);
+    request_server(req, sock, config.port_);
 }
 
-void request_server(struct Request r, DefaultSocket socketClient)
+void request_server(struct Request r, DefaultSocket socketClient, int port)
 {
-
-    /*handling error
-    */
-
     if ((strncmp(r.http_version.c_str(), "HTTP/1.1", 8) != 0) || (strncmp(r.url.c_str(), "http://", 7) != 0))
     {
         socketClient.send(
@@ -83,15 +80,15 @@ void request_server(struct Request r, DefaultSocket socketClient)
 
     if (strncmp(r.method.c_str(),"GET", 3))
     {
-        http_get(r, socketClient);
+        http::http_get(r, socketClient, port);
     }
     else if (strncmp(r.method.c_str(),"HEAD", 4))
     {
-        http_head(r, socketClient);
+        http::http_head(r, socketClient, port);
     }
     else if (strncmp(r.method.c_str(),"POST", 4))
     {
-        http_post(r, socketClient);
+        http::http_post(r, socketClient, port);
     }
     else
     {
