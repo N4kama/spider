@@ -33,23 +33,23 @@ namespace http
      */
 struct VHostConfig
 {
-    VHostConfig(const std::string &ip, const int port,
-                const std::string &server_name, const std::string &root,
-                const std::string &default_file = "index.html");
-    //VHostConfig() = default;
-    VHostConfig(const VHostConfig &) = default;
-    VHostConfig &operator=(const VHostConfig &) = default;
-    VHostConfig(VHostConfig &&) = default;
-    VHostConfig &operator=(VHostConfig &&) = default;
+     VHostConfig(const std::string &ip, const int port,
+                 const std::string &server_name, const std::string &root,
+                 const std::string &default_file = "index.html");
+     //VHostConfig() = default;
+     VHostConfig(const VHostConfig &) = default;
+     VHostConfig &operator=(const VHostConfig &) = default;
+     VHostConfig(VHostConfig &&) = default;
+     VHostConfig &operator=(VHostConfig &&) = default;
 
-    ~VHostConfig() = default;
-    void print_VHostConfig(void);
+     ~VHostConfig() = default;
+     void print_VHostConfig(void);
 
-    const std::string ip_;
-    const int port_;
-    const std::string server_name_;
-    const std::string root_;
-    const std::string default_file_;
+     const std::string ip_;
+     const int port_;
+     const std::string server_name_;
+     const std::string root_;
+     const std::string default_file_;
 };
 
 /**
@@ -61,15 +61,15 @@ struct VHostConfig
      */
 struct ServerConfig
 {
-    ServerConfig() = default;
-    ServerConfig(const ServerConfig &) = default;
-    ServerConfig &operator=(const ServerConfig &) = default;
-    ServerConfig(ServerConfig &&) = default;
-    ServerConfig &operator=(ServerConfig &&) = default;
+     ServerConfig() = default;
+     ServerConfig(const ServerConfig &) = default;
+     ServerConfig &operator=(const ServerConfig &) = default;
+     ServerConfig(ServerConfig &&) = default;
+     ServerConfig &operator=(ServerConfig &&) = default;
 
-    ~ServerConfig() = default;
+     ~ServerConfig() = default;
 
-    std::vector<http::VHostConfig> vhosts_;
+     std::vector<http::VHostConfig> vhosts_;
 };
 
 /**
@@ -79,5 +79,8 @@ struct ServerConfig
      * file.
      * \return The server configuration.
      */
+int check_vhost(nlohmann::json j);
+json get_json(const std::string &s);
+nlohmann::json get_vhosts(nlohmann::json j);
 struct ServerConfig parse_configuration(const std::string &path, int debug);
 } // namespace http

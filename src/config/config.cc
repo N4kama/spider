@@ -30,7 +30,7 @@ json get_json(const std::string &s)
     return j;
 }
 
-nlohmann::json get_vhosts(nlohmann::json j)
+json get_vhosts(json j)
 {
     try
     {
@@ -44,7 +44,7 @@ nlohmann::json get_vhosts(nlohmann::json j)
     return nullptr;
 }
 
-int check_vhost(nlohmann::json j)
+int check_vhost(json j)
 {
     if (j.find("ip") == j.end() || !j.find("ip")->is_string())
     {
@@ -72,10 +72,10 @@ int check_vhost(nlohmann::json j)
 struct ServerConfig parse_configuration(const std::string &path, int debug)
 {
     ServerConfig c = ServerConfig();
-    nlohmann::json j = get_vhosts(get_json(path.c_str()));
+    json j = get_vhosts(get_json(path.c_str()));
     for (auto vhost = j.begin(); vhost != j.end(); vhost++)
     {
-        nlohmann::json cur = *vhost;
+        json cur = *vhost;
         if (check_vhost(cur))
         {
             std::string ip_s = cur.at("ip").get<std::string>();
@@ -114,5 +114,6 @@ struct ServerConfig parse_configuration(const std::string &path, int debug)
             throw std::exception();
         }
     }
+    return c;
 }
 } // namespace http
