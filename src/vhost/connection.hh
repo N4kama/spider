@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "socket/socket.hh"
+#include "request/request.hh"
+#include "dispatcher.hh"
 
 namespace http
 {
@@ -27,8 +29,12 @@ namespace http
         Connection& operator=(Connection&&) = default;
         ~Connection() = default;
 
-        /* FIXME: Add members to store the information relative to the
-        ** connection.
-        */
+        //Client socket
+        shared_socket sock_;
+        //Request from client
+        Request req_;
     };
+
+    int new_connexion(shared_socket sock);
+
 } // namespace http
