@@ -14,7 +14,7 @@ void http_get(struct Request r, DefaultSocket socketClient)
 {
     std::cout << "GET " << r.url.c_str() << '\n';
 
-    //struct sockaddr_in sock;
+    struct sockaddr_in sock;
     struct hostent *host;
     std::stringstream str;
     std::pair<STATUS_CODE, const char *> err;
@@ -23,18 +23,21 @@ void http_get(struct Request r, DefaultSocket socketClient)
     if (!host)
     {
         err = statusCode(NOT_FOUND);
+            std::cout << "erreur!\n";
         str << "<html><h1>http error: " << err.first << "</h1><h2> " << err.second << "</h2></html>";
         socketClient.send(&str, str.str().size());
         return;
     }
 
-    //sock.sin_port = htons(port);
-    //sock.sin_family = AF_INET;
-    //sock.sin_addr.s_addr = *(reinterpret_cast<unsigned long *>(host->h_addr));//*((unsigned long*)host->h_addr);
+    sock.sin_port = htons(1234);
+    sock.sin_family = AF_INET;
+    sock.sin_addr.s_addr = *(reinterpret_cast<unsigned long *>(host->h_addr));//*((unsigned long*)host->h_addr);
 
-    //DefaultSocket socketServer = DefaultSocket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    //socketServer.connect((sockaddr *) &sock, sizeof(sockaddr));
-    //std::cout << "connexion done!\n";
+    DefaultSocket socketServer = DefaultSocket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    socketServer.connect((sockaddr *) &sock, sizeof(sockaddr));
+    std::cout << "connexion done!\n";
+    socketClient.send("yes2\n", 5);
+    socketServer.send("yes1\n", 5);
 
     str.str("");
     str << "GET / HTTP/1.1\r\nHost: " << r.url.c_str() << " \r\nConnection: close\r\n\r\n";
