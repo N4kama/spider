@@ -27,6 +27,7 @@ struct Request
     ~Request() = default;
     // FIXME: Add members to store the information relative to a request.
 
+    int port;
     std::string method;
     int status;
     std::string url;
@@ -35,8 +36,8 @@ struct Request
     std::string message_body;
 };
 
-std::string recvLine(DefaultSocket &sock);
-void fill_Request(DefaultSocket sock, VHostConfig& config);
-void request_server(struct Request r, DefaultSocket socketClient, int port);
+std::string recvLine(Socket &sock);
+Request fill_Request(Socket &sock);
+void request_server(struct Request r, DefaultSocket socketClient);
 
-} // namespace http
+} // namespace httpy

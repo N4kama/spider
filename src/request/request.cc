@@ -8,7 +8,7 @@
 namespace http
 {
 
-std::string recvLine(DefaultSocket &sock)
+std::string recvLine(Socket &sock)
 {
     std::string data = std::string("");
     char c = ' ';
@@ -21,7 +21,7 @@ std::string recvLine(DefaultSocket &sock)
     return data;
 }
 
-void fill_Request(DefaultSocket sock, VHostConfig& config)
+Request fill_Request(Socket& sock)
 {
     Request req = Request();
 
@@ -57,11 +57,10 @@ void fill_Request(DefaultSocket sock, VHostConfig& config)
             req.message_body.append(buf);
         }
     }
-
-    request_server(req, sock, config.port_);
+    return req;
 }
 
-void request_server(struct Request r, DefaultSocket socketClient, int port)
+void request_server(struct Request r, DefaultSocket socketClient)
 {
     if ((strncmp(r.http_version.c_str(), "HTTP/1.1", 8) != 0) || (strncmp(r.url.c_str(), "http://", 7) != 0))
     {
@@ -80,15 +79,15 @@ void request_server(struct Request r, DefaultSocket socketClient, int port)
 
     if (strncmp(r.method.c_str(),"GET", 3))
     {
-        http::http_get(r, socketClient, port);
+        http::http_get(r, socketClient);
     }
     else if (strncmp(r.method.c_str(),"HEAD", 4))
     {
-        http::http_head(r, socketClient, port);
+        http::http_head(r, socketClient);
     }
     else if (strncmp(r.method.c_str(),"POST", 4))
     {
-        http::http_post(r, socketClient, port);
+        http::http_post(r, socketClient);
     }
     else
     {
