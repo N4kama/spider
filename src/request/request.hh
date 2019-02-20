@@ -30,14 +30,14 @@ struct Request
     int port;
     std::string method;
     int status;
-    std::string url;
     std::string http_version;
     std::vector<header> headers;
     std::string message_body;
+    std::string uri;
 };
 
-std::string recvLine(Socket &sock);
-Request fill_Request(Socket &sock);
+std::string recvLine(DefaultSocket &sock);
+Request fill_Request(DefaultSocket &sock);
 void request_server(struct Request r, DefaultSocket socketClient);
 
 } // namespace httpy

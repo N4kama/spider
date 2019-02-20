@@ -8,7 +8,7 @@
 namespace http
 {
 
-std::string recvLine(Socket &sock)
+std::string recvLine(DefaultSocket &sock)
 {
     std::string data = std::string("");
     char c = ' ';
@@ -21,7 +21,7 @@ std::string recvLine(Socket &sock)
     return data;
 }
 
-Request fill_Request(Socket& sock)
+Request fill_Request(DefaultSocket& sock)
 {
     Request req = Request();
 
@@ -33,7 +33,7 @@ Request fill_Request(Socket& sock)
     req.method = std::string(line.begin(), end);
     start = end + 1;
     end = line.begin() + line.find_first_of(' ', start - line.begin());
-    req.url = std::string(start, end);
+    req.uri = std::string(start, end);
     req.http_version = std::string(end + 1, line.end() - 1);
 
     //fill headers
@@ -62,7 +62,7 @@ Request fill_Request(Socket& sock)
 
 void request_server(struct Request r, DefaultSocket socketClient)
 {
-    if ((strncmp(r.http_version.c_str(), "HTTP/1.1", 8) != 0) || (strncmp(r.url.c_str(), "http://", 7) != 0))
+    if ((strncmp(r.http_version.c_str(), "HTTP/1.1", 8) != 0) || (strncmp(r.uri.c_str(), "http://", 7) != 0))
     {
         socketClient.send(
              "<html><h1>http error: 501</h1><h2> There is place for only Head,"

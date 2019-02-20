@@ -6,6 +6,11 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 
+#include <iostream>
+#include <sstream>
+#include <cstring>
+#include <string>
+
 int main()
 {
     try
@@ -24,33 +29,24 @@ int main()
         sockserv.bind((struct sockaddr *)&adr, sizeof(adr));
         sockserv.listen(20);
 
-
         struct sockaddr_in adr_c;
         socklen_t clientaddrsize;
 
-
         http::shared_socket tmp = sockserv.accept((struct sockaddr *)&adr_c, &clientaddrsize);
         http::DefaultSocket sock = http::DefaultSocket(tmp->fd_get());
-        std::cout << "ici\n";
 
+        std::stringstream str;
         //tmp->~Socket();
 
         auto r = http::Request();
         r.method = "get";
         r.status = 100;
         r.url = "localhost";
-
-        http_head(r, sock);
-
-        ssize_t nDataLength = 0;
-        char buffer[10000];
-        while (1)
+        for (int i=1; i<=5; i++)
         {
-            while ((nDataLength = sock.recv(buffer,10000)) > 0)
-            {
-                std::cout << buffer;
-            }
+            r.headers.push_back(std::pair<std::string, std::string>("test", "test"));
         }
+        http_head(r, sock);
     /*
     while ((nDataLength = sockserv.recv(buffer,10000)) > 0)
     {
