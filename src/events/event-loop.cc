@@ -31,7 +31,9 @@ void EventLoop::unregister_watcher(EventWatcher* evt)
 
 static void sigint_cb (struct ev_loop *loop, ev_signal *w, int revents)
 {
-  ev_break (loop, EVBREAK_ALL);
+    revents = revents;
+    w = w;
+    ev_break(loop, EVBREAK_ALL);
 }
 
 void EventLoop::register_sigint_watcher(ev_signal* evt_sig) const
