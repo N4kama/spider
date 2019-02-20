@@ -12,14 +12,14 @@ namespace http
 {
 void http_get(struct Request r, DefaultSocket socketClient)
 {
-    std::cout << "GET " << r.url.c_str() << '\n';
+    std::cout << "GET " << r.uri.c_str() << '\n';
 
     struct sockaddr_in sock;
     struct hostent *host;
     std::stringstream str;
     std::pair<STATUS_CODE, const char *> err;
 
-    host = gethostbyname(r.url.c_str());
+    host = gethostbyname(r.uri.c_str());
     if (!host)
     {
         //err = statusCode(NOT_FOUND);
@@ -40,7 +40,7 @@ void http_get(struct Request r, DefaultSocket socketClient)
     socketServer.send("yes1\n", 5);
 
     str.str("");
-    str << "GET / HTTP/1.1\r\nHost: " << r.url.c_str() << " \r\nConnection: close\r\n\r\n";
+    str << "GET / HTTP/1.1\r\nHost: " << r.uri.c_str() << " \r\nConnection: close\r\n\r\n";
     if (socketClient.send(&str, str.str().size()) < 0)
     {
         std::cout << "Client disconnected !\n";
@@ -51,14 +51,14 @@ void http_get(struct Request r, DefaultSocket socketClient)
 
 void http_head(struct Request r, DefaultSocket socketClient)
 {
-    std::cout << "HEAD " << r.url.c_str() << '\n';
+    std::cout << "HEAD " << r.uri.c_str() << '\n';
 
     //struct sockaddr_in sock;
     struct hostent *host;
     std::stringstream str;
     std::pair<STATUS_CODE, const char *> err;
 
-    host = gethostbyname(r.url.c_str());
+    host = gethostbyname(r.uri.c_str());
     if (!host)
     {
          //err = statusCode(NOT_FOUND);
@@ -93,14 +93,14 @@ void http_head(struct Request r, DefaultSocket socketClient)
 
 void http_post(struct Request r, DefaultSocket socketClient)
 {
-    std::cout << "POST " << r.url.c_str() << '\n';
+    std::cout << "POST " << r.uri.c_str() << '\n';
 
     //struct sockaddr_in sock;
     struct hostent *host;
     std::stringstream str;
     std::pair<STATUS_CODE, const char *> err;
 
-    host = gethostbyname(r.url.c_str());
+    host = gethostbyname(r.uri.c_str());
     if (!host)
     {
          //err = statusCode(NOT_FOUND);
