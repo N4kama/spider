@@ -18,17 +18,17 @@ namespace sys
     /**
      * \brief accept(2).
      */
-    inline auto accept = make_wrapper<misc::FileDescriptor>(::accept);
+    auto accept = make_wrapper<misc::FileDescriptor>(::accept);
 
     /**
      * \brief bind(2).
      */
-    inline auto bind = make_wrapper<void>(::bind);
+    auto bind = make_wrapper<void>(::bind);
 
     /**
      * \brief connect(2).
      */
-    inline auto connect = make_wrapper<void>(::connect);
+    auto connect = make_wrapper<void>(::connect);
 
     static int fcntl_wrapper(int fildes, int opts)
     {
@@ -41,50 +41,50 @@ namespace sys
      * Since fcntl is a variadic syscall we need to call a helper function
      * with a fixed number of parameter to create a wrapper out of it.
      */
-    inline auto fcntl_set = make_wrapper<int>(fcntl_wrapper);
+    auto fcntl_set = make_wrapper<int>(fcntl_wrapper);
 
     /**
      * \brief getsockname(2).
      */
-    inline auto getsockname = make_wrapper<void>(::getsockname);
+    auto getsockname = make_wrapper<void>(::getsockname);
 
     /**
      * \brief listen(2).
      */
-    inline auto listen = make_wrapper<void>(::listen);
+    auto listen = make_wrapper<void>(::listen);
 
     /**
      * \brief lseek(2).
      */
-    inline auto lseek = make_wrapper<off_t>(::lseek);
+    auto lseek = make_wrapper<off_t>(::lseek);
 
     /**
      * \brief read(2).
      */
-    inline auto read = make_wrapper<ssize_t>(::read);
+    auto read = make_wrapper<ssize_t>(::read);
 
     /**
      * \brief recv(2).
      */
-    inline auto recv = make_wrapper<ssize_t>(::recv);
+    auto recv = make_wrapper<ssize_t>(::recv);
 
     /**
      * \brief send(2).
      */
-    inline auto send = make_wrapper<ssize_t>(::send);
+    auto send = make_wrapper<ssize_t>(::send);
 
     /**
      * \brief sendfile(2).
      */
-    inline auto sendfile = make_wrapper<ssize_t>(::sendfile);
+    auto sendfile = make_wrapper<ssize_t>(::sendfile);
 
     /**
      * \brief setsockopt(2).
      */
-    inline auto setsockopt = make_wrapper<void>(::setsockopt);
+    auto setsockopt = make_wrapper<void>(::setsockopt);
 
     /**
      * \brief socket(2).
      */
-    inline auto socket = make_wrapper<misc::FileDescriptor>(::socket);
+    auto socket = make_wrapper<misc::FileDescriptor>(::socket);
 } // namespace sys

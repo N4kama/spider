@@ -2,7 +2,7 @@
 using namespace http;
 
 ListenerEW::ListenerEW(shared_socket socket)
-:sock_(socket) // {}
+:sock_{socket}
 {
     struct sockaddr_in my_addr;
     socklen_t len = sizeof(my_addr);
@@ -12,5 +12,5 @@ ListenerEW::ListenerEW(shared_socket socket)
 
 void ListenerEW::operator()()
 {
-
+    new_connexion(sock_);
 }

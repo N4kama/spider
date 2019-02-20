@@ -14,7 +14,7 @@ int dispatch(std::string arg, int debug)
         http::ServerConfig config = http::parse_configuration(arg, debug);
         http::VHostConfig vhost = config.vhosts_.at(0);
         //Add the new vhost to the VHOST list in the dispatcher
-        //http::dispatcher.add_vhost(vhost);
+        http::dispatcher.add_vhost(vhost);
 
         //init socket
         http::DefaultSocket server_socket = http::DefaultSocket(AF_INET, SOCK_STREAM, 0);

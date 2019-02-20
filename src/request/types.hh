@@ -34,7 +34,7 @@ namespace http
      * \param code STATUS_CODE http status code.
      * \return pair associating a status code to its message.
      */
-    inline constexpr std::pair<STATUS_CODE, decltype(http_crlf)>
+    inline std::pair<STATUS_CODE, decltype(http_crlf)>
     statusCode(STATUS_CODE code)
     {
         switch (code)

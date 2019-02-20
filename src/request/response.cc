@@ -22,9 +22,9 @@ void http_get(struct Request r, DefaultSocket socketClient)
     host = gethostbyname(r.url.c_str());
     if (!host)
     {
-        err = statusCode(NOT_FOUND);
+        //err = statusCode(NOT_FOUND);
             std::cout << "erreur!\n";
-        str << "<html><h1>http error: " << err.first << "</h1><h2> " << err.second << "</h2></html>";
+        str << "<html><h1>http error: " << /*err.first*/"ERR" << "</h1><h2> " << err.second << "</h2></html>";
         socketClient.send(&str, str.str().size());
         return;
     }
@@ -61,9 +61,10 @@ void http_head(struct Request r, DefaultSocket socketClient)
     host = gethostbyname(r.url.c_str());
     if (!host)
     {
-        err = statusCode(NOT_FOUND);
-        str << "<html><h1>http error: " << err.first << "</h1><h2> " << err.second << "</h2></html>";
-        socketClient.send(&str, str.str().size());
+         //err = statusCode(NOT_FOUND);
+            std::cout << "erreur!\n";
+        str << "<html><h1>http error: " << /*err.first*/"ERR" << "</h1><h2> " << err.second << "</h2></html>";
+       socketClient.send(&str, str.str().size());
         return;
     }
 
@@ -102,9 +103,10 @@ void http_post(struct Request r, DefaultSocket socketClient)
     host = gethostbyname(r.url.c_str());
     if (!host)
     {
-        err = statusCode(NOT_FOUND);
-        str << "<html><h1>http error: " << err.first << "</h1><h2> " << err.second << "</h2></html>";
-        socketClient.send(&str, str.str().size());
+         //err = statusCode(NOT_FOUND);
+            std::cout << "erreur!\n";
+        str << "<html><h1>http error: " << /*err.first*/"ERR" << "</h1><h2> " << err.second << "</h2></html>";
+       socketClient.send(&str, str.str().size());
         return;
     }
 

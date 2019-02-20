@@ -4,7 +4,7 @@ namespace http
 {
     void Dispatcher::add_vhost(VHostConfig config)
     {
-        vhosts_.push_back(Create(config));
+        vhosts_.push_back(VHostFactory::Create(config));
     }
 
     int Dispatcher::dispatch_request(Connection &cnx);
@@ -14,5 +14,7 @@ namespace http
         //Now we consider there is only one vhost
         auto vhost = *(dispatcher.vhosts_[0]);
         vhost.respond(request, cnx, nullptr, nullptr); //fix the remaining iter
+
+        return 0;
     }
 }
