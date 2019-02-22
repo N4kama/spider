@@ -9,8 +9,8 @@ VHostStaticFile VHostStaticFile::get_vsf(const VHostConfig& ext_conf)
 VHostStaticFile::VHostStaticFile(const VHostConfig& ext_conf)
 : conf_(ext_conf) {}
 
-void VHostStaticFile::respond(const Request& req, Connection conn, remaining_iterator begin,
-                     remaining_iterator end)
+void VHostStaticFile::respond(const Request& req, Connection conn, remaining_iterator,
+                     remaining_iterator)
 {
     //En rapport avec connexion.hh qui doit etre coder...
 

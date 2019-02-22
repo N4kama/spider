@@ -14,7 +14,7 @@
 namespace http
 {
     // FIXME: iterator to data remaining from next request.
-    using remaining_iterator = NotImplemented;
+    using remaining_iterator = int; //SHOULD BE CHANGED BECAUSE IS FALSE !
     /**
      * \class VHost
      * \brief Abstract class representing a VHost.

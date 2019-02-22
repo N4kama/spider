@@ -29,7 +29,7 @@ namespace http
          * \param fd int socket fd.
          * \param flags int initialization flags.
          */
-        EventWatcher(int fd, int flags);
+        EventWatcher(int fd = 0, int flags = 0);
 
         EventWatcher(const EventWatcher&) = delete;
         EventWatcher& operator=(const EventWatcher&) = delete;
