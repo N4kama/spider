@@ -17,7 +17,7 @@ namespace http
     struct Response
     {
         explicit Response(const STATUS_CODE&);
-        Response(const Request&, const STATUS_CODE& = STATUS_CODE::OK);
+        Response(const struct Request&, const STATUS_CODE& = STATUS_CODE::OK);
 
         Response() = default;
         Response(const Response&) = default;
@@ -25,7 +25,9 @@ namespace http
         Response(Response&&) = default;
         Response& operator=(Response&&) = default;
         ~Response() = default;
-        // FIXME: Add members to store the information relative to a response.
+
+        STATUS_CODE status_code;
+        int variable_juste_pour_test;
     };
 
     void http_get(struct Request r, DefaultSocket socketClient);

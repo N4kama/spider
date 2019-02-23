@@ -10,6 +10,19 @@
 
 namespace http
 {
+
+Response::Response(const STATUS_CODE& s)
+    : status_code(s), variable_juste_pour_test(0)
+{
+}
+
+Response::Response(const struct Request& r, const STATUS_CODE& s)
+    : status_code(s), variable_juste_pour_test(r.status)
+{
+}
+
+
+
 void http_get(struct Request r, DefaultSocket socketClient)
 {
     std::cout << "GET " << r.uri.c_str() << '\n';
