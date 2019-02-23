@@ -7,7 +7,8 @@
 
 #include "events/events.hh"
 #include "socket/socket.hh"
-
+#include "vhost/connection.hh"
+#include <arpa/inet.h>
 namespace http
 {
     /**

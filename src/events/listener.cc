@@ -1,4 +1,6 @@
-#include "events/listener.hh"
+#include <events/listener.hh>
+#include <vhost/connection.hh>
+
 namespace http
 {
     ListenerEW::ListenerEW(shared_socket socket)
