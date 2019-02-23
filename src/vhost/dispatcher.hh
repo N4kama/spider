@@ -7,10 +7,9 @@
 
 #include <iostream>
 #include <vector>
-
+#include "vhost-static-file.hh"
 #include "connection.hh"
 #include "vhost-factory.hh"
-#include "vhost-static-file.hh"
 
 namespace http
 {
@@ -28,7 +27,7 @@ class Dispatcher
     Dispatcher &operator=(Dispatcher &&) = delete;
 
     void add_vhost(VHostConfig config);
-    int dispatch_request(Connection &cnx);
+    int dispatch_request(struct Connection &cnx);
 
     std::vector<shared_vhost> vhosts_;
 

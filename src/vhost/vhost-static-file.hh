@@ -5,10 +5,9 @@
 
 #pragma once
 
-#include "config/config.hh"
-#include "request/request.hh"
-#include "vhost/connection.hh"
-#include "vhost/vhost.hh"
+#include "../config/config.hh"
+#include "../request/request.hh"
+#include "connection.hh"
 
 namespace http
 {
@@ -16,7 +15,8 @@ namespace http
      * \class VHostStaticFile
      * \brief VHost serving static files.
      */
-    class VHostStaticFile : public VHost
+    using remaining_iterator = int; //SHOULD BE CHANGED BECAUSE IS FALSE !
+    class VHostStaticFile
     {
     public:
         friend class VHostFactory;
@@ -43,7 +43,9 @@ namespace http
          *
          * Note that these iterators will only be useful starting from SRPS.
          */
-        void respond(const struct Request&, Connection, remaining_iterator,
-                     remaining_iterator) final;
+        void respond(const struct Request&, struct Connection, remaining_iterator,
+                     remaining_iterator);
     };
+    using shared_vhost = std::shared_ptr<VHostStaticFile>;
+
 } // namespace http

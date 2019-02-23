@@ -6,9 +6,8 @@
 #pragma once
 
 #include <memory>
-
-#include "socket/socket.hh"
-#include "request/request.hh"
+#include "../socket/default-socket.hh"
+#include "../request/request.hh"
 #include "dispatcher.hh"
 
 namespace http

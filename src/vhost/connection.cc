@@ -2,6 +2,8 @@
 
 namespace http
 {
+
+Dispatcher dispatcher;
 int new_connexion(shared_socket sock)
 {
     //Init Connection
@@ -9,8 +11,8 @@ int new_connexion(shared_socket sock)
     cnx.sock_ = sock;
 
     //Getting request from client
-    cnx.req_ = fill_Request(*cnx.sock_);
-
+    http::DefaultSocket s = http::DefaultSocket(sock->fd_get());
+    cnx.req_ = fill_Request(s);
     return dispatcher.dispatch_request(cnx);
 }
 } // namespace http
