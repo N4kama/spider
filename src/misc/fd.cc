@@ -13,12 +13,12 @@ FileDescriptor &FileDescriptor::operator=(FileDescriptor &&fileDescriptor)
     return *this;
 }
 
-FileDescriptor::operator int() const
+FileDescriptor::operator int() const&
 {
     return fd_;
 }
 
-FileDescriptor::operator bool() const
+FileDescriptor::operator bool() const&
 {
     return fd_ != -1;
 }

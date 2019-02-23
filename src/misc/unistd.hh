@@ -17,12 +17,12 @@ namespace sys
     /**
      * \brief close(2).
      */
-    auto close = make_wrapper<void>(::close);
+    inline auto close = make_wrapper<void>(::close);
 
     /**
      * \brief fstat(2).
      */
-    auto fstat = make_wrapper<int>(::fstat);
+    inline auto fstat = make_wrapper<int>(::fstat);
 
     static int open_wrapper(const char* path, int flags)
     {
@@ -34,5 +34,5 @@ namespace sys
      * Since open is a variadic syscall we need to call a helper with a
      * fixed number of parameters to create a wrapper out of it.
      */
-    auto open = make_wrapper<misc::FileDescriptor>(open_wrapper);
+    inline auto open = make_wrapper<misc::FileDescriptor>(open_wrapper);
 } // namespace sys
