@@ -14,7 +14,7 @@
 namespace http
 {
     // FIXME: iterator to data remaining from next request.
-    //using remaining_iterator = int; //SHOULD BE CHANGED BECAUSE IS FALSE !
+    using remaining_iterator = int;
     /**
      * \class VHost
      * \brief Abstract class representing a VHost.
@@ -44,7 +44,7 @@ namespace http
          * \param begin remaining_iterator of received data.
          * \param end remaining_iterator of received data.
          */
-        virtual void respond(const Request&, Connection, remaining_iterator,
+        virtual void respond(const Request&, struct Connection, remaining_iterator,
                              remaining_iterator) = 0;
 
         inline const VHostConfig& conf_get() const noexcept
@@ -59,5 +59,5 @@ namespace http
         VHostConfig conf_;
     };
 
-    //using shared_vhost = std::shared_ptr<VHostStaticFile>;
+    using shared_vhost = std::shared_ptr<VHost>;
 } // namespace http

@@ -7,9 +7,9 @@
 
 #include <iostream>
 #include <vector>
-#include "vhost-static-file.hh"
 #include "connection.hh"
 #include "vhost-factory.hh"
+#include "vhost-static-file.hh"
 
 namespace http
 {
@@ -29,12 +29,12 @@ class Dispatcher
     void add_vhost(VHostConfig config);
     int dispatch_request(struct Connection &cnx);
 
-    std::vector<shared_vhost> vhosts_;
 
   private:
     /* FIXME: Add members to store the information relative to the
         ** Dispatcher.
         */
+    std::vector<shared_vhost> vhosts_;
 
     //Dispatcher is a global variable which stores the server config
 };
