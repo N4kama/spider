@@ -22,6 +22,7 @@ stamp-h1
 libspider.*
 ar-lib
 compile
+config.h.in~
 config.guess
 requests
 config.sub
