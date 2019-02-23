@@ -6,9 +6,7 @@
 #pragma once
 
 #include "../config/config.hh"
-#include "error/not-implemented.hh"
-#include "request/request.hh"
-#include "vhost/connection.hh"
+#include "connection.hh"
 
 namespace http
 {
@@ -21,6 +19,7 @@ namespace http
     class VHost
     {
     public:
+
         /**
          * \brief Create a VHost from its configuration.
          *

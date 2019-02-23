@@ -1,6 +1,8 @@
 #include "vhost.hh"
 
-VHost(const VHostConfig& c)
-    : conf{c}
+namespace http
 {
-}
+    VHost::VHost(const struct VHostConfig& c)
+        : conf_{c}
+    {}
+} // namespace http

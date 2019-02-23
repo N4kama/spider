@@ -6,9 +6,10 @@
 #pragma once
 
 #include <vector>
-#include <socket/default-socket.hh>
-#include <request/types.hh>
-#include <config/config.hh>
+#include "../socket/default-socket.hh"
+#include "types.hh"
+#include "../config/config.hh"
+
 namespace http
 {
 using header = std::pair<std::string, std::string>;

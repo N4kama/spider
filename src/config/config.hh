@@ -47,7 +47,7 @@ namespace http
         void print_VHostConfig(void);
 
         const std::string ip_;
-        const int port_;
+        const int port_ = 80;
         const std::string server_name_;
         const std::string root_;
         const std::string default_file_;
