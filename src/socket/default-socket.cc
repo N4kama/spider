@@ -68,7 +68,7 @@ std::shared_ptr<Socket> DefaultSocket::accept(sockaddr *addr,
         std::cerr << "accept: bad address given !\n";
         return nullptr;
     }
-    
+
     int fd = *fd_;
     int r_res = sys::accept(fd, addr, addrlen);
     misc::shared_fd f = std::make_shared<misc::FileDescriptor>(r_res);
