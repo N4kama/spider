@@ -57,7 +57,7 @@ namespace http
          * \param watcher EventWatcher* to unregister.
          * \return If the operation was successful.
          */
-        bool unregister_ew(EventWatcher*);
+        bool unregister_ew(EventWatcher* ev);
 
         /**
          * \brief Access EventWatcher in the map.
@@ -65,7 +65,7 @@ namespace http
          * \param watcher EventWatcher* key to the events_ map.
          * \return The found EventWatcher otherwise std::nullopt.
          */
-        std::optional<std::shared_ptr<EventWatcher>> at(EventWatcher*);
+        std::optional<std::shared_ptr<EventWatcher>> at(EventWatcher* ev);
 
         const EventLoop& loop_get() const noexcept
         {
