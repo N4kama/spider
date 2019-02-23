@@ -5,8 +5,7 @@
 
 #pragma once
 
-
-#include "config/config.hh"
+#include "../config/config.hh"
 #include "error/not-implemented.hh"
 #include "request/request.hh"
 #include "vhost/connection.hh"
@@ -44,8 +43,8 @@ namespace http
          * \param begin remaining_iterator of received data.
          * \param end remaining_iterator of received data.
          */
-        virtual void respond(const Request&, struct Connection, remaining_iterator,
-                             remaining_iterator) = 0;
+        virtual void respond(const Request&, struct Connection,
+                             remaining_iterator, remaining_iterator) = 0;
 
         inline const VHostConfig& conf_get() const noexcept
         {

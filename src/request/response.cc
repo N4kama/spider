@@ -21,8 +21,6 @@ Response::Response(const struct Request& r, const STATUS_CODE& s)
 {
 }
 
-
-
 void http_get(struct Request r, DefaultSocket socketClient)
 {
     std::cout << "GET " << r.uri.c_str() << '\n';

@@ -55,8 +55,9 @@ namespace http
     std::shared_ptr<Socket> DefaultSocket::accept(sockaddr* addr,
                                                   socklen_t* addrlen)
     {
-        return std::make_shared<DefaultSocket>(std::make_shared<misc::FileDescriptor>(
-            sys::accept(*fd_, addr, addrlen)));
+        return std::make_shared<DefaultSocket>(
+            std::make_shared<misc::FileDescriptor>(
+                sys::accept(*fd_, addr, addrlen)));
     }
 
     void DefaultSocket::connect(const sockaddr* addr, socklen_t l)

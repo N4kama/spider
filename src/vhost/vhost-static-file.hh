@@ -22,6 +22,7 @@ namespace http
         friend class VHostFactory;
         virtual ~VHostStaticFile() = default;
         static VHostStaticFile get_vsf(const VHostConfig& ext_conf);
+        explicit VHostStaticFile(const VHostConfig&);
 
     private:
         /**
@@ -30,7 +31,6 @@ namespace http
          * \param config VHostConfig virtual host configuration.
          */
         VHostConfig conf_;
-        explicit VHostStaticFile(const VHostConfig&);
 
     public:
         /**
