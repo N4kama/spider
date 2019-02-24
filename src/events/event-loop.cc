@@ -3,9 +3,9 @@
 using namespace http;
 
 EventLoop::EventLoop()
-    :loop{EV_DEFAULT}
+    //:loop{EV_DEFAULT}
 {
-    //ev_loop_new(0);
+    ev_loop_new(0);
 }
 
 EventLoop::EventLoop(struct ev_loop* old_loop)
