@@ -30,3 +30,5 @@ depcomp
 install-sh
 ltmain.sh
 missing
+spider
+.vscode
