@@ -30,6 +30,7 @@ namespace http
         int variable_juste_pour_test;
     };
 
+    void parse_uri(std::string uri, std::string& servN, std::string& fileP);
     void http_get(struct Request r, Socket& socketClient);
     void http_head(struct Request r, Socket& socketClient);
     void http_post(struct Request r, Socket& socketClient);
