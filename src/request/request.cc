@@ -33,30 +33,23 @@ namespace http
         start = end + 1;
         end = line.begin() + line.find_first_of(' ', start - line.begin());
         req.uri = std::string(start, end);
-        req.http_version = std::string(end + 1, line.end() - 1);
+        req.http_version = std::string(end + 1, line.end() - 2);
 
         // fill headers
         line = recvLine(sock);
-        while (line.size() && line.at(0) != '\n')
+        while (line.size() && line.at(0) != '\r')
         {
             // creating pairs of two string separated by a semicolon and a space
             size_t sep_idx = line.find_first_of(':', 0);
             req.headers.emplace_back(
                 std::string(line.begin(), line.begin() + sep_idx),
-                std::string(line.begin() + sep_idx + 2, line.end() - 1));
+                std::string(line.begin() + sep_idx + 2, line.end() - 2));
 
             line = recvLine(sock);
         }
 
         // if message exists, it will be initialized
-        if (line.size())
-        {
-            char buf[4096];
-            while (sock.recv(buf, 4096) > 0)
-            {
-                req.message_body.append(buf);
-            }
-        }
+        // well not really because others might want to get it themselves
         return req;
     }
 
