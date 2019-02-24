@@ -88,7 +88,7 @@ namespace http
             ipv6_ = ipv6;
         }
 
-        virtual void set_non_block() = 0;
+        virtual int set_non_block() = 0;
 
     protected:
         /**

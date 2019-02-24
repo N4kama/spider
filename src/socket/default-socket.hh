@@ -36,6 +36,6 @@ namespace http
 
         void connect(const sockaddr*, socklen_t) final;
 
-        void set_non_block() final;
+        int set_non_block() final;
     };
 } // namespace http
