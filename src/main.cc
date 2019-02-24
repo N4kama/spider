@@ -15,9 +15,16 @@ int dispatch(std::string arg, int debug)
 {
     try
     {
-        /* Init one VHOST */
+        // Dispatcher is routing the requests to the corresponding vhost
+        http::Dispatcher pat = http::Dispatcher();
+
+        // Init one VHOST
         http::ServerConfig config = http::parse_configuration(arg, debug);
         http::VHostConfig vhost = config.vhosts_.at(0);
+
+        // adding the vhost(s) to the list
+        pat.add_vhost(vhost);
+
         /* Init socket */
         http::DefaultSocket server_socket =
             http::DefaultSocket(AF_INET, SOCK_STREAM, 0);
