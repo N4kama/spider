@@ -35,5 +35,7 @@ namespace http
         shared_socket accept(sockaddr* addr, socklen_t* addrlen) final;
 
         void connect(const sockaddr*, socklen_t) final;
+
+        void set_non_block() final;
     };
 } // namespace http

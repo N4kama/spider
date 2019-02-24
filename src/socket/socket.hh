@@ -88,6 +88,8 @@ namespace http
             ipv6_ = ipv6;
         }
 
+        virtual void set_non_block() = 0;
+
     protected:
         /**
          * \brief File descriptor of the socket.

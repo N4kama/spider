@@ -64,4 +64,9 @@ namespace http
     {
         sys::connect(*fd_, addr, l);
     }
+
+    int DefaultSocket::set_non_block()
+    {
+        return sys::fcntl_wrapper(fd_->fd_, O_NONBLOCK);
+    }
 } // namespace http
