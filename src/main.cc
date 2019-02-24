@@ -30,7 +30,6 @@ int dispatch(std::string arg, int debug)
         addr.sin_port = htons(vhost.port_);
 
         /* Experimental event */
-        http::EventLoop evloop = http::EventLoop(); // Pour faire la boucle pour les event qui
                                  // permet de faire pls action en meme temps
         // struct ev_loop *loop = ev_default_loop(EVBACKEND_EPOLL);
         // struct ev_loop *loop = ev_default_loop(0);
@@ -46,12 +45,13 @@ int dispatch(std::string arg, int debug)
         server_socket.listen(30);
         //socklen_t* s_len = (socklen_t*)&len;
 
+        struct ev_loop *loop = ev_default_loop(0); // Pour faire la boucle pour les event qui
         struct ev_io w_accept;
         ev_io_init(&w_accept, accept_cb, server_socket.fd_get()->fd_, EV_READ);
-        ev_io_start(evloop.loop, &w_accept);
+        ev_io_start(loop, &w_accept);
         while (1)
         {
-            ev_loop(evloop.loop, 0);
+            ev_loop(loop, 0);
             // ev_run(evloop->loop, 0);
         }
         /*
