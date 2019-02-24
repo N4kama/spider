@@ -4,8 +4,8 @@ using namespace http;
 
 EventLoop::EventLoop()
     //:loop{EV_DEFAULT}
+    : loop(ev_default_loop(0))
 {
-    ev_loop_new(0);
 }
 
 EventLoop::EventLoop(struct ev_loop* old_loop)
@@ -44,5 +44,5 @@ void EventLoop::register_sigint_watcher(ev_signal* evt_sig) const
 
 void EventLoop::operator()() const
 {
-    ev_run(loop, 0);
+    ev_loop(loop, 0);
 }

@@ -4,10 +4,10 @@
 =======
 #include "main.hh"
 
+#include "events/callbacks.hh"
 #include "events/events.hh"
 #include "events/listener.hh"
 #include "events/register.hh"
-#include "events/callbacks.hh"
 namespace po = boost::program_options;
 http::EventWatcherRegistry event_register;
 
@@ -37,7 +37,7 @@ int dispatch(std::string arg, int debug)
         addr.sin_port = htons(vhost.port_);
 
         /* Experimental event */
-                                 // permet de faire pls action en meme temps
+        // permet de faire pls action en meme temps
         // struct ev_loop *loop = ev_default_loop(EVBACKEND_EPOLL);
         // struct ev_loop *loop = ev_default_loop(0);
 
@@ -50,15 +50,15 @@ int dispatch(std::string arg, int debug)
         }
 
         server_socket.listen(30);
-        //socklen_t* s_len = (socklen_t*)&len;
+        // socklen_t* s_len = (socklen_t*)&len;
 
-        struct ev_loop *loop = ev_default_loop(0); // Pour faire la boucle pour les event qui
+        http::EventLoop event_loop = http::EventLoop();
         struct ev_io w_accept;
         ev_io_init(&w_accept, accept_cb, server_socket.fd_get()->fd_, EV_READ);
-        ev_io_start(loop, &w_accept);
+        ev_io_start(event_loop.loop, &w_accept);
         while (1)
         {
-            ev_loop(loop, 0);
+            event_loop();
             // ev_run(evloop->loop, 0);
         }
         /*
