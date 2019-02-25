@@ -1,9 +1,9 @@
 #include "events/register.hh"
 
+http::EventWatcherRegistry event_register = http::EventWatcherRegistry();
+
 namespace http
 {
-    EventWatcherRegistry event_register;
-
     bool EventWatcherRegistry::unregister_ew(EventWatcher* ev)
     {
         return events_.erase(ev);
@@ -16,8 +16,7 @@ namespace http
         {
             auto res = events_.at(ev);
             return res;
-        }
-        catch(const std::out_of_range& e)
+        } catch (const std::out_of_range& e)
         {
             return nullptr;
         }

@@ -4,12 +4,7 @@
 =======
 #include "main.hh"
 
-#include "events/callbacks.hh"
-#include "events/events.hh"
-#include "events/listener.hh"
-#include "events/register.hh"
 namespace po = boost::program_options;
-http::EventWatcherRegistry event_register;
 
 int dispatch(std::string arg, int debug)
 {
@@ -51,11 +46,9 @@ int dispatch(std::string arg, int debug)
 
         server_socket.listen(30);
         // socklen_t* s_len = (socklen_t*)&len;
-
-        http::EventLoop event_loop = http::EventLoop();
-        struct ev_io w_accept;
-        ev_io_init(&w_accept, accept_cb, server_socket.fd_get()->fd_, EV_READ);
-        ev_io_start(event_loop.loop, &w_accept);
+        event_register.register_ew<http::ListenerEW, http::shared_socket>(
+            std::make_shared<http::DefaultSocket>(server_socket.fd_get()));
+        http::EventLoop event_loop = event_register.loop_get();
         while (1)
         {
             event_loop();

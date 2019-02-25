@@ -91,7 +91,8 @@ namespace http
     /**
      * \brief Service object.
      */
-    extern EventWatcherRegistry event_register;
 } // namespace http
+
+extern http::EventWatcherRegistry event_register;
 
 #include "events/register.hxx"
