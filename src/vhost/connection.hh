@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "../request/request.hh"
+#include "../request/response.hh"
 
 namespace http
 {
@@ -30,6 +31,7 @@ namespace http
         shared_socket sock_;
         //Request from client
         Request req_;
+        Response rep_;
     };
 
     int new_connexion(shared_socket sock);

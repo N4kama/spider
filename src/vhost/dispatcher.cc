@@ -1,6 +1,6 @@
 #include "dispatcher.hh"
-
 #include "vhost-factory.hh"
+#include "../main.hh"
 
 namespace http
 {
@@ -14,9 +14,15 @@ namespace http
         // search to whom vhost the request is destined
 
         // Now we consider there is only one vhost
-        auto vhost = (dispatcher.vhosts_[0]);
-        vhost->respond(cnx.req_, cnx, 0, 0); // fix the remaining iter
-
+        try
+        {
+            auto vhost = (http::dispatcher.vhosts_[0]);
+            vhost->respond(cnx.req_, cnx, 0, 0);
+        }
+        catch(const std::exception& e)
+        {
+            std::cerr << e.what() << '\n';
+        }
         return 0;
     }
 } // namespace http

@@ -14,10 +14,8 @@ VHostStaticFile::VHostStaticFile(const VHostConfig& ext_conf)
 void VHostStaticFile::respond(const Request& req, Connection conn,
                               remaining_iterator, remaining_iterator)
 {
-    // En rapport avec connexion.hh qui doit etre coder...
+    conn.rep_ = Response(req);
 
-    http::DefaultSocket sock = DefaultSocket(conn.sock_->fd_get());
-    conn.sock_->~Socket();
-    request_server(req, sock); // Il faut coder connexion si c'est pas deja
-                               // fait et cree l'attribut socket_
+    conn.sock_->send(conn.rep_.rep.c_str(), conn.rep_.rep.length());
+    //Call send_reponse veentwatcher with connexion struct
 }

@@ -40,5 +40,4 @@ namespace http
     /**
      * \brief Service object.
      */
-    extern Dispatcher dispatcher;
 } // namespace http
