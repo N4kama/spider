@@ -73,6 +73,6 @@ void read_cb(struct ev_loop* loop, struct ev_io *watcher, int revents)
     }
 
     // Send message bach to the client
-    send(watcher->fd, buffer, read, 0);
+    send(watcher->fd, "<http><h1>DBZ >>> NARUTO\n</h1>hehehe sex</http>", 48, 0);
     bzero(buffer, read);
 }
