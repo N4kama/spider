@@ -1,19 +1,21 @@
 #pragma once
-#include <boost/program_options.hpp>
-#include <netinet/in.h>
 #include <arpa/inet.h>
+#include <boost/program_options.hpp>
 #include <netdb.h>
-#include "request/response.hh"
-#include "request/request.hh"
+#include <netinet/in.h>
 
 #include "config/config.hh"
-#include "socket/default-socket.hh"
-#include "vhost/dispatcher.hh"
-
-
 #include "events/callbacks.hh"
 #include "events/events.hh"
 #include "events/listener.hh"
 #include "events/register.hh"
+#include "request/request.hh"
+#include "request/response.hh"
+#include "socket/default-socket.hh"
+#include "vhost/dispatcher.hh"
 
-int dispatch(std::string arg, int debug);
+namespace http
+{
+    extern http::Dispatcher dispatcher;
+    int start_server(std::string arg, int debug);
+} // namespace http

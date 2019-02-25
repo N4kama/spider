@@ -17,8 +17,8 @@ namespace http
     {
         struct sockaddr_in addr;
         socklen_t addr_len = sizeof(addr);
-        sock_->accept((struct sockaddr *)&addr, &addr_len);
+        auto client_sock = sock_->accept((struct sockaddr *)&addr, &addr_len);
         std::cout << "Successfully connected with client.\n";
-        //new_connexion(sock_);
+        new_connexion(client_sock);
     }
 } // namespace http
