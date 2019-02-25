@@ -31,6 +31,7 @@ namespace http
         void http_rpost(struct Request r);
 
         STATUS_CODE status_code;
+        bool is_file;
         std::string rep;
     };
 

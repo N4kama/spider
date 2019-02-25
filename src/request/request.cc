@@ -53,44 +53,4 @@ namespace http
         return req;
     }
 
-    void request_server(struct Request r, Socket& socketClient)
-    {
-        if ((strncmp(r.http_version.c_str(), "HTTP/1.1", 8) != 0)
-            || (strncmp(r.uri.c_str(), "http://", 7) != 0))
-        {
-            socketClient.send(
-                "<html><h1>http error: 501</h1><h2> There is place for only "
-                "Head,"
-                " Post and Get method allowed in this town cowboy</h2></html>",
-                125);
-        }
-        if ((strstr(r.message_body.c_str(), "\nHost") == NULL)
-            || (strstr(r.message_body.c_str(), "\nContent-Length") == NULL))
-        {
-            socketClient.send(
-                "<html><h1>http error: 400</h1><h2> There is place for only "
-                "Head,"
-                " Post and Get method allowed in this town cowboy</h2></html>",
-                125);
-        }
-
-        if (strncmp(r.method.c_str(), "GET", 3))
-        {
-            http::http_get(r, socketClient);
-        } else if (strncmp(r.method.c_str(), "HEAD", 4))
-        {
-            http::http_head(r, socketClient);
-        } else if (strncmp(r.method.c_str(), "POST", 4))
-        {
-            http::http_post(r, socketClient);
-        } else
-        {
-            socketClient.send(
-                "<html><h1>http error: 405</h1><h2> There is place for only "
-                "Head,"
-                " Post and Get method allowed in this town cowboy</h2></html>",
-                125);
-        }
-    }
-
 } // namespace http
