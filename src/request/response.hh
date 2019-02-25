@@ -25,7 +25,9 @@ namespace http
         Response(Response&&) = default;
         Response& operator=(Response&&) = default;
         ~Response() = default;
-
+        void http_rget(struct Request r);
+        void http_rhead(struct Request r);
+        void http_rpost(struct Request r);
         STATUS_CODE status_code;
         int variable_juste_pour_test;
     };

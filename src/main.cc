@@ -10,14 +10,14 @@ int dispatch(std::string arg, int debug)
 {
     try
     {
-        // Dispatcher is routing the requests to the corresponding vhost
+        /* Dispatcher is routing the requests to the corresponding vhost */
         http::Dispatcher pat = http::Dispatcher();
 
-        // Init one VHOST
+        /* Init one VHOST */
         http::ServerConfig config = http::parse_configuration(arg, debug);
         http::VHostConfig vhost = config.vhosts_.at(0);
 
-        // adding the vhost(s) to the list
+        /* adding the vhost(s) to the list */
         pat.add_vhost(vhost);
 
         /* Init socket */
@@ -30,11 +30,6 @@ int dispatch(std::string arg, int debug)
         addr.sin_family = AF_INET;
         addr.sin_addr.s_addr = inet_addr(vhost.ip_.c_str());
         addr.sin_port = htons(vhost.port_);
-
-        /* Experimental event */
-        // permet de faire pls action en meme temps
-        // struct ev_loop *loop = ev_default_loop(EVBACKEND_EPOLL);
-        // struct ev_loop *loop = ev_default_loop(0);
 
         /* Bind socket with address */
         struct sockaddr* addr_not_in = (struct sockaddr*)&addr;
@@ -52,29 +47,7 @@ int dispatch(std::string arg, int debug)
         while (1)
         {
             event_loop();
-            // ev_run(evloop->loop, 0);
         }
-        /*
-        while (1)
-        {
-            // while eventloop
-            http::shared_socket new_s = server_socket.accept(addr_not_in,
-        s_len); http::ListenerEW l_EW(new_s); // Create a ListenerEW from a
-        listener socket. if (false) // Each time we receive a new connection
-            {
-                l_EW(); // Start accepting connections on listener socket.
-                std::shared_ptr<http::EventWatcher> ew =
-        event_register.register_ew(1);// Register an eventwatcher to handle the
-        connection if (false) // Once event is finished
-                {
-                    event_register.unregister_ew(ew.get());
-                }
-            }
-            // http::fill_Request(new_s);
-            // TO COMPLETE
-        }
-        // DEBUG TESTING:
-        */
     } catch (const std::exception& e)
     {
         return 1;
