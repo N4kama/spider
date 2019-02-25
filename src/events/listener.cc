@@ -1,5 +1,9 @@
 #include <events/listener.hh>
+#include <events/recv.hh>
+#include <events/register.hh>
 #include <vhost/connection.hh>
+
+#include "callbacks.hh"
 
 namespace http
 {
@@ -17,8 +21,14 @@ namespace http
     {
         struct sockaddr_in addr;
         socklen_t addr_len = sizeof(addr);
-        auto client_sock = sock_->accept((struct sockaddr *)&addr, &addr_len);
+        std::shared_ptr<Socket> new_s =
+            sock_->accept((struct sockaddr*)&addr, &addr_len);
         std::cout << "Successfully connected with client.\n";
-        new_connexion(client_sock);
+        // struct ev_io* w_client = new ev_io(); // = ?
+        // ev_io_init(w_client, read_cb, new_s->fd_get()->fd_, EV_READ);
+        // ev_io_start(event_register.loop_get().loop, w_client);
+        event_register.register_ew<http::RecvEv, http::shared_socket>(
+            std::make_shared<http::DefaultSocket>(new_s->fd_get()));
+        // new_connexion(sock_);
     }
 } // namespace http
