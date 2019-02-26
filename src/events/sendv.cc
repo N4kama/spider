@@ -1,6 +1,8 @@
 #include <events/recv.hh>
 #include <events/register.hh>
 #include <events/sendv.hh>
+#include <fstream>
+#include <sstream>
 #include <vhost/connection.hh>
 
 namespace http
@@ -20,8 +22,43 @@ namespace http
 
     void SendEv::operator()()
     {
-        sock_->send(msg_.c_str(), msg_.length());
-        event_register.unregister_ew(this);
+        if (!count_)
+        {
+            event_register.unregister_ew(this);
+            return;
+        }
+        if (!is_file_)
+        {
+            int size_left = count_;
+            while (size_left)
+            {
+                ssize_t send_nb = sock_->send(
+                    msg_.c_str(), (size_left >= count_) ? count_ : size_left);
+                if (send_nb == -1)
+                {
+                    std::cerr << "Erreur lors du nb d'octets envoyé !\n";
+                }
+                size_left -= send_nb;
+            }
+            count_ = 0;
+        } else
+        {
+            const int fd = open(msg_.c_str(), O_RDONLY);
+            auto f = std::make_shared<misc::FileDescriptor>(
+                misc::FileDescriptor(fd));
+            off_t p = 0;
+            if (fd == -1)
+            {
+                std::stringstream str;
+                auto err = statusCode(INTERNAL_SERVER_ERROR);
+                str << "<html><h1>http error: " << err.first << "</h1><h2> "
+                    << err.second << "</h2></html>";
+                sock_->send(str.str().c_str(), str.str().size());
+            } else
+            {
+                sock_->sendfile(f, p, 0);
+            }
+        }
         return;
     }
 } // namespace http
