@@ -6,6 +6,7 @@
 #pragma once
 
 #include <memory>
+
 #include "../request/request.hh"
 #include "../request/response.hh"
 
@@ -20,6 +21,7 @@ namespace http
      */
     struct Connection
     {
+        Connection(shared_socket sock);
         Connection() = default;
         Connection(const Connection&) = default;
         Connection& operator=(const Connection&) = default;
@@ -27,9 +29,9 @@ namespace http
         Connection& operator=(Connection&&) = default;
         ~Connection() = default;
 
-        //Client socket
+        // Client socket
         shared_socket sock_;
-        //Request from client
+        // Request from client
         Request req_;
         Response rep_;
     };

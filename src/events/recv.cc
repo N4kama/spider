@@ -17,28 +17,6 @@ namespace http
 
     void RecvEv::operator()()
     {
-        char buffer[4096];
-        ssize_t read;
-
-        read = sock_->recv(buffer, 4096);
-
-        if (read < 0)
-        {
-            std::cerr << "read error";
-            return;
-        }
-        if (read == 0)
-        {
-            event_register.unregister_ew(this);
-            std::cerr << "peer might closing\n";
-            return;
-        } else
-        {
-            printf("message:%s\n", buffer);
-        }
-
-        // Send message bach to the client
-        sock_->send("<http><h1>DBZ <<< NARUTO\n</h1>hehehe sex</http>", 48);
-        bzero(buffer, read);
+        new_connexion(sock_);
     }
 } // namespace http
