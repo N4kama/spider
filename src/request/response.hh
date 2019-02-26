@@ -39,4 +39,5 @@ namespace http
     void http_get(struct Request r, Socket& socketClient);
     void http_head(struct Request r, Socket& socketClient);
     void http_post(struct Request r, Socket& socketClient);
+    char* get_date(const struct tm *timeptr);
 } // namespace http
