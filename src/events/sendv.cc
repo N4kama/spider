@@ -5,7 +5,7 @@
 
 namespace http
 {
-    SendEv::SendEv(shared_socket socket, Response resp)
+    SendEv::SendEv(shared_socket socket, std::shared_ptr<Response> resp)
         : EventWatcher(socket->fd_get()->fd_, EV_WRITE)
         , sock_{socket}
     {

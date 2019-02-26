@@ -18,7 +18,7 @@ namespace http
         /**
          * \brief Create a ListenerEW from a listener socket.
          */
-        explicit SendEv(shared_socket socket, Response resp);
+        explicit SendEv(shared_socket socket, std::shared_ptr<Response> resp);
 
         /**
          * \brief Start accepting connections on listener socket.
