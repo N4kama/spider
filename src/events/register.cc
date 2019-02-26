@@ -6,6 +6,7 @@ namespace http
 {
     bool EventWatcherRegistry::unregister_ew(EventWatcher* ev)
     {
+        ev_io_stop(loop_.loop, &ev->watcher_get());
         return events_.erase(ev);
     }
 
