@@ -20,9 +20,10 @@ namespace http
         cnx.rep_ = Response(cnx.req_);
         std::shared_ptr<http::SendEv> s =
             event_register
-                .register_ew<http::SendEv, http::shared_socket, std::shared_ptr<Response>>(
+                .register_ew<http::SendEv, http::shared_socket,
+           std::shared_ptr<Response>>(
                     std::make_shared<http::DefaultSocket>(sock->fd_get()),
-                    std::make_shared<http::Response>(cnx.rep_));
+                    std::make_shared<http::Response>(cnx.rep_));        
         return 1;
         // return http::dispatcher.dispatch_request(cnx);
     }
