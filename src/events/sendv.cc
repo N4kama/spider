@@ -20,28 +20,8 @@ namespace http
 
     void SendEv::operator()()
     {
-        if (!count_)
-        {
-            event_register.unregister_ew(this);
-            return;
-        }
-        if (is_file_)
-        {
-            int size_left = count_;
-            while (size_left)
-            {
-                ssize_t send_nb = sock_->send(msg_.c_str(), (size_left >= count_) ? count_ : size_left);
-                if (send_nb == -1)
-                {
-                    std::cerr << "Erreur lors du nb d'octets envoyé !\n";
-                }
-                size_left -= send_nb;
-            }
-            count_ = 0;
-        }
-        else
-        {
-            //sock_->sendfile(sock_->fd_get.get_(), )
-        }
+        sock_->send(msg_.c_str(), msg_.length());
+        event_register.unregister_ew(this);
+        return;
     }
 } // namespace http

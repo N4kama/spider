@@ -18,5 +18,6 @@ namespace http
     void RecvEv::operator()()
     {
         new_connexion(sock_);
+        event_register.unregister_ew(this);
     }
 } // namespace http
