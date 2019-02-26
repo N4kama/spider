@@ -29,7 +29,6 @@ namespace http
         ~Request() = default;
         // FIXME: Add members to store the information relative to a request.
 
-        int port;
         std::string method;
         int status;
         std::string http_version;
