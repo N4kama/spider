@@ -2,6 +2,7 @@
 #include <events/register.hh>
 #include <events/sendv.hh>
 #include <fstream>
+#include <misc/unistd.hh>
 #include <sstream>
 #include <vhost/connection.hh>
 
@@ -12,6 +13,7 @@ namespace http
         , sock_{socket}
     {
         this->msg_ = resp->rep;
+        this->path_ = resp->file_p;
         this->count_ = resp->rep.size();
         this->is_file_ = resp->is_file;
         struct sockaddr_in my_addr;
@@ -43,7 +45,7 @@ namespace http
             count_ = 0;
         } else
         {
-            const int fd = open(msg_.c_str(), O_RDONLY);
+            int fd = sys::open_wrapper(path_.c_str(), O_RDONLY);
             auto f = std::make_shared<misc::FileDescriptor>(
                 misc::FileDescriptor(fd));
             off_t p = 0;
@@ -56,9 +58,14 @@ namespace http
                 sock_->send(str.str().c_str(), str.str().size());
             } else
             {
-                sock_->sendfile(f, p, 0);
+                struct stat st;
+                if (sys::fstat(fd, &st) == -1)
+                {
+                    std::cerr << "fstat: fail\n";
+                }
+                sock_->send(msg_.c_str(), msg_.size());
+                sock_->sendfile(f, p, st.st_size);
             }
         }
-        return;
     }
 } // namespace http

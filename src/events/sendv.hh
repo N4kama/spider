@@ -36,6 +36,7 @@ namespace http
         uint16_t port_;
         ssize_t count_;
         std::string msg_;
+        std::string path_;
         bool is_file_;
     };
 } // namespace http

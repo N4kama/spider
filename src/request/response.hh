@@ -33,6 +33,7 @@ namespace http
         STATUS_CODE status_code;
         bool is_file;
         std::string rep;
+        std::string file_p;
     };
 
     void parse_uri(std::string uri, std::string& servN, std::string& fileP);
