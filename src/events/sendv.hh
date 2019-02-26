@@ -4,6 +4,7 @@
 #include <socket/socket.hh>
 #include "vhost/connection.hh"
 #include <arpa/inet.h>
+#include <request/response.hh>
 
 namespace http
 {
@@ -17,7 +18,7 @@ namespace http
         /**
          * \brief Create a ListenerEW from a listener socket.
          */
-        explicit SendEv(shared_socket socket, std::string msg, ssize_t count);
+        explicit SendEv(shared_socket socket, Response resp);
 
         /**
          * \brief Start accepting connections on listener socket.
@@ -35,5 +36,6 @@ namespace http
         uint16_t port_;
         ssize_t count_;
         std::string msg_;
+        bool is_file_;
     };
 } // namespace http

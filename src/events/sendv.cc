@@ -5,12 +5,13 @@
 
 namespace http
 {
-    SendEv::SendEv(shared_socket socket, std::string msg, ssize_t count)
+    SendEv::SendEv(shared_socket socket, Response resp)
         : EventWatcher(socket->fd_get()->fd_, EV_WRITE)
         , sock_{socket}
     {
-        this->msg_ = msg;
-        this->count_ = count;
+        this->msg_ = resp.rep;
+        this->count_ = resp.rep.size();
+        this->is_file_ = resp.is_file;
         struct sockaddr_in my_addr;
         socklen_t len = sizeof(my_addr);
         getsockname(socket->fd_get()->fd_, (struct sockaddr*)&my_addr, &len);
@@ -24,16 +25,23 @@ namespace http
             event_register.unregister_ew(this);
             return;
         }
-        int size_left = count_;
-        while (size_left)
+        if (is_file_)
         {
-            ssize_t send_nb = sock_->send(msg_.c_str(), (size_left >= count_) ? count_ : size_left);
-            if (send_nb == -1)
+            int size_left = count_;
+            while (size_left)
             {
-                std::cerr << "Erreur lors du nb d'octets envoyé !\n";
+                ssize_t send_nb = sock_->send(msg_.c_str(), (size_left >= count_) ? count_ : size_left);
+                if (send_nb == -1)
+                {
+                    std::cerr << "Erreur lors du nb d'octets envoyé !\n";
+                }
+                size_left -= send_nb;
             }
-            size_left -= send_nb;
+            count_ = 0;
         }
-        count_ = 0;
+        else
+        {
+            //sock_->sendfile(sock_->fd_get.get_(), )
+        }
     }
 } // namespace http
