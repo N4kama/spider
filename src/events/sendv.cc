@@ -9,9 +9,9 @@ namespace http
         : EventWatcher(socket->fd_get()->fd_, EV_WRITE)
         , sock_{socket}
     {
-        this->msg_ = resp.rep;
-        this->count_ = resp.rep.size();
-        this->is_file_ = resp.is_file;
+        this->msg_ = resp->rep;
+        this->count_ = resp->rep.size();
+        this->is_file_ = resp->is_file;
         struct sockaddr_in my_addr;
         socklen_t len = sizeof(my_addr);
         getsockname(socket->fd_get()->fd_, (struct sockaddr*)&my_addr, &len);
