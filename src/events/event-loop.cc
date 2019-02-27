@@ -5,11 +5,10 @@ using namespace http;
 EventLoop::EventLoop()
     //:loop{EV_DEFAULT}
     : loop(ev_default_loop(0))
-{
-}
+{}
 
 EventLoop::EventLoop(struct ev_loop* old_loop)
-    :loop{old_loop}
+    : loop{old_loop}
 {}
 
 EventLoop::~EventLoop()
@@ -24,15 +23,11 @@ void EventLoop::register_watcher(EventWatcher* evt)
 
 void EventLoop::unregister_watcher(EventWatcher* evt)
 {
-    ev_io_stop(loop, &evt->watcher_get()); //one arg
-    //ev_io_stop(watcher_get(evt));
+    ev_io_stop(loop, &evt->watcher_get());
 }
 
-
-static void sigint_cb (struct ev_loop *loop, ev_signal *w, int revents)
+static void sigint_cb(struct ev_loop* loop, ev_signal*, int)
 {
-    revents = revents;
-    w = w;
     ev_break(loop, EVBREAK_ALL);
 }
 
@@ -44,5 +39,5 @@ void EventLoop::register_sigint_watcher(ev_signal* evt_sig) const
 
 void EventLoop::operator()() const
 {
-    ev_loop(loop, 0);
+    ev_run(loop, 0);
 }
