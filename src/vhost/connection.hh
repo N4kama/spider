@@ -21,7 +21,8 @@ namespace http
      */
     struct Connection
     {
-        Connection(shared_socket sock);
+        Connection(shared_socket sock, std::shared_ptr<Request> req,
+                   std::shared_ptr<Response> res);
         Connection() = default;
         Connection(const Connection&) = default;
         Connection& operator=(const Connection&) = default;
@@ -32,8 +33,8 @@ namespace http
         // Client socket
         shared_socket sock_;
         // Request from client
-        Request req_;
-        Response rep_;
+        std::shared_ptr<Request> req_;
+        std::shared_ptr<Response> rep_;
     };
 
     int new_connexion(shared_socket sock);
