@@ -6,6 +6,7 @@
 #pragma once
 
 #include <vector>
+#include <map>
 
 #include "../config/config.hh"
 #include "../socket/default-socket.hh"
@@ -13,14 +14,13 @@
 
 namespace http
 {
-    using header = std::pair<std::string, std::string>;
-
     /**
      * \struct Request
      * \brief Value object representing a request.
      */
     struct Request
     {
+        Request(std::string &s);
         Request() = default;
         Request(const Request&) = default;
         Request& operator=(const Request&) = default;
@@ -32,13 +32,13 @@ namespace http
         std::string method;
         int status;
         std::string http_version;
-        std::vector<header> headers;
+        std::map<std::string, std::string> headers;
         std::string message_body;
         std::string uri;
     };
     //std::string recvLine(Socket& sock);
     //Request fill_Request(Socket& sock);
-    Request fill_Request(std::string &s);
+    //Request fill_Request(std::string &s);
     void request_server(struct Request r, Socket& socketClient);
 
 } // namespace http
