@@ -56,11 +56,6 @@ namespace http
             if (fd == -1)
             {
                 clean_send();
-                std::stringstream str;
-                auto err = statusCode(INTERNAL_SERVER_ERROR);
-                str << "<html><h1>http error: " << err.first << "</h1><h2> "
-                    << err.second << "</h2></html>";
-                sock_->send(str.str().c_str(), str.str().size());
             } else
             {
                 struct stat st;
