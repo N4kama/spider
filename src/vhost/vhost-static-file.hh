@@ -4,6 +4,8 @@
  */
 
 #pragma once
+#include "events/register.hh"
+#include "events/sendv.hh"
 #include "vhost.hh"
 
 namespace http
