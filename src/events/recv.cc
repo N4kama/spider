@@ -59,15 +59,10 @@ namespace http
                     // throw
                 }
                 std::string res = header + body;
-                Response rep_ = Response(fill_Request(res));
-                std::shared_ptr<http::SendEv> s =
-                    event_register.register_ew<http::SendEv,
-                                               http::shared_socket,
-                                               std::shared_ptr<Response>>(
-                        std::make_shared<http::DefaultSocket>(sock_->fd_get()),
-                        std::make_shared<http::Response>(rep_));
+                std::shared_ptr<Request> req = std::make_shared<Request>(res);
+                Connection cnx =
+                    Connection(sock_, req, std::make_shared<Response>(req));
                 event_register.unregister_ew(this);
-                return;
             }
             return;
         }
