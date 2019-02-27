@@ -50,6 +50,11 @@ namespace http
             return conf_;
         }
 
+        VHostConfig get_conf() const
+        {
+            return conf_;
+        }
+
     private:
         /**
          *  \brief VHost configuration.

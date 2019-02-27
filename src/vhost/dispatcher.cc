@@ -17,6 +17,7 @@ namespace http
         {
             // search to whom vhost the request is destined
             auto vhost = (http::dispatcher.vhosts_[0]);
+            cnx.req_.config_ptr = std::make_shared<VHostConfig>(vhost->get_conf());
             vhost->respond(cnx.req_, cnx, 0, 0);
         } catch (const std::exception& e)
         {

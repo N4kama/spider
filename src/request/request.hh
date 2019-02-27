@@ -35,6 +35,8 @@ namespace http
         std::map<std::string, std::string> headers;
         std::string message_body;
         std::string uri;
+
+        std::shared_ptr<VHostConfig> config_ptr;
     };
     //std::string recvLine(Socket& sock);
     //Request fill_Request(Socket& sock);
