@@ -13,7 +13,7 @@ EventLoop::EventLoop(struct ev_loop* old_loop)
 
 EventLoop::~EventLoop()
 {
-    ev_loop_destroy(loop);
+    ev_loop_destroy(EV_DEFAULT_UC);
 }
 
 void EventLoop::register_watcher(EventWatcher* evt)
