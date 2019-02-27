@@ -1,6 +1,7 @@
 #include "dispatcher.hh"
-#include "vhost-factory.hh"
+
 #include "../main.hh"
+#include "vhost-factory.hh"
 
 namespace http
 {
@@ -11,15 +12,13 @@ namespace http
 
     int Dispatcher::dispatch_request(Connection& cnx)
     {
-        // search to whom vhost the request is destined
-
         // Now we consider there is only one vhost
         try
         {
+            // search to whom vhost the request is destined
             auto vhost = (http::dispatcher.vhosts_[0]);
             vhost->respond(cnx.req_, cnx, 0, 0);
-        }
-        catch(const std::exception& e)
+        } catch (const std::exception& e)
         {
             std::cerr << e.what() << '\n';
         }
