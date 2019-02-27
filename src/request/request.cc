@@ -7,17 +7,48 @@
 
 namespace http
 {
-    Request fill_Request(std::string &s)
+    static std::string getline(std::string& s)
+    {
+        size_t delim = s.find_first_of("\r\n") + 2;
+        std::string res = s.substr(0, delim);
+        s = s.substr(delim);
+        return res;
+    }
+
+    Request fill_Request(std::string& s)
     {
         Request req = Request();
-        std::cout << s;
-        // if message exists, it will be initialized
-        // well not really because others might want to get it themselves
+
+        std::string line = getline(s);
+        auto start = line.begin();
+        auto end = start;
+        end += line.find_first_of(' ', 0);
+        req.method = std::string(line.begin(), end);
+        start = end + 1;
+        end = line.begin() + line.find_first_of(' ', start - line.begin());
+        req.uri = std::string(start, end);
+        req.http_version = std::string(end + 1, line.end() - 2);
+
+        // fill headers
+        line = getline(s);
+        while (line.size() && line.at(0) != '\r')
+        {
+            // creating pairs of two string separated by a semicolon and a
+            // space
+            size_t sep_idx = line.find_first_of(':', 0);
+            req.headers.emplace_back(
+                std::string(line.begin(), line.begin() + sep_idx),
+                std::string(line.begin() + sep_idx + 2, line.end() - 2));
+
+            line = getline(s);
+        }
+
+        req.message_body = s;
+
         return req;
     }
 
 } // namespace http
-
 
 /*
 
