@@ -14,7 +14,7 @@ namespace http
     {
         this->msg_ = resp->rep;
         this->path_ = resp->file_p;
-        this->count_ = resp->rep.size();
+        this->count_ = this->msg_.size();
         this->is_file_ = resp->is_file;
         struct sockaddr_in my_addr;
         socklen_t len = sizeof(my_addr);
@@ -22,48 +22,23 @@ namespace http
         this->port_ = ntohs(my_addr.sin_port);
     }
 
-    void SendEv::operator()()
+    void SendEv::clean_send()
     {
-        if (1)
+        int size_left = count_;
+        while (size_left)
         {
-            sock_->send("HTTP/1.1 200 OK\r\n"
-                        "Content-Length: 88\r\n"
-                        "Content-Type: text/html\r\n"
-                        "Connection: Closed\r\n"
-                        "\r\n<html>"
-                        "<body>"
-                        "<h1>DBZ > NARUTO!</h1>"
-                        "</body>"
-                        "</html>\r\n",
-                        135);
-            event_register.unregister_ew(this);
-            event_register.register_ew<http::RecvEv, http::shared_socket>(
-            std::make_shared<http::DefaultSocket>(sock_->fd_get()));
-        } else
-        {
-            const int fd = open(msg_.c_str(), O_RDONLY);
-            auto f = std::make_shared<misc::FileDescriptor>(
-                misc::FileDescriptor(fd));
-            off_t p = 0;
-            if (fd == -1)
+            ssize_t send_nb = sock_->send(
+                msg_.c_str(), (size_left >= count_) ? count_ : size_left);
+            if (send_nb == -1)
             {
-                std::stringstream str;
-                auto err = statusCode(INTERNAL_SERVER_ERROR);
-                str << "<html><h1>http error: " << err.first << "</h1><h2> "
-                    << err.second << "</h2></html>";
-                sock_->send(str.str().c_str(), str.str().size());
-            } else
-            {
-                sock_->sendfile(f, p, 0);
+                std::cerr << "Erreur lors du nb d'octets envoyé !\n";
             }
+            size_left -= send_nb;
         }
-        return;
+        count_ = 0;
     }
-} // namespace http
 
-
-/*
-void SendEv::operator()()
+    void SendEv::operator()()
     {
         if (!count_)
         {
@@ -71,20 +46,8 @@ void SendEv::operator()()
             return;
         }
         if (!is_file_)
-        {
-            int size_left = count_;
-            while (size_left)
-            {
-                ssize_t send_nb = sock_->send(
-                    msg_.c_str(), (size_left >= count_) ? count_ : size_left);
-                if (send_nb == -1)
-                {
-                    std::cerr << "Erreur lors du nb d'octets envoyé !\n";
-                }
-                size_left -= send_nb;
-            }
-            count_ = 0;
-        } else
+            clean_send();
+        else
         {
             int fd = sys::open_wrapper(path_.c_str(), O_RDONLY);
             auto f = std::make_shared<misc::FileDescriptor>(
@@ -92,6 +55,7 @@ void SendEv::operator()()
             off_t p = 0;
             if (fd == -1)
             {
+                clean_send();
                 std::stringstream str;
                 auto err = statusCode(INTERNAL_SERVER_ERROR);
                 str << "<html><h1>http error: " << err.first << "</h1><h2> "
@@ -101,13 +65,10 @@ void SendEv::operator()()
             {
                 struct stat st;
                 if (sys::fstat(fd, &st) == -1)
-                {
                     std::cerr << "fstat: fail\n";
-                }
-                sock_->send(msg_.c_str(), msg_.size());
+                clean_send();
                 sock_->sendfile(f, p, st.st_size);
             }
         }
     }
-
-*/
+} // namespace http

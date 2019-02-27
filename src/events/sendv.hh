@@ -20,6 +20,8 @@ namespace http
          */
         explicit SendEv(shared_socket socket, std::shared_ptr<Response> resp);
 
+        void clean_send();
+
         /**
          * \brief Start accepting connections on listener socket.
          */
