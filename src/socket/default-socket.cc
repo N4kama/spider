@@ -27,12 +27,12 @@ namespace http
 
     ssize_t DefaultSocket::recv(void* dst, size_t len)
     {
-        return sys::recv(*fd_, dst, len, 0);
+        return sys::recv(*fd_, dst, len, MSG_NOSIGNAL);
     }
 
     ssize_t DefaultSocket::send(const void* src, size_t len)
     {
-        return sys::send(*fd_, src, len, 0);
+        return sys::send(*fd_, src, len, MSG_NOSIGNAL);
     }
 
     ssize_t DefaultSocket::sendfile(misc::shared_fd& in_fd, off_t& offset,

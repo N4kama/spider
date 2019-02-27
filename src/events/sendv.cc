@@ -24,6 +24,47 @@ namespace http
 
     void SendEv::operator()()
     {
+        if (1)
+        {
+            sock_->send("HTTP/1.1 200 OK\r\n"
+                        "Content-Length: 88\r\n"
+                        "Content-Type: text/html\r\n"
+                        "Connection: Closed\r\n"
+                        "\r\n<html>"
+                        "<body>"
+                        "<h1>DBZ > NARUTO!</h1>"
+                        "</body>"
+                        "</html>\r\n",
+                        135);
+            event_register.unregister_ew(this);
+            event_register.register_ew<http::RecvEv, http::shared_socket>(
+            std::make_shared<http::DefaultSocket>(sock_->fd_get()));
+        } else
+        {
+            const int fd = open(msg_.c_str(), O_RDONLY);
+            auto f = std::make_shared<misc::FileDescriptor>(
+                misc::FileDescriptor(fd));
+            off_t p = 0;
+            if (fd == -1)
+            {
+                std::stringstream str;
+                auto err = statusCode(INTERNAL_SERVER_ERROR);
+                str << "<html><h1>http error: " << err.first << "</h1><h2> "
+                    << err.second << "</h2></html>";
+                sock_->send(str.str().c_str(), str.str().size());
+            } else
+            {
+                sock_->sendfile(f, p, 0);
+            }
+        }
+        return;
+    }
+} // namespace http
+
+
+/*
+void SendEv::operator()()
+    {
         if (!count_)
         {
             event_register.unregister_ew(this);
@@ -68,4 +109,5 @@ namespace http
             }
         }
     }
-} // namespace http
+
+*/
