@@ -20,15 +20,17 @@ namespace http
         , is_file(false)
     {
         std::stringstream str;
+        std::string msg;
         if (strncmp(r.http_version.c_str(), "HTTP/1.1", 8) != 0)
         {
+            msg = "<html><h1>http error: 501</h1><h2> There is place for only "
+                   "Head, Post and Get method allowed in this town "
+                   "cowboy</h2></html>";
             str << "HTTP/1.1 " << 501 << " "
                 << "Not Implemented\r\n";
             str << "Date: " << get_date() << "\r\n";
-            str << "Content-Length: " << r.path_info.second << "\r\n\r\n";
-            str << "<html><h1>http error: 501</h1><h2> There is place for only "
-                   "Head, Post and Get method allowed in this town "
-                   "cowboy</h2></html>";
+            str << "Content-Length: " << msg.size() << "\r\n\r\n";
+            str << msg;
             rep = str.str();
             status_code = NOT_IMPLEMENTED;
         }
@@ -51,13 +53,14 @@ namespace http
             http_rpost(r);
         } else
         {
+            msg = "<html><h1>http error: 405</h1><h2> There is place for only "
+                   "Head, Post and Get method allowed in this town "
+                   "cowboy</h2></html>";
             str << "HTTP/1.1 " << 405 << " "
                 << "Method Not Allowed\r\n";
             str << "Date: " << get_date() << "\r\n";
-            str << "Content-Length: " << r.path_info.second << "\r\n\r\n";
-            str << "<html><h1>http error: 405</h1><h2> There is place for only "
-                   "Head, Post and Get method allowed in this town "
-                   "cowboy</h2></html>";
+            str << "Content-Length: " << msg.size() << "\r\n\r\n";
+            str << msg;
             rep = str.str();
             status_code = METHOD_NOT_ALLOWED;
         }
@@ -98,24 +101,28 @@ namespace http
 
     void Response::http_rget(struct Request r)
     {
-        // fills header first hand
-        http_rhead(r);
-
         // now handling get request
         file_p = r.path_info.first;
         if (r.path_info.second)
+        {
             is_file = true;
+            // fills header first hand
+            http_rhead(r);
+        }
         else
         {
             // error file does not exists
             std::pair<STATUS_CODE, const char*> err = statusCode(NOT_FOUND);
             std::stringstream ss;
+            std::stringstream msg;
+
+            msg << "<html><h1>http error: " << err.first << "</h1><h2> "
+               << err.second << "</h2></html>";
 
             ss << "HTTP/1.1 " << err.first << " " << err.second << "\r\n";
             ss << "Date: " << get_date() << "\r\n"
-               << "Content-Length: " << r.path_info.second << "\r\n\r\n";
-            ss << "<html><h1>http error: " << err.first << "</h1><h2> "
-               << err.second << "</h2></html>";
+               << "Content-Length: " << msg.str().size() << "\r\n\r\n";
+            ss << msg.str();
             rep = ss.str();
         }
     }
