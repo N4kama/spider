@@ -8,8 +8,8 @@
 
 namespace http
 {
-    Connection::Connection(shared_socket sock, std::shared_ptr<Request> request,
-                           std::shared_ptr<Response> response)
+    Connection::Connection(shared_socket sock, Request request,
+                           Response response)
         : sock_{sock}
         , req_{request}
         , rep_{response}
