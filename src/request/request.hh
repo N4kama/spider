@@ -36,9 +36,9 @@ namespace http
         std::string message_body;
         std::string uri;
     };
-
-    std::string recvLine(Socket& sock);
-    Request fill_Request(Socket& sock);
+    //std::string recvLine(Socket& sock);
+    //Request fill_Request(Socket& sock);
+    Request fill_Request(std::string &s);
     void request_server(struct Request r, Socket& socketClient);
 
 } // namespace http

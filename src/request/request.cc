@@ -7,7 +7,21 @@
 
 namespace http
 {
-    std::string recvLine(Socket& sock)
+    Request fill_Request(std::string &s)
+    {
+        Request req = Request();
+        std::cout << s;
+        // if message exists, it will be initialized
+        // well not really because others might want to get it themselves
+        return req;
+    }
+
+} // namespace http
+
+
+/*
+
+std::string recvLine(Socket& sock)
     {
         std::string data = std::string("");
         char c = ' ';
@@ -59,4 +73,4 @@ namespace http
         return req;
     }
 
-} // namespace http
+} // namespace http*/
