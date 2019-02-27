@@ -35,8 +35,9 @@ namespace http
 
     int read_int(std::string s, size_t pos)
     {
-        size_t pos_end = s.find_first_of(" \t\n", pos + 1);
-        return std::atoi(s.substr(pos, pos_end).c_str());
+        size_t pos_end = s.find_first_of(" \r\n", pos);
+        std::string sub = s.substr(pos, pos_end);
+        return std::atoi(sub.c_str());
     }
 
     void RecvEv::operator()()
@@ -80,8 +81,9 @@ namespace http
                 auto pos = header.find("Content-Length: ");
                 if (pos != std::string::npos)
                 {
-                    pos += 17;
+                    pos += 16;
                     int value = read_int(header, pos);
+                    std::cout << "atoi: " << value << "\n";
                     filled = value;
                 } else
                 {
