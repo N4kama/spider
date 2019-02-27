@@ -3,6 +3,7 @@
 #include <events/register.hh>
 #include <events/sendv.hh>
 #include <vhost/connection.hh>
+#include "main.hh"
 
 namespace http
 {
@@ -58,10 +59,12 @@ namespace http
                     return;
                     // throw
                 }
-                std::string res = header + body;
-                Request req = Request(res);
-                Connection cnx = Connection(sock_, req, Response(req));
-                event_register.unregister_ew(this);
+                     Request req = Request(header);
+                    Connection cnx = Connection();
+                    cnx.req_ = req;
+                    cnx.sock_ = sock_;
+                    http::dispatcher.dispatch_request(cnx);
+                    event_register.unregister_ew(this);
             }
             return;
         }
@@ -83,7 +86,10 @@ namespace http
                 } else
                 {
                     Request req = Request(header);
-                    Connection cnx = Connection(sock_, req, Response(req));
+                    Connection cnx = Connection();
+                    cnx.req_ = req;
+                    cnx.sock_ = sock_;
+                    http::dispatcher.dispatch_request(cnx);
                     event_register.unregister_ew(this);
                 }
                 return;

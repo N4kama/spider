@@ -21,7 +21,7 @@ namespace http
      */
     struct Connection
     {
-        Connection(shared_socket sock, Request req, Response res);
+        //Connection(shared_socket sock, Request req, Response res);
         Connection() = default;
         Connection(const Connection&) = default;
         Connection& operator=(const Connection&) = default;
