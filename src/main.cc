@@ -40,14 +40,13 @@ namespace http
             server_socket.listen(30);
 
             // socklen_t* s_len = (socklen_t*)&len;
-            event_register.register_ew<http::ListenerEW, http::shared_socket>(
+            std::shared_ptr<http::ListenerEW> listener = event_register.register_ew<http::ListenerEW, http::shared_socket>(
                 std::make_shared<http::DefaultSocket>(server_socket.fd_get()));
             http::EventLoop event_loop = event_register.loop_get();
             ev_signal signal_watcher;
-            http::EventLoop sig_loop = http::EventLoop();
             event_loop.register_sigint_watcher(&signal_watcher);
             event_loop();
-            sig_loop();
+            event_register.unregister_ew(listener.get());
         } catch (const std::exception& e)
         {
             return 1;
