@@ -19,7 +19,6 @@ namespace http
     class VHost
     {
     public:
-
         /**
          * \brief Create a VHost from its configuration.
          *

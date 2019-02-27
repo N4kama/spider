@@ -4,6 +4,7 @@
 #include <netdb.h>
 #include <request/request.hh>
 #include <request/response.hh>
+#include <sys/stat.h>
 
 namespace http
 {
@@ -41,6 +42,20 @@ namespace http
             line = getline(s);
         }
         message_body = s;
+
+        path_info = std::make_pair("", 0);
+    }
+
+    void Request::get_path()
+    {
+        path_info.first = config_ptr->root_ + uri;
+        if (path_info.first[path_info.first.length() - 1] == '/')
+            path_info.first += config_ptr->default_file_;
+        struct stat buf;
+        if (!stat(path_info.first.c_str(), &buf))
+        {
+            path_info.second = buf.st_size;
+        }
     }
 
 } // namespace http

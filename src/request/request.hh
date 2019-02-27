@@ -29,6 +29,8 @@ namespace http
         ~Request() = default;
         // FIXME: Add members to store the information relative to a request.
 
+        void get_path();
+
         std::string method;
         int status;
         std::string http_version;
@@ -37,6 +39,8 @@ namespace http
         std::string uri;
 
         std::shared_ptr<VHostConfig> config_ptr;
+        std::pair<std::string, int> path_info;  //pair : url, content_length
+                                                //content-length = -1 on error
     };
     //std::string recvLine(Socket& sock);
     //Request fill_Request(Socket& sock);
