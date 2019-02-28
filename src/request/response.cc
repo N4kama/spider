@@ -137,32 +137,30 @@ namespace http
     {
         // now handling get request
         file_p = r.path_info.first;
-        if (r.path_info.second)
+        http_rhead(r);
+        std::ofstream file;
+        file.open(file_p);
+        if (file.is_open())
         {
-            is_file = true;
-            // fills header first hand
-            http_rhead(r);
-        } else
-        {
-            // error file does not exists
-            std::pair<STATUS_CODE, const char*> err = statusCode(NOT_FOUND);
-            std::stringstream ss;
-            std::stringstream msg;
-
-            msg << "<html><h1>http error: " << err.first << "</h1><h2> "
-                << err.second << "</h2></html>";
-
-            ss << "HTTP/1.1 " << err.first << " " << err.second << "\r\n";
-            ss << "Date: " << get_date() << "\r\n"
-               << "Host: " << r.config_ptr->server_name_ << ':'
-               << r.config_ptr->port_ << "\r\n"
-               << "Content-type: text/plain\r\n"
-               << "Content-Length: " << msg.str().size() << "\r\n"
-               << "Connection: close\r\n\r\n";
-
-            ss << msg.str();
-            rep = ss.str();
+            file << r.message_body;
+            return;
         }
+        // error file does not exists
+        std::pair<STATUS_CODE, const char*> err = statusCode(NOT_FOUND);
+        std::stringstream ss;
+        std::stringstream msg;
+
+        msg << "<html><h1>http error: " << err.first << "</h1><h2> "
+            << err.second << "</h2></html>";
+
+        ss << "HTTP/1.1 " << err.first << " " << err.second << "\r\n";
+        ss << "Date: " << get_date() << "\r\n";
+        ss << "Host: " << r.config_ptr->server_name_ << ':'
+           << r.config_ptr->port_ << "\r\n";
+        ss << "Content-Length: " << msg.str().size() << "\r\n";
+        ss << "Connection: close\r\n\r\n";
+        ss << msg.str();
+        rep = ss.str();
     }
 
 } // namespace http
