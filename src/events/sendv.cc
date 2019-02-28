@@ -24,7 +24,7 @@ namespace http
 
     void SendEv::clean_send()
     {
-        int size_left = count_;
+        int size_left = count_ - 2;
         while (size_left)
         {
             ssize_t send_nb = sock_->send(
@@ -43,6 +43,8 @@ namespace http
     {
         if (!count_)
         {
+            event_register.register_ew<http::RecvEv, http::shared_socket>(
+            std::make_shared<http::DefaultSocket>(sock_->fd_get()));
             event_register.unregister_ew(this);
             return;
         }
@@ -64,13 +66,6 @@ namespace http
                     std::cerr << "fstat: fail\n";
                 clean_send();
                 sock_->sendfile(f, p, st.st_size);
-                std::ifstream myfile;
-                std::string s;
-                myfile.open(path_.c_str());
-                while(myfile >> s)
-                {
-                    std::cout << s << "\n";
-                }
             }
         }
     }
