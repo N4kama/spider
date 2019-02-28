@@ -1,3 +1,4 @@
+
 #include "main.hh"
 
 #include <vector>
@@ -20,6 +21,9 @@ namespace http
             {
                 dispatcher.add_vhost(config.vhosts_.at(i));
             }
+
+            std::vector<std::shared_ptr<http::ListenerEW>> listeners =
+                std::vector<std::shared_ptr<http::ListenerEW>>();
 
             for (unsigned i = 0; i < config.vhosts_.size(); i++)
             {
@@ -54,6 +58,7 @@ namespace http
                             .register_ew<http::ListenerEW, http::shared_socket>(
                                 std::make_shared<http::DefaultSocket>(
                                     server_socket.fd_get()));
+                    listeners.emplace_back(listener);
                 }
                 freeaddrinfo(result);
             }
@@ -63,6 +68,10 @@ namespace http
             event_loop.register_sigint_watcher(&signal_watcher);
             event_loop();
 
+            for (unsigned i = 0; i < listeners.size(); i++)
+            {
+                event_register.unregister_ew(listeners.at(i).get());
+            }
         } catch (const std::exception& e)
         {
             return 1;
