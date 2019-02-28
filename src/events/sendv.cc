@@ -29,6 +29,7 @@ namespace http
         {
             ssize_t send_nb = sock_->send(
                 msg_.c_str(), (size_left >= count_) ? count_ : size_left);
+            std::cout << "\n" << msg_ << "\n";
             if (send_nb == -1)
             {
                 std::cerr << "Erreur lors du nb d'octets envoyé !\n";
@@ -63,6 +64,13 @@ namespace http
                     std::cerr << "fstat: fail\n";
                 clean_send();
                 sock_->sendfile(f, p, st.st_size);
+                std::ifstream myfile;
+                std::string s;
+                myfile.open(path_.c_str());
+                while(myfile >> s)
+                {
+                    std::cout << s;
+                }
             }
         }
     }

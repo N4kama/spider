@@ -18,6 +18,7 @@ namespace http
 
     Request::Request(std::string& s)
     {
+        std::cout << "\n" << s << "\n";
         std::string line = getline(s);
         auto start = line.begin();
         auto end = start;
