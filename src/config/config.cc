@@ -25,10 +25,17 @@ namespace http
 
     json get_vhosts(const std::string& s)
     {
-        std::ifstream ifs(s);
-        if (!ifs.is_open())
-            return nullptr;
-        json j = json::parse(ifs);
+        json j;
+        try
+        {
+            std::ifstream ifs(s);
+            if (!ifs.is_open())
+                return nullptr;
+            j = json::parse(ifs);
+        } catch (const std::exception& e)
+        {
+            std::cerr << "bad json\n";
+        }
         try
         {
             auto& arr = j.at("vhosts");
