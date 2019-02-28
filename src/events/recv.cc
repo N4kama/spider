@@ -43,9 +43,6 @@ namespace http
 
     void RecvEv::operator()()
     {
-        // new_connexion(sock_);
-        // req_ = fill_Request(*sock_);
-
         if (filled != 0)
         {
             char c = ' ';
@@ -63,7 +60,6 @@ namespace http
                 {
                     std::cerr << "content length is not respected\n";
                     return;
-                    // throw
                 }
                 header += body;
                 Request req = Request(header);
@@ -104,11 +100,7 @@ namespace http
                     http::dispatcher.dispatch_request(cnx);
                     event_register.unregister_ew(this);
                 }
-                return;
             }
-        } else
-        {
-            return;
         }
     }
 } // namespace http
