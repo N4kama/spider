@@ -59,12 +59,13 @@ namespace http
             }
             if (endby(body, std::string("\r\n")))
             {
-                if (body.length() != filled)
+                if (body.length() != filled + 2)
                 {
                     std::cerr << "content length is not respected\n";
                     return;
                     // throw
                 }
+                header += body;
                 Request req = Request(header);
                 Connection cnx = Connection();
                 cnx.req_ = req;
