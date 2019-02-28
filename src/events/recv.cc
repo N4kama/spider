@@ -54,13 +54,8 @@ namespace http
                 std::cerr << "Client Disconected\n";
                 event_register.unregister_ew(this);
             }
-            if (endby(body, std::string("\r\n")))
+            if (filled == body.length())
             {
-                if (body.length() != filled + 2)
-                {
-                    std::cerr << "content length is not respected\n";
-                    return;
-                }
                 header += body;
                 Request req = Request(header);
                 Connection cnx = Connection();
