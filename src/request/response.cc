@@ -70,22 +70,19 @@ namespace http
         }
     }
 
-    char* get_date(void)
+    std::string get_date(void)
     {
-        time_t now = time(0);
-        struct tm* timeptr = localtime(&now);
+        time_t rawtime;
+        struct tm* timeinfo;
+        char buffer[80];
 
-        static const char wday_name[][4] = {"Sun", "Mon", "Tue", "Wed",
-                                            "Thu", "Fri", "Sat"};
-        static const char mon_name[][4] = {"Jan", "Feb", "Mar", "Apr",
-                                           "May", "Jun", "Jul", "Aug",
-                                           "Sep", "Oct", "Nov", "Dec"};
-        static char result[37] = "";
-        sprintf(result, "%.3s, %.2d %3s %d %.2d:%.2d:%.2d GMT",
-                wday_name[timeptr->tm_wday], timeptr->tm_mday,
-                mon_name[timeptr->tm_mon], 1900 + timeptr->tm_year,
-                timeptr->tm_hour, timeptr->tm_min, timeptr->tm_sec);
-        return result;
+        time(&rawtime);
+        timeinfo = localtime(&rawtime);
+
+        strftime(buffer, 200, "%a, %d %b %Y %H:%M:%S GMT", timeinfo);
+        std::string time(buffer);
+
+        return time;
     }
 
     void Response::http_rhead(struct Request r)
@@ -94,10 +91,8 @@ namespace http
         std::stringstream str;
         std::pair<STATUS_CODE, const char*> st = statusCode(status_code);
 
-        char* date = get_date();
-
         str << "HTTP/1.1 " << st.first << " " << st.second << "\r\n";
-        str << "Date: " << date << "\r\n";
+        str << "Date: " << get_date() << "\r\n";
         str << "Server: " << r.config_ptr->server_name_ << "\r\n";
         str << "Content-Length: " << r.path_info.second << "\r\n";
         str << "Connection: close\r\n\r\n";
