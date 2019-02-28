@@ -1,5 +1,7 @@
 #include "main.hh"
 
+#include <vector>
+
 namespace po = boost::program_options;
 
 namespace http
@@ -13,40 +15,45 @@ namespace http
         {
             /* Init one VHOST */
             http::ServerConfig config = http::parse_configuration(arg, debug);
-            http::VHostConfig vhost = config.vhosts_.at(0);
 
-            /* adding the vhost(s) to the list */
-            dispatcher.add_vhost(vhost);
+            /* Init addrinfo */
+            addrinfo info = {};
+            info.ai_family = PF_UNSPEC;
+            info.ai_socktype = SOCK_STREAM;
+            info.ai_protocol = IPPROTO_TCP;
+            info.ai_flags = AI_PASSIVE;
+            addrinfo* result;
 
-            /* Init socket */
-            http::DefaultSocket server_socket =
-                http::DefaultSocket(AF_INET, SOCK_STREAM, 0);
-            struct sockaddr_in addr;
-            int len = sizeof(addr);
-
-            /* Init address */
-            addr.sin_family = AF_INET;
-            addr.sin_addr.s_addr = inet_addr(vhost.ip_.c_str());
-            addr.sin_port = htons(vhost.port_);
-
-            /* Bind socket with address */
-            struct sockaddr* addr_not_in = (struct sockaddr*)&addr;
-            server_socket.bind(addr_not_in, len);
-            if (-1 == server_socket.set_non_block())
+            getaddrinfo(config.vhosts_.at(0).ip_.c_str(),
+                        std::to_string(config.vhosts_.at(i).port_).c_str(),
+                        &info, &result);
+            for (addrinfo* addr = result; addr != NULL; addr = addr->ai_next)
             {
-                std::cerr << "can't set the socket to non blocking\n";
+                /* Init socket */
+                http::DefaultSocket server_socket = http::DefaultSocket(
+                    addr->ai_family, addr->ai_socktype, addr->ai_protocol);
+                /* Bind socket with address */
+                server_socket.bind(addr->ai_addr, addr->ai_addrlen);
+                if (-1 == server_socket.set_non_block())
+                {
+                    std::cerr << "can't set the socket to non blocking\n";
+                }
+
+                server_socket.listen(30);
+
+                // socklen_t* s_len = (socklen_t*)&len;
+                std::shared_ptr<http::ListenerEW> listener =
+                    event_register
+                        .register_ew<http::ListenerEW, http::shared_socket>(
+                            std::make_shared<http::DefaultSocket>(
+                                server_socket.fd_get()));
             }
+            freeaddrinfo(result);
 
-            server_socket.listen(30);
-
-            // socklen_t* s_len = (socklen_t*)&len;
-            std::shared_ptr<http::ListenerEW> listener = event_register.register_ew<http::ListenerEW, http::shared_socket>(
-                std::make_shared<http::DefaultSocket>(server_socket.fd_get()));
             http::EventLoop event_loop = event_register.loop_get();
             ev_signal signal_watcher;
             event_loop.register_sigint_watcher(&signal_watcher);
             event_loop();
-            event_register.unregister_ew(listener.get());
         } catch (const std::exception& e)
         {
             return 1;
