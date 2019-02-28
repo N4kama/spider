@@ -15,6 +15,24 @@ namespace http
         // Now we consider there is only one vhost
         try
         {
+            if (cnx.sock_->is_ipv6())
+            {
+                struct sockaddr_in6 my_addr;
+                socklen_t len = sizeof(my_addr);
+                getsockname(cnx.sock_->fd_get()->fd_,
+                            (struct sockaddr_in6*)&my_addr, &len);
+                char str[INET6_ADDRSTRLEN];
+                inet_ntop(AF_INET6, &my_addr.sin6_addr, str, INET6_ADDRSTRLEN);
+            } else
+            {
+                struct sockaddr_in my_addr;
+                socklen_t len = sizeof(my_addr);
+                getsockname(cnx.sock_->fd_get()->fd_,
+                            (struct sockaddr*)&my_addr, &len);
+                uint16_t port = ntohs(my_addr.sin_port);
+                char str[INET_ADDRSTRLEN];
+                inet_ntop(AF_INET, &my_addr.sin_addr, str, INET_ADDRSTRLEN);
+            }
             // search to whom vhost the request is destined
             auto vhost = (http::dispatcher.vhosts_[0]);
             cnx.req_.config_ptr =
