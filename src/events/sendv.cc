@@ -69,7 +69,7 @@ namespace http
                 myfile.open(path_.c_str());
                 while(myfile >> s)
                 {
-                    std::cout << s;
+                    std::cout << s << "\n";
                 }
             }
         }

@@ -3,6 +3,7 @@
 #include <events/register.hh>
 #include <events/sendv.hh>
 #include <vhost/connection.hh>
+
 #include "main.hh"
 
 namespace http
@@ -51,6 +52,10 @@ namespace http
             if (sock_->recv(&c, 1) > 0)
             {
                 body.append(1, c);
+            } else
+            {
+                std::cerr << "Client Disconected\n";
+                event_register.unregister_ew(this);
             }
             if (endby(body, std::string("\r\n")))
             {
@@ -60,12 +65,12 @@ namespace http
                     return;
                     // throw
                 }
-                     Request req = Request(header);
-                    Connection cnx = Connection();
-                    cnx.req_ = req;
-                    cnx.sock_ = sock_;
-                    http::dispatcher.dispatch_request(cnx);
-                    event_register.unregister_ew(this);
+                Request req = Request(header);
+                Connection cnx = Connection();
+                cnx.req_ = req;
+                cnx.sock_ = sock_;
+                http::dispatcher.dispatch_request(cnx);
+                event_register.unregister_ew(this);
             }
             return;
         }
@@ -75,6 +80,10 @@ namespace http
             if (sock_->recv(&c, 1) > 0)
             {
                 header.append(1, c);
+            } else
+            {
+                std::cerr << "Client Disconected\n";
+                event_register.unregister_ew(this);
             }
             if (endby(header, std::string("\r\n\r\n")))
             {
