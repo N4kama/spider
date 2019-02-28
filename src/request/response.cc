@@ -29,7 +29,8 @@ namespace http
             str << "HTTP/1.1 " << 501 << " "
                 << "Not Implemented\r\n";
             str << "Date: " << get_date() << "\r\n";
-            str << "Server: " << r.config_ptr->server_name_ << "\r\n";
+            str << "Host: " << r.config_ptr->server_name_ << ':'
+                << r.config_ptr->port_ << "\r\n";
             str << "Content-Length: " << msg.size() << "\r\n";
             str << "Connection: close\r\n\r\n";
             str << msg;
@@ -61,7 +62,8 @@ namespace http
             str << "HTTP/1.1 " << 405 << " "
                 << "Method Not Allowed\r\n";
             str << "Date: " << get_date() << "\r\n";
-            str << "Server: " << r.config_ptr->server_name_ << "\r\n";
+            str << "Host: " << r.config_ptr->server_name_ << ':'
+                << r.config_ptr->port_ << "\r\n";
             str << "Content-Length: " << msg.size() << "\r\n";
             str << "Connection: close\r\n\r\n";
             str << msg;
@@ -93,7 +95,8 @@ namespace http
 
         str << "HTTP/1.1 " << st.first << " " << st.second << "\r\n";
         str << "Date: " << get_date() << "\r\n";
-        str << "Server: " << r.config_ptr->server_name_ << "\r\n";
+        str << "Host: " << r.config_ptr->server_name_ << ':'
+            << r.config_ptr->port_ << "\r\n";
         str << "Content-Length: " << r.path_info.second << "\r\n";
         str << "Connection: close\r\n\r\n";
         str << "\r\n";
@@ -121,7 +124,8 @@ namespace http
 
             ss << "HTTP/1.1 " << err.first << " " << err.second << "\r\n";
             ss << "Date: " << get_date() << "\r\n";
-            ss << "Server: " << r.config_ptr->server_name_ << "\r\n";
+            ss << "Host: " << r.config_ptr->server_name_ << ':'
+               << r.config_ptr->port_ << "\r\n";
             ss << "Content-Length: " << msg.str().size() << "\r\n";
             ss << "Connection: close\r\n\r\n";
             ss << msg.str();
@@ -150,7 +154,8 @@ namespace http
 
             ss << "HTTP/1.1 " << err.first << " " << err.second << "\r\n";
             ss << "Date: " << get_date() << "\r\n"
-               << "Server: " << r.config_ptr->server_name_ << "\r\n"
+               << "Host: " << r.config_ptr->server_name_ << ':'
+               << r.config_ptr->port_ << "\r\n"
                << "Content-type: text/plain\r\n"
                << "Content-Length: " << msg.str().size() << "\r\n"
                << "Connection: close\r\n\r\n";
