@@ -80,7 +80,7 @@ namespace http
         static const char mon_name[][4] = {"Jan", "Feb", "Mar", "Apr",
                                            "May", "Jun", "Jul", "Aug",
                                            "Sep", "Oct", "Nov", "Dec"};
-        static char result[30];
+        static char result[37] = "";
         sprintf(result, "%.3s, %.2d %3s %d %.2d:%.2d:%.2d GMT",
                 wday_name[timeptr->tm_wday], timeptr->tm_mday,
                 mon_name[timeptr->tm_mon], 1900 + timeptr->tm_year,
