@@ -44,7 +44,6 @@ namespace http
         std::string body;
 
         size_t filled;
-        int has_body;
     };
     int read_int(std::string s, size_t pos);
     int endby(std::string const& str, std::string const& end);
