@@ -142,6 +142,7 @@ namespace http
         if (file.is_open())
         {
             file << r.message_body;
+            rep += r.message_body;
             return;
         }
         // error file does not exists
