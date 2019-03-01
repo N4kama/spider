@@ -18,7 +18,7 @@ namespace http
             uint16_t port = 0;
             std::string host;
             struct in_addr addr;
-            int domain;
+            int domain = cnx.sock_->is_ipv6() ? AF_INET6 : AF_INET;
             if (cnx.sock_->is_ipv6())
             {
                 struct sockaddr_in6 my_addr;
@@ -29,7 +29,6 @@ namespace http
                 char str[INET6_ADDRSTRLEN];
                 host = inet_ntop(AF_INET6, &my_addr.sin6_addr, str,
                                  INET6_ADDRSTRLEN);
-                domain = AF_INET6;
             } else
             {
                 struct sockaddr_in my_addr;
@@ -40,7 +39,6 @@ namespace http
                 char str[INET_ADDRSTRLEN];
                 host =
                     inet_ntop(AF_INET, &my_addr.sin_addr, str, INET_ADDRSTRLEN);
-                domain = AF_INET;
             }
             for (unsigned i = 0; i < http::dispatcher.vhosts_.size(); i++)
             {
@@ -52,8 +50,7 @@ namespace http
                 {
                     cnx.req_.config_ptr =
                         std::make_shared<VHostConfig>(vhost->get_conf());
-                    cnx.req_.get_path(); // initialise path_config (now that
-                                         // config_ptr is created)
+                    cnx.req_.get_path();
                     vhost->respond(cnx.req_, cnx, 0, 0);
                     break;
                 }
@@ -63,5 +60,5 @@ namespace http
             std::cerr << e.what() << '\n';
         }
         return 0;
-    } // namespace http
+    }
 } // namespace http
