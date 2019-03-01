@@ -28,6 +28,17 @@ namespace http
     {
         std::stringstream str;
         std::string msg;
+        if (r.path_info.second == -400)
+        {
+            status_code = BAD_REQUEST;
+            set_error_rep(r, status_code);
+            return;
+        }
+        if (error_405(r.method))
+        {
+            set_error_rep(r, METHOD_NOT_ALLOWED);
+            return;
+        }
         if (r.path_info.second == -404)
         {
             // error file does not exists
@@ -38,12 +49,6 @@ namespace http
         if (r.path_info.second == -403)
         {
             status_code = FORBIDDEN;
-            set_error_rep(r, status_code);
-            return;
-        }
-        if (r.path_info.second == -400)
-        {
-            status_code = BAD_REQUEST;
             set_error_rep(r, status_code);
             return;
         }
@@ -69,9 +74,6 @@ namespace http
         } else if (strncmp(r.method.c_str(), "POST", 4) == 0)
         {
             http_rpost(r);
-        } else if (error_405(r.method))
-        {
-            set_error_rep(r, METHOD_NOT_ALLOWED);
         } else
         {
             status_code = BAD_REQUEST;
