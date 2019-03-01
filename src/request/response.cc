@@ -21,6 +21,25 @@ namespace http
     {
         std::stringstream str;
         std::string msg;
+        if (r.path_info.second == -404)
+        {
+            // error file does not exists
+            status_code = NOT_FOUND;
+            set_error_rep(r, status_code);
+            return;
+        }
+        if (r.path_info.second == -403)
+        {
+            status_code = FORBIDDEN;
+            set_error_rep(r, status_code);
+            return;
+        }
+        if (r.path_info.second == -400)
+        {
+            status_code = BAD_REQUEST;
+            set_error_rep(r, status_code);
+            return;
+        }
         if (strncmp(r.http_version.c_str(), "HTTP/1.1", 8) != 0)
         {
             status_code = UPGRADE_REQUIRED;
