@@ -97,6 +97,11 @@ namespace http
                 v.ip_, v.port_, v.server_name_, v.root_, v.default_file_);
         }
 
+        http::VHostConfig &get_vhost()
+        {
+            return *vhost_;
+        }
+
     protected:
         /**
          * \brief File descriptor of the socket.
