@@ -23,19 +23,8 @@ namespace http
         std::string msg;
         if (strncmp(r.http_version.c_str(), "HTTP/1.1", 8) != 0)
         {
-            msg = "<html><h1>http error: 501</h1><h2> There is place for only "
-                  "Head, Post and Get method allowed in this town "
-                  "cowboy</h2></html>";
-            str << "HTTP/1.1 " << 501 << " "
-                << "Not Implemented\r\n";
-            str << "Date: " << get_date() << "\r\n";
-            str << "Host: " << r.config_ptr->server_name_ << ':'
-                << r.config_ptr->port_ << "\r\n";
-            str << "Content-Length: " << msg.size() << "\r\n";
-            str << "Connection: close\r\n\r\n";
-            str << msg;
-            rep = str.str();
-            status_code = NOT_IMPLEMENTED;
+            status_code = UPGRADE_REQUIRED;
+            set_error_rep(r, status_code);
         }
         /*
         else if ((strstr(r.message_body.c_str(), "\nHost") == NULL)
@@ -56,20 +45,28 @@ namespace http
             http_rpost(r);
         } else
         {
-            msg = "<html><h1>http error: 405</h1><h2> There is place for only "
-                  "Head, Post and Get method allowed in this town "
-                  "cowboy</h2></html>";
-            str << "HTTP/1.1 " << 405 << " "
-                << "Method Not Allowed\r\n";
-            str << "Date: " << get_date() << "\r\n";
-            str << "Host: " << r.config_ptr->server_name_ << ':'
-                << r.config_ptr->port_ << "\r\n";
-            str << "Content-Length: " << msg.size() << "\r\n";
-            str << "Connection: close\r\n\r\n";
-            str << msg;
-            rep = str.str();
             status_code = METHOD_NOT_ALLOWED;
+            set_error_rep(r, status_code);
         }
+    }
+
+    void Response::set_error_rep(const struct Request& r, const STATUS_CODE& s)
+    {
+        std::pair<STATUS_CODE, const char*> st = statusCode(s);
+        std::stringstream str;
+        std::stringstream msg;
+
+        msg << "<html><h1>Http Error: " << st.first
+            << "</h1><h2> Error Message: " << st.second << "</h2></html>";
+
+        str << "HTTP/1.1 " << st.first << " " << st.second << "\r\n";
+        str << "Date: " << get_date() << "\r\n";
+        str << "Host: " << r.config_ptr->server_name_ << ':'
+            << r.config_ptr->port_ << "\r\n";
+        str << "Content-Length: " << msg.str().size() << "\r\n";
+        str << "Connection: close\r\n\r\n";
+        str << msg.str();
+        rep = str.str();
     }
 
     std::string get_date(void)
@@ -114,29 +111,16 @@ namespace http
             http_rhead(r);
         } else
         {
-            std::pair<STATUS_CODE, const char*> err;
-            if (r.path_info.second == -404)
+            if (r.path_info.second == 404)
             {
                 // error file does not exists
-                err = statusCode(NOT_FOUND);
+                status_code = NOT_FOUND;
             }
-            if (r.path_info.second == -403)
+            if (r.path_info.second == 403)
             {
-                err = statusCode(FORBIDDEN);
+                status_code = FORBIDDEN;
             }
-            std::stringstream ss;
-            std::stringstream msg;
-            msg << "<html><h1>http error: " << err.first << "</h1><h2> "
-                << err.second << "</h2></html>";
-
-            ss << "HTTP/1.1 " << err.first << " " << err.second << "\r\n";
-            ss << "Date: " << get_date() << "\r\n";
-            ss << "Host: " << r.config_ptr->server_name_ << ':'
-               << r.config_ptr->port_ << "\r\n";
-            ss << "Content-Length: " << msg.str().size() << "\r\n";
-            ss << "Connection: close\r\n\r\n";
-            ss << msg.str();
-            rep = ss.str();
+            set_error_rep(r, status_code);
         }
     }
 
@@ -154,21 +138,7 @@ namespace http
             return;
         }
         // error file does not exists
-        std::pair<STATUS_CODE, const char*> err = statusCode(NOT_FOUND);
-        std::stringstream ss;
-        std::stringstream msg;
-
-        msg << "<html><h1>http error: " << err.first << "</h1><h2> "
-            << err.second << "</h2></html>";
-
-        ss << "HTTP/1.1 " << err.first << " " << err.second << "\r\n";
-        ss << "Date: " << get_date() << "\r\n";
-        ss << "Host: " << r.config_ptr->server_name_ << ':'
-           << r.config_ptr->port_ << "\r\n";
-        ss << "Content-Length: " << msg.str().size() << "\r\n";
-        ss << "Connection: close\r\n\r\n";
-        ss << msg.str();
-        rep = ss.str();
+        status_code=  NOT_FOUND;
+        set_error_rep(r, status_code);
     }
-
 } // namespace http

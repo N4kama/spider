@@ -29,16 +29,12 @@ namespace http
         void http_rhead(struct Request r);
         void http_rget(struct Request r);
         void http_rpost(struct Request r);
+        void set_error_rep(const struct Request& r, const STATUS_CODE& s);
 
         STATUS_CODE status_code;
         bool is_file;
         std::string rep;
         std::string file_p;
     };
-
-    void parse_uri(std::string uri, std::string& servN, std::string& fileP);
-    void http_get(struct Request r, Socket& socketClient);
-    void http_head(struct Request r, Socket& socketClient);
-    void http_post(struct Request r, Socket& socketClient);
     std::string get_date(void);
 } // namespace http
