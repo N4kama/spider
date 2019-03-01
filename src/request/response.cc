@@ -106,18 +106,25 @@ namespace http
     {
         // now handling get request
         file_p = r.path_info.first;
-        if (r.path_info.second)
+        if (r.path_info.second > 0)
         {
             is_file = true;
             // fills header first hand
             http_rhead(r);
         } else
         {
-            // error file does not exists
-            std::pair<STATUS_CODE, const char*> err = statusCode(NOT_FOUND);
+            std::pair<STATUS_CODE, const char*> err;
+            if (r.path_info.second == -404)
+            {
+                // error file does not exists
+                err = statusCode(NOT_FOUND);
+            }
+            if (r.path_info.second == -403)
+            {
+                err = statusCode(FORBIDDEN);
+            }
             std::stringstream ss;
             std::stringstream msg;
-
             msg << "<html><h1>http error: " << err.first << "</h1><h2> "
                 << err.second << "</h2></html>";
 
