@@ -99,7 +99,6 @@ namespace http
             << r.config_ptr->port_ << "\r\n";
         str << "Content-Length: " << r.path_info.second << "\r\n";
         str << "Connection: close\r\n\r\n";
-        str << "\r\n";
         rep = str.str();
     }
 

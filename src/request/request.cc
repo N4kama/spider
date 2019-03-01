@@ -45,7 +45,7 @@ namespace http
         if (s.length())
         {
             message_body = s;
-            message_body.resize(message_body.length() - 2);
+            message_body.resize(message_body.length());
         }
 
         path_info = std::make_pair("", 0);
