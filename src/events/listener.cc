@@ -24,7 +24,7 @@ namespace http
         std::shared_ptr<DefaultSocket> new_s =
             std::make_shared<http::DefaultSocket>(
                 sock_->accept((struct sockaddr*)&addr, &addr_len)->fd_get());
-        new_s->ipv6_set(addr.sin_family == AF_INET6);
+        new_s->set_vhost(sock_->get_vhost());
         std::cout << "Successfully connected with client.\n";
         event_register.register_ew<http::RecvEv, http::shared_socket>(new_s);
     }

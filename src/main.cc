@@ -36,18 +36,18 @@ namespace http
                 {
                     http::DefaultSocket server_socket = http::DefaultSocket(
                         addr->ai_family, addr->ai_socktype, addr->ai_protocol);
-                    server_socket.set_vhost(config.vhosts_.at(i));
-                    server_socket.bind(addr->ai_addr, addr->ai_addrlen);
-                    if (-1 == server_socket.set_non_block())
+                    std::shared_ptr<DefaultSocket> sock =
+                        std::make_shared<DefaultSocket>(server_socket.fd_get());
+                    if (-1 == sock->set_non_block())
                     {
                         std::cerr << "can't set the socket to non blocking\n";
                     }
-                    server_socket.listen(30);
-                    std::shared_ptr<http::ListenerEW> listener =
-                        event_register
-                            .register_ew<http::ListenerEW, http::shared_socket>(
-                                std::make_shared<http::DefaultSocket>(
-                                    server_socket.fd_get()));
+                    sock->bind(addr->ai_addr, addr->ai_addrlen);
+                    sock->listen(30);
+                    sock->set_vhost(config.vhosts_.at(i));
+                    std::shared_ptr<ListenerEW> listener =
+                        event_register.register_ew<ListenerEW, shared_socket>(
+                            sock);
                     listeners.emplace_back(listener);
                 }
                 freeaddrinfo(result);
