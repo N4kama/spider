@@ -52,14 +52,16 @@ namespace http
 
     void Response::set_error_rep(const struct Request& r, const STATUS_CODE& s)
     {
-        std::pair<STATUS_CODE, const char*> st = statusCode(s);
         std::stringstream str;
         std::stringstream msg;
+        std::pair<STATUS_CODE, const char*> err = statusCode(s);
+        const int err_n = err.first;
+        const char* err_m = err.second;
 
-        msg << "<html><h1>Http Error: " << st.first
-            << "</h1><h2> Error Message: " << st.second << "</h2></html>";
+        msg << "<html><h1>Http Error: " << err_n
+            << "</h1><h2> Error Message: " << err_m << "</h2></html>";
 
-        str << "HTTP/1.1 " << st.first << " " << st.second << "\r\n";
+        str << "HTTP/1.1 " << err_n << " " << err_m << "\r\n";
         str << "Date: " << get_date() << "\r\n";
         str << "Host: " << r.config_ptr->server_name_ << ':'
             << r.config_ptr->port_ << "\r\n";
@@ -89,8 +91,10 @@ namespace http
         r = r;
         std::stringstream str;
         std::pair<STATUS_CODE, const char*> st = statusCode(status_code);
+        const int st_n = st.first;
+        const char* st_m = st.second;
 
-        str << "HTTP/1.1 " << st.first << " " << st.second << "\r\n";
+        str << "HTTP/1.1 " << st_n << " " << st_m << "\r\n";
         str << "Date: " << get_date() << "\r\n";
         str << "Host: " << r.config_ptr->server_name_ << ':'
             << r.config_ptr->port_ << "\r\n";
