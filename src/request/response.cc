@@ -117,12 +117,12 @@ namespace http
 
         } else
         {
-            if (r.path_info.second == 404)
+            if (r.path_info.second == -404)
             {
                 // error file does not exists
                 status_code = NOT_FOUND;
             }
-            if (r.path_info.second == 403)
+            if (r.path_info.second == -403)
             {
                 status_code = FORBIDDEN;
             }
