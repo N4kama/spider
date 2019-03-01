@@ -69,6 +69,7 @@ namespace http
         str << "Connection: close\r\n\r\n";
         str << msg.str();
         rep = str.str();
+        rep += "\r\n";
     }
 
     std::string get_date(void)
@@ -100,7 +101,6 @@ namespace http
             << r.config_ptr->port_ << "\r\n";
         str << "Content-Length: " << r.path_info.second << "\r\n";
         str << "Connection: close\r\n\r\n";
-        str << "\r\n";
         rep = str.str();
     }
 
@@ -113,6 +113,8 @@ namespace http
             is_file = true;
             // fills header first hand
             http_rhead(r);
+            rep += "\r\n";
+
         } else
         {
             if (r.path_info.second == 404)
@@ -142,7 +144,7 @@ namespace http
             return;
         }
         // error file does not exists
-        status_code=  NOT_FOUND;
+        status_code = NOT_FOUND;
         set_error_rep(r, status_code);
     }
 } // namespace http
