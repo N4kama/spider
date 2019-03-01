@@ -26,8 +26,6 @@ namespace http
         : status_code(s)
         , is_file(false)
     {
-        std::stringstream str;
-        std::string msg;
         if (r.path_info.second == -400)
         {
             status_code = BAD_REQUEST;
@@ -41,7 +39,6 @@ namespace http
         }
         if (r.path_info.second == -404)
         {
-            // error file does not exists
             status_code = NOT_FOUND;
             set_error_rep(r, status_code);
             return;
@@ -52,10 +49,26 @@ namespace http
             set_error_rep(r, status_code);
             return;
         }
-        if (strncmp(r.http_version.c_str(), "HTTP/1.1", 8) != 0)
+        if (r.http_version.size() != 0
+            && strncmp(r.http_version.c_str(), "HTTP/1.1", 8) != 0)
         {
-            status_code = UPGRADE_REQUIRED;
+            std::string method = r.http_version;
+            if (strncmp(method.c_str(), "HTTP/", 5) != 0)
+            {
+                status_code = BAD_REQUEST;
+            } else
+            {
+                std::string v_str(method.substr(5));
+                std::string::size_type sz;
+                float v = std::stof(v_str, &sz);
+
+                if (v < 1.1)
+                    status_code = UPGRADE_REQUIRED;
+                else
+                    status_code = HTTP_VERSION_NOT_SUPPORTED;
+            }
             set_error_rep(r, status_code);
+            return;
         }
         if (strncmp(r.method.c_str(), "GET", 3) == 0)
         {
