@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <config/config.hh>
 #include <memory>
 #include <sys/socket.h>
 
@@ -90,6 +91,12 @@ namespace http
 
         virtual int set_non_block() = 0;
 
+        void set_vhost(http::VHostConfig& v)
+        {
+            vhost_ = std::make_shared<VHostConfig>(
+                v.ip_, v.port_, v.server_name_, v.root_, v.default_file_);
+        }
+
     protected:
         /**
          * \brief File descriptor of the socket.
@@ -99,6 +106,7 @@ namespace http
          * Either ipv4 or ipv6.
          */
         bool ipv6_ = false;
+        std::shared_ptr<http::VHostConfig> vhost_;
     };
 
     using shared_socket = std::shared_ptr<Socket>;
