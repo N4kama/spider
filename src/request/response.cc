@@ -97,6 +97,10 @@ namespace http
         str << "Host: " << r.config_ptr->server_name_ << ':'
             << r.config_ptr->port_ << "\r\n";
         str << "Content-Length: " << msg.str().size() << "\r\n";
+
+        if (s == METHOD_NOT_ALLOWED)
+            str << "Allow: GET, HEAD, POST\r\n";
+
         str << "Connection: close\r\n\r\n";
         str << msg.str();
         rep = str.str();
@@ -118,9 +122,8 @@ namespace http
         return time;
     }
 
-    void Response::http_rhead(struct Request r)
+    void Response::set_rep_heads(const struct Request& r)
     {
-        r = r;
         std::stringstream str;
         std::pair<STATUS_CODE, const char*> st = statusCode(status_code);
         const int st_n = st.first;
@@ -135,22 +138,24 @@ namespace http
         rep = str.str();
     }
 
+    void Response::http_rhead(struct Request r)
+    {
+        set_rep_heads(r);
+        rep += "\r\n";
+    }
+
     void Response::http_rget(struct Request r)
     {
-        // now handling get request
         file_p = r.path_info.first;
         if (r.path_info.second > 0)
         {
             is_file = true;
-            // fills header first hand
-            http_rhead(r);
+            set_rep_heads(r);
             rep += "\r\n";
-
         } else
         {
             if (r.path_info.second == -404)
             {
-                // error file does not exists
                 status_code = NOT_FOUND;
             }
             if (r.path_info.second == -403)
@@ -165,7 +170,7 @@ namespace http
     {
         // now handling get request
         file_p = r.path_info.first;
-        http_rhead(r);
+        set_rep_heads(r);
         std::ofstream file;
         file.open(file_p);
         if (file.is_open())

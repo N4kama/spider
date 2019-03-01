@@ -30,6 +30,7 @@ namespace http
         void http_rget(struct Request r);
         void http_rpost(struct Request r);
         void set_error_rep(const struct Request& r, const STATUS_CODE& s);
+        void set_rep_heads(const struct Request& r);
 
         STATUS_CODE status_code;
         bool is_file;
