@@ -60,10 +60,10 @@ namespace http
         if (!stat(path_info.first.c_str(), &buf))
         {
             int flags = S_IROTH + S_IRGRP + S_IRUSR;
-            if (buf.st_mode & flags == flags)
-                path_info.second = -403;
-            else
+            if (buf.st_mode & flags)
                 path_info.second = buf.st_size;
+            else
+                path_info.second = -403;
         }
     }
 
