@@ -111,12 +111,19 @@ namespace http
                     } catch (const std::exception& e2)
                     {
                         std::cerr << "Invalid json" << '\n';
+                        throw std::exception();
                     }
                 }
             } else
             {
+                std::cerr << "Invalid json" << '\n';
                 throw std::exception();
             }
+        }
+        if (c.vhosts_.size() == 0)
+        {
+            std::cerr << "Invalid json" << '\n';
+            throw std::exception();
         }
         return c;
     }
