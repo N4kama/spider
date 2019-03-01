@@ -11,6 +11,13 @@
 
 namespace http
 {
+    static bool error_405(const std::string& s)
+    {
+        std::vector<std::string> method(
+            {"PUT", "DELETE", "CONNECT", "OPTIONS", "TRACE"});
+        return std::find(method.begin(), method.end(), s) != method.end();
+    }
+
     Response::Response(const STATUS_CODE& s)
         : status_code(s)
     {}
@@ -62,9 +69,12 @@ namespace http
         } else if (strncmp(r.method.c_str(), "POST", 4) == 0)
         {
             http_rpost(r);
+        } else if (error_405(r.method))
+        {
+            set_error_rep(r, METHOD_NOT_ALLOWED);
         } else
         {
-            status_code = METHOD_NOT_ALLOWED;
+            status_code = BAD_REQUEST;
             set_error_rep(r, status_code);
         }
     }
