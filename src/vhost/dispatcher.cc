@@ -46,40 +46,22 @@ namespace http
             {
                 auto vhost = (http::dispatcher.vhosts_[i]);
                 inet_pton(domain, vhost->get_conf().ip_.c_str(), &addr);
-                if (domain == AF_INET6)
+                char temp_host[INET6_ADDRSTRLEN];
+                inet_ntop(domain, &addr, temp_host, sizeof(temp_host));
+                if ((temp_host == host) && port == vhost->get_conf().port_)
                 {
-                    char temp_host[INET6_ADDRSTRLEN];
-                    inet_ntop(domain, &addr, temp_host, sizeof(temp_host));
-                    if ((temp_host == host) && port == vhost->get_conf().port_)
-                    {
-                        cnx.req_.config_ptr =
-                            std::make_shared<VHostConfig>(vhost->get_conf());
-                        cnx.req_.get_path(); // initialise path_config (now that
-                                             // config_ptr is created)
-                        vhost->respond(cnx.req_, cnx, 0, 0);
-                        break;
-                    }
-                }
-                if (domain == AF_INET)
-                {
-                    char temp_host[INET_ADDRSTRLEN];
-                    inet_ntop(domain, &addr, temp_host, sizeof(temp_host));
-                    if ((temp_host == host) && port == vhost->get_conf().port_)
-                    {
-                        cnx.req_.config_ptr =
-                            std::make_shared<VHostConfig>(vhost->get_conf());
-                        cnx.req_.get_path(); // initialise path_config (now that
-                                             // config_ptr is created)
-                        vhost->respond(cnx.req_, cnx, 0, 0);
-                        break;
-                    }
+                    cnx.req_.config_ptr =
+                        std::make_shared<VHostConfig>(vhost->get_conf());
+                    cnx.req_.get_path(); // initialise path_config (now that
+                                         // config_ptr is created)
+                    vhost->respond(cnx.req_, cnx, 0, 0);
+                    break;
                 }
             }
-
         } catch (const std::exception& e)
         {
             std::cerr << e.what() << '\n';
         }
         return 0;
-    }
+    } // namespace http
 } // namespace http
