@@ -36,7 +36,7 @@ namespace http
                 {
                     http::DefaultSocket server_socket = http::DefaultSocket(
                         addr->ai_family, addr->ai_socktype, addr->ai_protocol);
-                    server_socket.ipv6_set(addr->ai_family == AF_INET6);
+                    server_socket.set_vhost(config.vhosts_.at(i));
                     server_socket.bind(addr->ai_addr, addr->ai_addrlen);
                     if (-1 == server_socket.set_non_block())
                     {
