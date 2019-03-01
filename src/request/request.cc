@@ -48,7 +48,7 @@ namespace http
             message_body.resize(message_body.length());
         }
 
-        path_info = std::make_pair("", 0);
+        path_info = std::make_pair("", -404);
     }
 
     void Request::get_path()
@@ -59,7 +59,11 @@ namespace http
         struct stat buf;
         if (!stat(path_info.first.c_str(), &buf))
         {
-            path_info.second = buf.st_size;
+            int flags = S_IROTH + S_IRGRP + S_IRUSR;
+            if (buf.st_mode & flags == flags)
+                path_info.second = -403;
+            else
+                path_info.second = buf.st_size;
         }
     }
 
