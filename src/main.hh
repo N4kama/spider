@@ -1,6 +1,5 @@
 #pragma once
 #include <arpa/inet.h>
-#include <boost/program_options.hpp>
 #include <netdb.h>
 #include <netinet/in.h>
 
@@ -17,5 +16,5 @@
 namespace http
 {
     extern http::Dispatcher dispatcher;
-    int start_server(std::string arg, int debug);
+    int start_server(std::string arg);
 } // namespace http

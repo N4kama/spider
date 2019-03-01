@@ -73,7 +73,7 @@ namespace http
         return 1;
     }
 
-    struct ServerConfig parse_configuration(const std::string& path, int debug)
+    struct ServerConfig parse_configuration(const std::string& path)
     {
         ServerConfig c = ServerConfig();
         json j = get_vhosts(path.c_str());
@@ -93,10 +93,6 @@ namespace http
                     VHostConfig v =
                         VHostConfig(ip_s, port_i, serv_s, root_s, def_s);
                     c.vhosts_.emplace_back(v);
-                    if (debug)
-                    {
-                        v.print_VHostConfig();
-                    }
                 } catch (const std::exception& e1)
                 {
                     try
@@ -104,10 +100,6 @@ namespace http
                         VHostConfig v =
                             VHostConfig(ip_s, port_i, serv_s, root_s);
                         c.vhosts_.emplace_back(v);
-                        if (debug)
-                        {
-                            v.print_VHostConfig();
-                        }
                     } catch (const std::exception& e2)
                     {
                         std::cerr << "Invalid json" << '\n';

@@ -25,7 +25,6 @@ AM_LDFLAGS = \
              -lssl \
              -lcrypto \
              -lboost_system \
-             -lboost_program_options \
              -Wno-unused-command-line-argument \
              $(NULL)
 

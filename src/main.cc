@@ -4,18 +4,16 @@
 #include <misc/addrinfo/addrinfo.hh>
 #include <vector>
 
-namespace po = boost::program_options;
-
 namespace http
 {
     /* Dispatcher is routing the requests to the corresponding vhost */
     http::Dispatcher dispatcher = http::Dispatcher();
 
-    int start_server(std::string arg, int debug)
+    int start_server(std::string arg)
     {
         try
         {
-            http::ServerConfig config = http::parse_configuration(arg, debug);
+            http::ServerConfig config = http::parse_configuration(arg);
             for (unsigned i = 0; i < config.vhosts_.size(); i++)
             {
                 dispatcher.add_vhost(config.vhosts_.at(i));
@@ -33,7 +31,8 @@ namespace http
                 getaddrinfo(config.vhosts_.at(i).ip_.c_str(),
                             std::to_string(config.vhosts_.at(i).port_).c_str(),
                             &info, &result);
-                for (addrinfo* addr = result; addr != NULL; addr = addr->ai_next)
+                for (addrinfo* addr = result; addr != NULL;
+                     addr = addr->ai_next)
                 {
                     http::DefaultSocket server_socket = http::DefaultSocket(
                         addr->ai_family, addr->ai_socktype, addr->ai_protocol);
@@ -74,27 +73,17 @@ int main(int argc, char* argv[])
 {
     try
     {
-        po::options_description opt_desc("Options");
-        opt_desc.add_options()("help,h", "Displays options")(
-            ",t", po::value<std::string>(),
-            "Takes a json as argument and checks its validity")(
-            "debug,d", "debug option, prints info");
-        po::variables_map vm;
-        po::store(po::parse_command_line(argc, argv, opt_desc), vm);
-        po::notify(vm);
-
-        int debug = 0;
-        if (vm.count("debug"))
-            debug = 1;
-        if (vm.count("help"))
+        if (argc == 2)
+            return http::start_server(argv[1]);
+        else if (argc == 3)
         {
-            std::cout << opt_desc << "\n";
-            return 0;
-        } else if (vm.count("-t"))
-        {
-            return http::start_server(vm["-t"].as<std::string>(), debug);
-        } else
-            return http::start_server(argv[1], debug);
+            if (argv[1][0] == '-' && argv[1][1] == 't')
+            {
+                return http::start_server(argv[2]);
+            }
+            return 1;
+        }
+        return 1;
     } catch (const std::exception& e)
     {
         return 1;

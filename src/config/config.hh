@@ -82,5 +82,5 @@ namespace http
      */
     json get_vhosts(const std::string& s);
     int check_vhost(json j);
-    struct ServerConfig parse_configuration(const std::string& path, int debug);
+    struct ServerConfig parse_configuration(const std::string& path);
 } // namespace http
