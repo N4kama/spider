@@ -18,37 +18,43 @@ namespace http
 
     Request::Request(std::string& s)
     {
-        std::cout << "\n" << s << "\n";
-        std::string line = getline(s);
-        auto start = line.begin();
-        auto end = start;
-        end += line.find_first_of(' ', 0);
-        method = std::string(line.begin(), end);
-        start = end + 1;
-        end = line.begin() + line.find_first_of(' ', start - line.begin());
-        uri = std::string(start, end);
-        http_version = std::string(end + 1, line.end() - 2);
-
-        // fill headers
-        line = getline(s);
-        while (line.size() && line.at(0) != '\r')
+        try
         {
-            // creating pairs of two string separated by a semicolon and a
-            // space
-            size_t sep_idx = line.find_first_of(':', 0);
-            headers.emplace(
-                std::string(line.begin(), line.begin() + sep_idx),
-                std::string(line.begin() + sep_idx + 2, line.end() - 2));
+            std::cout << "\n" << s << "\n";
+            std::string line = getline(s);
+            auto start = line.begin();
+            auto end = start;
+            end += line.find_first_of(' ', 0);
+            method = std::string(line.begin(), end);
+            start = end + 1;
+            end = line.begin() + line.find_first_of(' ', start - line.begin());
+            uri = std::string(start, end);
+            http_version = std::string(end + 1, line.end() - 2);
 
+            // fill headers
             line = getline(s);
-        }
-        if (s.length())
-        {
-            message_body = s;
-            message_body.resize(message_body.length());
-        }
+            while (line.size() && line.at(0) != '\r')
+            {
+                // creating pairs of two string separated by a semicolon and a
+                // space
+                size_t sep_idx = line.find_first_of(':', 0);
+                headers.emplace(
+                    std::string(line.begin(), line.begin() + sep_idx),
+                    std::string(line.begin() + sep_idx + 2, line.end() - 2));
 
-        path_info = std::make_pair("", -404);
+                line = getline(s);
+            }
+            if (s.length())
+            {
+                message_body = s;
+                message_body.resize(message_body.length());
+            }
+
+            path_info = std::make_pair("", -404);
+        } catch (const std::exception& e)
+        {
+            path_info = std::make_pair("", -400);
+        }
     }
 
     void Request::get_path()
