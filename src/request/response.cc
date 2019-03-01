@@ -57,14 +57,6 @@ namespace http
             status_code = UPGRADE_REQUIRED;
             set_error_rep(r, status_code);
         }
-        /*
-        else if ((strstr(r.message_body.c_str(), "\nHost") == NULL)
-            || (strstr(r.message_body.c_str(), "\nContent-Length") == NULL))
-        {
-            rep = "<html><h1>http error: 400</h1><h2> There is place for only
-        Head, Post and Get method allowed in this town cowboy</h2></html>",
-            status_code = BAD_REQUEST;
-        }*/
         if (strncmp(r.method.c_str(), "GET", 3) == 0)
         {
             http_rget(r);

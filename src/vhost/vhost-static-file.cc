@@ -18,5 +18,4 @@ void VHostStaticFile::respond(const Request& req, Connection conn,
                                std::shared_ptr<Response>>(
         std::make_shared<DefaultSocket>(conn.sock_->fd_get()),
         std::make_shared<Response>(req));
-    // Call send_reponse veentwatcher with connexion struct
 }

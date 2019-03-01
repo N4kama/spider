@@ -52,8 +52,7 @@ namespace http
                     {
                         cnx.req_.config_ptr =
                             std::make_shared<VHostConfig>(vhost->get_conf());
-                        cnx.req_.get_path(); // initialise path_config (now that
-                                             // config_ptr is created)
+                        cnx.req_.get_path();
                         vhost->respond(cnx.req_, cnx, 0, 0);
                         break;
                     }
@@ -66,8 +65,7 @@ namespace http
                     {
                         cnx.req_.config_ptr =
                             std::make_shared<VHostConfig>(vhost->get_conf());
-                        cnx.req_.get_path(); // initialise path_config (now that
-                                             // config_ptr is created)
+                        cnx.req_.get_path();
                         vhost->respond(cnx.req_, cnx, 0, 0);
                         break;
                     }

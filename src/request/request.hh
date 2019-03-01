@@ -39,12 +39,8 @@ namespace http
         std::string uri;
 
         std::shared_ptr<VHostConfig> config_ptr;
-        std::pair<std::string, int> path_info;  //pair : url, content_length
-                                                //content-length = -1 on error
+        std::pair<std::string, int> path_info;
     };
-    //std::string recvLine(Socket& sock);
-    //Request fill_Request(Socket& sock);
-    //Request fill_Request(std::string &s);
     void request_server(struct Request r, Socket& socketClient);
 
 } // namespace http

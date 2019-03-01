@@ -26,10 +26,6 @@ namespace http
                 sock_->accept((struct sockaddr*)&addr, &addr_len)->fd_get());
         new_s->ipv6_set(addr.sin_family == AF_INET6);
         std::cout << "Successfully connected with client.\n";
-        // struct ev_io* w_client = new ev_io(); // = ?
-        // ev_io_init(w_client, read_cb, new_s->fd_get()->fd_, EV_READ);
-        // ev_io_start(event_register.loop_get().loop, w_client);
         event_register.register_ew<http::RecvEv, http::shared_socket>(new_s);
-        // new_connexion(sock_);
     }
 } // namespace http

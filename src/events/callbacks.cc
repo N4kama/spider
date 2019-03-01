@@ -61,9 +61,9 @@ void read_cb(struct ev_loop* loop, struct ev_io *watcher, int revents)
     {
         // Stop and free watchet if client socket is closing
         ev_io_stop(loop, watcher);
-        //free(watcher);
         std::cerr << "peer might closing\n";
-        total_clients--; // Decrement total_clients count
+        total_clients--; 
+        // Decrement total_clients count
         std::cout << total_clients << "client(s) connected.\n";
         return;
     }
