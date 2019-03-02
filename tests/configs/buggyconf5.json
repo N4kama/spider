@@ -1,0 +1,17 @@
+{
+    "vhosts": [
+        {
+            "ip": "127.0.0.1",
+            "port": 8000,
+            "server_name": "localhost",
+            "root": "."
+        },
+        {
+            "ip": "::1",
+            "port": 8001,
+            "root": "./tests/configs/"
+            "server_name": "localhost",
+            "default_file": "hello.html"
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "vhosts": [
+        {
+            "ip": "::1",
+            "port": "90",
+            "server_name": "localhost",
+            "root": "./tests/configs/",
+            "default_file": "hello.html"
+        }
+    ]
+}
