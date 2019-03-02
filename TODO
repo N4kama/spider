@@ -1,14 +1,14 @@
 [ - ] Spider Web Server:
 
-        [ - ]   First stage:
+        [ X ]   First stage:
 
-                [ - ] Configuration
-                [   ] Non blocking IO
-                [   ] VHOSTS
-                [   ] IPV6
-                [   ] Static file Server
-                [   ] Graceful Shutdown
-                [   ] Return value
+                [ X ] Configuration
+                [ X ] Non blocking IO
+                [ X ] VHOSTS
+                [ X ] IPV6
+                [ X ] Static file Server
+                [ X ] Graceful Shutdown
+                [ X ] Return value
 
         [   ]   Second stage:
 
