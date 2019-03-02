@@ -4,6 +4,13 @@ from subprocess import Popen, PIPE
 import requests
 import socket
 
+def test_configs(path):
+    p = Popen(["./../spider", "-t", configs/{}".format(path)],
+            stdout=PIPE, stderr=PIPE)
+    print("Testing {}: server return with value {} (expected {})".format(
+        path.split('/')[-1], p.returncode, int(path[0] == 'b')))
+
+
 def test_statuscode(url, expect, info):
     try:
         r = requests.get(url)
@@ -20,13 +27,26 @@ def test_statuscode(url, expect, info):
 
 print("Starting testsuite :\n")
 
-p = Popen(["./../spider", "configs/test1.txt"],
-            stdout=PIPE, stderr=PIPE)
+'''
+        TESTING JSON CONFIG
+'''
+print("Testing server configurations\n")
 
+jsons = ["conf1.json", "conf2.json", "conf3.json", "conf4.json", "conf5.json",
+"buggyconf1.json", "buggyconf2.json", "buggyconf3.json", "buggyconf4.json",
+"buggyconf5.json"]
+
+for config in jsons:
+    test_configs(config)
+print()
 
 '''
         TESTING STATUS CODES
 '''
+print("Testing status codes:\n")
+
+p = Popen(["./../spider", "configs/test1.txt"],
+            stdout=PIPE, stderr=PIPE)
 
 #From files
 test_statuscode("http://localhost:8000/configs/hello.html", 200, "(valid request)")
