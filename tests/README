@@ -1,0 +1,16 @@
+README BEFORE LAUNCHING TESTSUITE:
+
+You want ot run the testsuite one time only :
+
+    execute launch_testsuite.sh for a clean run of the testsuite
+
+You want to run testsuite multiples times for development purpose :
+
+    virtualenv venv
+    source venv/bin/activate
+    pip install -r requirements.txt
+
+    python3 testsuite.py
+
+    deactivate
+    rm -rf venv
