@@ -65,6 +65,7 @@ namespace http
                     std::cerr << "fstat: fail\n";
                 clean_send();
                 sock_->sendfile(f, p, st.st_size);
+                sys::close(fd);
             }
         }
     }
