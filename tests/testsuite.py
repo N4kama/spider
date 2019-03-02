@@ -2,11 +2,19 @@ import os
 import signal
 from subprocess import Popen, PIPE
 import requests
+import socket
 
-def test_statuscode(url, expect):
-    r = requests.get(url)
-    print("GET REQUEST on : {}\nStatus code  : {} ({} was expected)\n".format(
-        url, r.status_code, expect))
+def test_statuscode(url, expect, info):
+    try:
+        r = requests.get(url)
+        print("GET REQUEST on : {} {}\nStatus code  : {} ({} was expected)\n".format(
+        url, info, r.status_code, expect))
+    except requests.exceptions.ConnectionError as e:
+        print("GET REQUEST on : {} {}\nStatus code  : {} ({} was expected)\n".format(
+        url, info, 404, expect))
+    except requests.exceptions.RequestException as e:
+        print(e)
+        exit(1)
 
 # MAIN
 
@@ -15,14 +23,37 @@ print("Starting testsuite :\n")
 p = Popen(["./../spider", "configs/test1.txt"],
             stdout=PIPE, stderr=PIPE)
 
+
+'''
+        TESTING STATUS CODES
+'''
+
+#From files
+test_statuscode("http://localhost:8000/configs/hello.html", 200, "(valid request)")
+test_statuscode("http://localhost:8000/configs/perm_error.html", 403, "(permission error : file cannot be read)")
+test_statuscode("http://localhost8000/index.html", 404, "(file does not exists)")
+
+#from manually forged requests
 try:
-    test_statuscode("http://localhost:8000/configs/hello.html", 200)
-    test_statuscode("http://localhost:8000/configs/perm_error.html", 403)
+    url = "http://localhost:8000/configs/hello.html"
+
+    #Testing method not implemented (405)
+    r = requests.put(url, data = {'fact':'naruto > dbz'})
+    print("PUT REQUEST on : {} (PUT method not implemented)\nStatus code  : {} (405 was expected)\n".format(
+            url, r.status_code))
+
+    #Testing invalid http version (426)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect(("localhost", 8000))
+    sock.send(b"HEAD /configs/hello.html HTTP/1.0\r\n\r\n")
+    response = str(sock.recv(100), 'utf-8').split(' ')
+    print("HEAD REQUEST on : {} (invalid HTTP version)\nStatus code  : {} (426 was expected)\n".format(
+            url, response[1]))
+    sock.close()
+
+    #Testing Bad request (400)
 except requests.exceptions.RequestException as e:
-    print(e)
     exit(1)
-
-
 
 p.kill()
 
