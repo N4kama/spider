@@ -2,10 +2,12 @@
 
 virtualenv venv
 source venv/bin/activate
-pip install -r requirements.txt
+pip install -r ./tests/requirements.txt
 clear
 
-python3 testsuite.py
+python3 ./tests/testsuite.py
 
 rm -rf venv
+cd tests
 deactivate
+cd -

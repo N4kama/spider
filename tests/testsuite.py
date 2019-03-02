@@ -5,7 +5,7 @@ import requests
 import socket
 
 def test_configs(path):
-    p = Popen(["./../spider", "-t", "configs/{}".format(path)],
+    p = Popen(["./spider", "-t", "./tests/configs/{}".format(path)],
             stdout=PIPE, stderr=PIPE)
     p.communicate()
     print("Testing {}: server return with value {} (expected {})".format(
@@ -46,12 +46,12 @@ print()
 '''
 print("Testing status codes:\n")
 
-p = Popen(["./../spider", "configs/test1.txt"],
+p = Popen(["./spider", "./tests/configs/test1.txt"],
             stdout=PIPE, stderr=PIPE)
 
 #From files
-test_statuscode("http://localhost:8000/configs/hello.html", 200, "(valid request)")
-test_statuscode("http://localhost:8000/configs/perm_error.html", 403, "(permission error : file cannot be read)")
+test_statuscode("http://localhost:8000/tests/configs/hello.html", 200, "(valid request)")
+test_statuscode("http://localhost:8000/tests/configs/perm_error.html", 403, "(permission error : file cannot be read)")
 test_statuscode("http://localhost8000/index.html", 404, "(file does not exists)")
 
 #from manually forged requests
@@ -59,14 +59,14 @@ try:
     url = "http://localhost:8000/configs/hello.html"
 
     #Testing method not implemented (405)
-    r = requests.put(url, data = {'fact':'naruto > dbz'})
+    r = requests.put(url, data = {'fact':'naruto < dbz'})
     print("PUT REQUEST on : {} (PUT method not implemented)\nStatus code  : {} (405 was expected)".format(
             url, r.status_code))
 
     #Testing invalid http version (426)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect(("localhost", 8000))
-    sock.send(b"HEAD /configs/hello.html HTTP/1.0\r\n\r\n")
+    sock.send(b"HEAD /tests/configs/hello.html HTTP/1.0\r\n\r\n")
     response = str(sock.recv(100), 'utf-8').split(' ')
     print("HEAD REQUEST on : {} (invalid HTTP version)\nStatus code  : {} (426 was expected)".format(
             url, response[1]))
