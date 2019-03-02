@@ -83,13 +83,33 @@ namespace http
             if (check_vhost(cur))
             {
                 std::string ip_s = cur.at("ip").get<std::string>();
+                if (ip_s == "")
+                {
+                    std::cerr << "ip is empty\n";
+                    throw std::exception();
+                }
                 int port_i = cur.at("port").get<int>();
                 std::string serv_s = cur.at("server_name").get<std::string>();
+                if (ip_s == "")
+                {
+                    std::cerr << "server name is empty\n";
+                    throw std::exception();
+                }
                 std::string root_s = cur.at("root").get<std::string>();
+                if (ip_s == "")
+                {
+                    std::cerr << "root is empty\n";
+                    throw std::exception();
+                }
                 try
                 {
                     std::string def_s =
                         cur.at("default_file").get<std::string>();
+                    if (ip_s == "")
+                    {
+                        std::cerr << "default file is empty\n";
+                        throw std::exception();
+                    }
                     VHostConfig v =
                         VHostConfig(ip_s, port_i, serv_s, root_s, def_s);
                     c.vhosts_.emplace_back(v);
