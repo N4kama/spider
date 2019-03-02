@@ -90,13 +90,13 @@ namespace http
                 }
                 int port_i = cur.at("port").get<int>();
                 std::string serv_s = cur.at("server_name").get<std::string>();
-                if (ip_s == "")
+                if (serv_s == "")
                 {
                     std::cerr << "server name is empty\n";
                     throw std::exception();
                 }
                 std::string root_s = cur.at("root").get<std::string>();
-                if (ip_s == "")
+                if (root_s == "")
                 {
                     std::cerr << "root is empty\n";
                     throw std::exception();
@@ -105,7 +105,7 @@ namespace http
                 {
                     std::string def_s =
                         cur.at("default_file").get<std::string>();
-                    if (ip_s == "")
+                    if (def_s == "")
                     {
                         std::cerr << "default file is empty\n";
                         throw std::exception();
