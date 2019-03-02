@@ -5,8 +5,9 @@ import requests
 import socket
 
 def test_configs(path):
-    p = Popen(["./../spider", "-t", configs/{}".format(path)],
+    p = Popen(["./../spider", "-t", "configs/{}".format(path)],
             stdout=PIPE, stderr=PIPE)
+    p.communicate()
     print("Testing {}: server return with value {} (expected {})".format(
         path.split('/')[-1], p.returncode, int(path[0] == 'b')))
 
@@ -14,10 +15,10 @@ def test_configs(path):
 def test_statuscode(url, expect, info):
     try:
         r = requests.get(url)
-        print("GET REQUEST on : {} {}\nStatus code  : {} ({} was expected)\n".format(
+        print("GET REQUEST on : {} {}\nStatus code  : {} ({} was expected)".format(
         url, info, r.status_code, expect))
     except requests.exceptions.ConnectionError as e:
-        print("GET REQUEST on : {} {}\nStatus code  : {} ({} was expected)\n".format(
+        print("GET REQUEST on : {} {}\nStatus code  : {} ({} was expected)".format(
         url, info, 404, expect))
     except requests.exceptions.RequestException as e:
         print(e)
@@ -59,7 +60,7 @@ try:
 
     #Testing method not implemented (405)
     r = requests.put(url, data = {'fact':'naruto > dbz'})
-    print("PUT REQUEST on : {} (PUT method not implemented)\nStatus code  : {} (405 was expected)\n".format(
+    print("PUT REQUEST on : {} (PUT method not implemented)\nStatus code  : {} (405 was expected)".format(
             url, r.status_code))
 
     #Testing invalid http version (426)
@@ -67,13 +68,15 @@ try:
     sock.connect(("localhost", 8000))
     sock.send(b"HEAD /configs/hello.html HTTP/1.0\r\n\r\n")
     response = str(sock.recv(100), 'utf-8').split(' ')
-    print("HEAD REQUEST on : {} (invalid HTTP version)\nStatus code  : {} (426 was expected)\n".format(
+    print("HEAD REQUEST on : {} (invalid HTTP version)\nStatus code  : {} (426 was expected)".format(
             url, response[1]))
     sock.close()
 
     #Testing Bad request (400)
 except requests.exceptions.RequestException as e:
     exit(1)
+
+print()
 
 p.kill()
 
