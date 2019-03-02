@@ -76,7 +76,15 @@ int main(int argc, char* argv[])
         {
             if (argv[1][0] == '-' && argv[1][1] == 't')
             {
-                return http::start_server(argv[2]);
+                try
+                {
+                    http::parse_configuration(argv[2]);
+                    return 0;
+                }
+                catch (const std::exception &e)
+                {
+                    return 1;
+                }
             }
             return 1;
         }
