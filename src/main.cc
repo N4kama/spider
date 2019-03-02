@@ -38,12 +38,8 @@ namespace http
                         addr->ai_family, addr->ai_socktype, addr->ai_protocol);
                     std::shared_ptr<DefaultSocket> sock =
                         std::make_shared<DefaultSocket>(server_socket.fd_get());
-                    if (-1 == sock->set_non_block())
-                    {
-                        std::cerr << "can't set the socket to non blocking\n";
-                    }
                     sock->bind(addr->ai_addr, addr->ai_addrlen);
-                    sock->listen(30);
+                    sock->listen(3000);
                     sock->set_vhost(config.vhosts_.at(i));
                     std::shared_ptr<ListenerEW> listener =
                         event_register.register_ew<ListenerEW, shared_socket>(
@@ -62,6 +58,7 @@ namespace http
             }
         } catch (const std::exception& e)
         {
+            std::cerr << e.what() << "\n";
             return 1;
         }
         return 0;

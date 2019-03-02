@@ -43,8 +43,7 @@ namespace http
     {
         if (!count_)
         {
-            //event_register.register_ew<http::RecvEv, http::shared_socket>(
-            //std::make_shared<http::DefaultSocket>(sock_->fd_get()));
+            sys::close(sock_->fd_get()->fd_);
             event_register.unregister_ew(this);
             return;
         }

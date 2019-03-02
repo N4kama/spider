@@ -13,12 +13,16 @@ namespace http
 {
     DefaultSocket::DefaultSocket(const misc::shared_fd& fd)
         : Socket{fd}
-    {}
+    {
+        set_non_block();
+    }
 
     DefaultSocket::DefaultSocket(int domain, int type, int protocol)
         : Socket{std::make_shared<misc::FileDescriptor>(
               sys::socket(domain, type, protocol))}
-    {}
+    {
+        set_non_block();
+    }
 
     void DefaultSocket::listen(int backlog)
     {
