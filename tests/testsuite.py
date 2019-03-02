@@ -1,43 +1,29 @@
-#!/usr/bin/python3
-
 import os
+import signal
 from subprocess import Popen, PIPE
+import requests
 
-def test_file(folder, file):
-    print("Testing " + file + ": ", end='')
+def test_statuscode(url, expect):
+    r = requests.get(url)
+    print("GET REQUEST on : {}\nStatus code  : {} ({} was expected)\n".format(
+        url, r.status_code, expect))
 
-    bash_res = Popen(["./" + folder + file],
-    stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    bash_out, bash_err = bash_res.communicate()
-    ret_val = bash_res.returncode
+# MAIN
 
-    if not ret_val:
-        print("OK")
-    else:
-        print("KO")
+print("Starting testsuite :\n")
 
-#Take a string 'folder' as parameter
-def run_unitaryTests(folder):
-    print("Running Unitary Tests:")
-    for file in os.listdir(folder):
-        if "." not in file:
-            test_file(folder, file)
+p = Popen(["./../spider", "configs/test1.txt"],
+            stdout=PIPE, stderr=PIPE)
 
-def run_globalTests():
-    print("Running Tests:")
-    print("Oops, nothing seems to be testing spider in it's globality")
+try:
+    test_statuscode("http://localhost:8000/configs/hello.html", 200)
+    test_statuscode("http://localhost:8000/configs/perm_error.html", 403)
+except requests.exceptions.RequestException as e:
+    print(e)
+    exit(1)
 
 
-"""
-MAIN :
-    -> Execute unitary tests
-    -> Execute global tests
-"""
 
-print("\tStarting TestSuite:\n")
+p.kill()
 
-run_unitaryTests("unitary_tests/")
-print()
-run_globalTests()
-
-print("\n\tTestSuite stopped.")
+print("Testsuite ended")
