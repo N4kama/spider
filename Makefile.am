@@ -1,5 +1,4 @@
 NULL =
-
 EXTRA_DIST = autogen.sh
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 AM_MAKEFLAGS = --no-print-directory
@@ -31,6 +30,9 @@ AM_LDFLAGS = \
 AM_LDFLAGS += \
               -Wno-unused-command-line-argument \
               $(NULL)
+
+check: spider
+	./tests/launch_testsuite.sh
 
 bin_PROGRAMS = spider
 lib_LTLIBRARIES = libspider.la
