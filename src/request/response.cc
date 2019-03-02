@@ -173,19 +173,6 @@ namespace http
 
     void Response::http_rpost(struct Request r)
     {
-        // now handling get request
-        file_p = r.path_info.first;
-        set_rep_heads(r);
-        std::ofstream file;
-        file.open(file_p);
-        if (file.is_open())
-        {
-            file << r.message_body;
-            rep += r.message_body;
-            return;
-        }
-        // error file does not exists
-        status_code = NOT_FOUND;
-        set_error_rep(r, status_code);
+        http_rget(r);
     }
 } // namespace http
