@@ -77,8 +77,10 @@ namespace http
     {
         ServerConfig c = ServerConfig();
         json j = get_vhosts(path.c_str());
+        int def = 0;
         for (auto vhost = j.begin(); vhost != j.end(); vhost++)
         {
+            def = 0;
             json cur = *vhost;
             if (check_vhost(cur))
             {
@@ -105,6 +107,7 @@ namespace http
                 {
                     std::string def_s =
                         cur.at("default_file").get<std::string>();
+                    def = 1;
                     if (def_s == "")
                     {
                         std::cerr << "default file is empty\n";
@@ -117,6 +120,10 @@ namespace http
                 {
                     try
                     {
+                        if (def == 1)
+                        {
+                            throw std::exception();
+                        }
                         VHostConfig v =
                             VHostConfig(ip_s, port_i, serv_s, root_s);
                         c.vhosts_.emplace_back(v);
