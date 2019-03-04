@@ -49,6 +49,10 @@ namespace http
             set_error_rep(r, status_code);
             return;
         }
+        if (r.headers.find(std::string("Connection"))->second == "keep-alive")
+        {
+            keep_alive = true;
+        }
         if (r.http_version.size() != 0
             && strncmp(r.http_version.c_str(), "HTTP/1.1", 8) != 0)
         {
@@ -106,7 +110,8 @@ namespace http
         if (s == METHOD_NOT_ALLOWED)
             str << "Allow: GET, HEAD, POST\r\n";
 
-        str << "Connection: close\r\n\r\n";
+        str << "Connection: " << (keep_alive ? "keep-alive" : "close");
+        str << "\r\n\r\n";
         str << msg.str();
         rep = str.str();
         rep += "\r\n";
@@ -139,7 +144,8 @@ namespace http
         str << "Host: " << r.config_ptr->server_name_ << ':'
             << r.config_ptr->port_ << "\r\n";
         str << "Content-Length: " << r.path_info.second << "\r\n";
-        str << "Connection: close\r\n\r\n";
+        str << "Connection: " << (keep_alive ? "keep-alive" : "close");
+        str << "\r\n\r\n";
         rep = str.str();
     }
 

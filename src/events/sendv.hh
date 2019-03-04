@@ -40,5 +40,6 @@ namespace http
         std::string msg_;
         std::string path_;
         bool is_file_;
+        bool keep_alive;
     };
 } // namespace http

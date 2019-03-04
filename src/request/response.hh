@@ -36,6 +36,7 @@ namespace http
         bool is_file;
         std::string rep;
         std::string file_p;
+        bool keep_alive;
     };
     std::string get_date(void);
 } // namespace http

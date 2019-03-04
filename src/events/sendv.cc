@@ -16,6 +16,7 @@ namespace http
         this->path_ = resp->file_p;
         this->count_ = this->msg_.size();
         this->is_file_ = resp->is_file;
+        this->keep_alive = resp->keep_alive;
         struct sockaddr_in my_addr;
         socklen_t len = sizeof(my_addr);
         getsockname(socket->fd_get()->fd_, (struct sockaddr*)&my_addr, &len);
@@ -43,7 +44,16 @@ namespace http
     {
         if (!count_)
         {
-            sys::close(sock_->fd_get()->fd_);
+            if (keep_alive)
+            {
+                std::shared_ptr<DefaultSocket> new_s =
+                    std::make_shared<http::DefaultSocket>(sock_->fd_get());
+                new_s->set_vhost(sock_->get_vhost());
+                std::cout << "Staying connected with client.\n";
+                event_register.register_ew<http::RecvEv, http::shared_socket>(
+                    new_s);
+            } else
+                sys::close(sock_->fd_get()->fd_);
             event_register.unregister_ew(this);
             return;
         }
