@@ -21,11 +21,10 @@ namespace http
     {
         struct sockaddr_in addr;
         socklen_t addr_len = sizeof(addr);
-        std::shared_ptr<DefaultSocket> new_s =
-            std::make_shared<http::DefaultSocket>(
-                sock_->accept((struct sockaddr*)&addr, &addr_len)->fd_get());
-        new_s->set_vhost(sock_->get_vhost());
+        shared_socket sock = sock_->accept((struct sockaddr*)&addr, &addr_len);
+        sock->ipv6_set(sock_->is_ipv6());
         std::cout << "Successfully connected with client.\n";
-        event_register.register_ew<http::RecvEv, http::shared_socket>(new_s);
+        event_register.register_ew<http::RecvEv, http::shared_socket>(
+            std::forward<shared_socket>(sock));
     }
 } // namespace http
