@@ -8,9 +8,10 @@
 
 namespace http
 {
-    RecvEv::RecvEv(shared_socket socket)
+    RecvEv::RecvEv(shared_socket socket, shared_vhost vhost)
         : EventWatcher(socket->fd_get()->fd_, EV_READ)
         , sock_{socket}
+        , vhost_{vhost}
     {
         struct sockaddr_in my_addr;
         socklen_t len = sizeof(my_addr);
@@ -61,7 +62,10 @@ namespace http
                 Connection cnx = Connection();
                 cnx.req_ = req;
                 cnx.sock_ = sock_;
-                http::dispatcher.dispatch_request(cnx);
+                cnx.req_.config_ptr =
+                    std::make_shared<VHostConfig>(vhost_->get_conf());
+                cnx.req_.get_path();
+                vhost_->respond(cnx.req_, cnx, 0, 0);
                 event_register.unregister_ew(this);
             }
             return;
@@ -92,7 +96,10 @@ namespace http
                     Connection cnx = Connection();
                     cnx.req_ = req;
                     cnx.sock_ = sock_;
-                    http::dispatcher.dispatch_request(cnx);
+                    cnx.req_.config_ptr =
+                        std::make_shared<VHostConfig>(vhost_->get_conf());
+                    cnx.req_.get_path();
+                    vhost_->respond(cnx.req_, cnx, 0, 0);
                     event_register.unregister_ew(this);
                 }
             }

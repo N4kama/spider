@@ -10,6 +10,7 @@
 
 #include "events.hh"
 #include "vhost/connection.hh"
+#include "vhost/vhost-static-file.hh"
 
 namespace http
 {
@@ -23,7 +24,7 @@ namespace http
         /**
          * \brief Create a ListenerEW from a listener socket.
          */
-        explicit RecvEv(shared_socket socket);
+        explicit RecvEv(shared_socket socket, shared_vhost vhost);
 
         /**
          * \brief Start accepting connections on listener socket.
@@ -40,6 +41,7 @@ namespace http
          */
         uint16_t port_;
 
+        shared_vhost vhost_;
         std::string header;
         std::string body;
 

@@ -2,7 +2,7 @@
 #include <events/recv.hh>
 #include <events/register.hh>
 #include <vhost/connection.hh>
-
+#include "../main.hh"
 #include "callbacks.hh"
 
 namespace http
@@ -24,7 +24,6 @@ namespace http
         shared_socket sock = sock_->accept((struct sockaddr*)&addr, &addr_len);
         sock->ipv6_set(sock_->is_ipv6());
         std::cout << "Successfully connected with client.\n";
-        event_register.register_ew<http::RecvEv, http::shared_socket>(
-            std::forward<shared_socket>(sock));
+        http::dispatcher.dispatch_request(sock);
     }
 } // namespace http
