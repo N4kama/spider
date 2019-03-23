@@ -4,13 +4,20 @@
             "ip": "127.0.0.1",
             "port": 8000,
             "server_name": "localhost",
-            "root": "."
+            "root": ".",
+            "uri_max_size": 0,
+            "payload_max_size": 0,
+            "header_max_size": 0
         },
         {
             "ip": "::1",
             "port": 8001,
             "server_name": "localhost",
             "root": "./tests/configs/",
+
+            "uri_max_size": 0,
+            "payload_max_size": 0,
+            "header_max_size": 0,
             "default_file": "hello.html"
         }
     ]
