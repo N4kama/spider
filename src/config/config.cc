@@ -6,9 +6,9 @@ namespace http
     VHostConfig::VHostConfig(const std::string& ip, const int port,
                              const std::string& server_name,
                              const std::string& root,
-                             const int header_max_size,
-                             const int uri_max_size,
-                             const int payload_max_size,
+                             const size_t header_max_size,
+                             const size_t uri_max_size,
+                             const size_t payload_max_size,
                              const std::string& default_file)
         : ip_(ip)
         , port_(port)
@@ -26,7 +26,8 @@ namespace http
                   << "PORT:\t\t" << port_ << "\n"
                   << "SERVER NAME:\t" << server_name_ << "\n"
                   << "ROOT: \t\t" << root_ << "\n"
-                  << "DEFAULT FILE:\t" << default_file_ << '\n';
+                  << "DEFAULT FILE:\t" << default_file_ << '\n'
+                  << "HEADER MAX SIZE:\t" << header_max_size_ << '\n';
     }
 
     json get_vhosts(const std::string& s)
@@ -83,10 +84,8 @@ namespace http
     {
         ServerConfig c = ServerConfig();
         json j = get_vhosts(path.c_str());
-        int def = 0;
         for (auto vhost = j.begin(); vhost != j.end(); vhost++)
         {
-            def = 0;
             json cur = *vhost;
             if (check_vhost(cur))
             {
@@ -110,42 +109,53 @@ namespace http
                     throw std::exception();
                 }
 
-                int header_max_size_i = cur.at("header_max_size").get<int>();
-                int uri_max_size_i = cur.at("uri_max_size").get<int>();
-                int payload_max_size_i = cur.at("payload_max_size").get<int>();
-
+                size_t header_max_size_i;
                 try
                 {
-                    std::string def_s =
-                        cur.at("default_file").get<std::string>();
-                    def = 1;
+                    header_max_size_i = cur.at("header_max_size").get<int>();
+                }
+                catch(const std::exception& e)
+                {
+                    header_max_size_i = 0;
+                }
+                size_t uri_max_size_i;
+                try
+                {
+                    uri_max_size_i = cur.at("uri_max_size").get<int>();
+                }
+                catch(const std::exception& e)
+                {
+                    uri_max_size_i = 0;
+                }
+                size_t payload_max_size_i;
+                try
+                {
+                    payload_max_size_i = cur.at("payload_max_size").get<int>();
+                }
+                catch(const std::exception& e)
+                {
+                    payload_max_size_i = 0;
+                }
+
+                std::string def_s;
+                try
+                {
+                    def_s = cur.at("default_file").get<std::string>();
                     if (def_s == "")
                     {
-                        std::cerr << "default file is empty\n";
-                        throw std::exception();
-                    }
-                    VHostConfig v =
-                        VHostConfig(ip_s, port_i, serv_s, root_s, header_max_size_i,
-                            uri_max_size_i, payload_max_size_i, def_s);
-                    c.vhosts_.emplace_back(v);
-                } catch (const std::exception& e1)
-                {
-                    try
-                    {
-                        if (def == 1)
-                        {
-                            throw std::exception();
-                        }
-                        VHostConfig v =
-                            VHostConfig(ip_s, port_i, serv_s, root_s, header_max_size_i,
-                                        uri_max_size_i, payload_max_size_i);
-                        c.vhosts_.emplace_back(v);
-                    } catch (const std::exception& e2)
-                    {
-                        std::cerr << "Invalid json" << '\n';
-                        throw std::exception();
+                        def_s = std::string("index.html");
                     }
                 }
+                catch(const std::exception& e)
+                {
+                    def_s = std::string("index.html");
+                }
+
+                VHostConfig v =
+                    VHostConfig(ip_s, port_i, serv_s, root_s, header_max_size_i,
+                        uri_max_size_i, payload_max_size_i, def_s);
+                c.vhosts_.emplace_back(v);
+                v.print_VHostConfig();
             } else
             {
                 std::cerr << "Invalid json" << '\n';
