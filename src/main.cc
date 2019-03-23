@@ -41,7 +41,6 @@ namespace http
                     sock->bind(addr->ai_addr, addr->ai_addrlen);
                     sock->listen(3000);
                     sock->ipv6_set(server_socket.is_ipv6());
-                    sock->set_vhost(config.vhosts_.at(i));
                     std::shared_ptr<ListenerEW> listener =
                         event_register.register_ew<ListenerEW, shared_socket>(
                             sock);
