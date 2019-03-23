@@ -95,6 +95,7 @@ SOURCES = \
           src/vhost/vhost-factory.hh \
           src/events/callbacks.cc \
           src/events/callbacks.hh \
+          src/socket/ssl-socket.cc \
           src/socket/ssl-socket.hh \
           src/vhost/vhost-reverse-proxy.hh \
           $(NULL)
