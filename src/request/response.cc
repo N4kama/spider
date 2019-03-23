@@ -26,8 +26,11 @@ namespace http
         : status_code(s)
         , is_file(false)
     {
-
         if (r.headers.find(std::string("Connection"))->second == "keep-alive")
+        {
+            keep_alive = true;
+        }
+        if (r.headers.find(std::string("max_header_length")) != std::string::npos)
         {
             keep_alive = true;
         }
@@ -145,8 +148,6 @@ namespace http
 
         str << "HTTP/1.1 " << st_n << " " << st_m << "\r\n";
         str << "Date: " << get_date() << "\r\n";
-        str << "Host: " << r.config_ptr->server_name_ << ':'
-            << r.config_ptr->port_ << "\r\n";
         str << "Content-Length: " << r.path_info.second << "\r\n";
         str << "Connection: " << (keep_alive ? "keep-alive" : "close");
         str << "\r\n\r\n";

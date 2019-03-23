@@ -33,6 +33,7 @@ namespace http
 
             // fill headers
             line = getline(s);
+            head_size += line.size();
             while (line.size() && line.at(0) != '\r')
             {
                 // creating pairs of two string separated by a semicolon and a
@@ -43,6 +44,7 @@ namespace http
                     std::string(line.begin() + sep_idx + 2, line.end() - 2));
 
                 line = getline(s);
+                head_size += line.size();
             }
             if (s.length())
             {

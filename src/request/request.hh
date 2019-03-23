@@ -37,7 +37,7 @@ namespace http
         std::map<std::string, std::string> headers;
         std::string message_body;
         std::string uri;
-
+        size_t head_size;
         std::shared_ptr<VHostConfig> config_ptr;
         std::pair<std::string, int> path_info;
     };
