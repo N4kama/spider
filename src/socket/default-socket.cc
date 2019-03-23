@@ -22,6 +22,8 @@ namespace http
               sys::socket(domain, type, protocol))}
     {
         set_non_block();
+        setsockopt(SOL_SOCKET, SO_REUSEPORT, 1);
+        setsockopt(SOL_SOCKET, SO_REUSEADDR, 1);
     }
 
     void DefaultSocket::listen(int backlog)
@@ -52,8 +54,7 @@ namespace http
 
     void DefaultSocket::setsockopt(int level, int optname, int optval)
     {
-        char* opt_buf = new char[optval];
-        sys::setsockopt(*fd_, level, optname, opt_buf, optval);
+        sys::setsockopt(*fd_, level, optname, &optval, sizeof(int));
     }
 
     std::shared_ptr<Socket> DefaultSocket::accept(sockaddr* addr,
