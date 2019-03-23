@@ -1,10 +1,11 @@
 #pragma once
 
-#include "events.hh"
-#include <socket/socket.hh>
-#include "vhost/connection.hh"
 #include <arpa/inet.h>
 #include <request/response.hh>
+#include <socket/socket.hh>
+
+#include "events.hh"
+#include "vhost/connection.hh"
 
 namespace http
 {
@@ -18,7 +19,8 @@ namespace http
         /**
          * \brief Create a ListenerEW from a listener socket.
          */
-        explicit SendEv(shared_socket socket, std::shared_ptr<Response> resp);
+        SendEv(shared_socket socket, shared_vhost vhost,
+               std::shared_ptr<Response> resp);
 
         void clean_send();
 
@@ -35,6 +37,7 @@ namespace http
         /**
          * \brief Port on which the socket is listening.
          */
+        shared_vhost vhost_;
         uint16_t port_;
         ssize_t count_;
         std::string msg_;

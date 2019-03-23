@@ -8,9 +8,10 @@
 
 namespace http
 {
-    SendEv::SendEv(shared_socket socket, std::shared_ptr<Response> resp)
+    SendEv::SendEv(shared_socket socket, shared_vhost vhost, std::shared_ptr<Response> resp)
         : EventWatcher(socket->fd_get()->fd_, EV_WRITE)
         , sock_{socket}
+        , vhost_{vhost}
     {
         this->msg_ = resp->rep;
         this->path_ = resp->file_p;
@@ -49,9 +50,10 @@ namespace http
             {
                 std::cout << "Staying connected with client.\n";
                 event_register.register_ew<http::RecvEv, http::shared_socket>(
-                    std::forward<shared_socket>(sock_));
+                    std::forward<shared_socket>(sock_),
+                    std::forward<shared_vhost>(vhost_));
             } else
-                sys::close(sock_->fd_get()->fd_);
+                sock_->~Socket();
             event_register.unregister_ew(this);
             return;
         }
@@ -66,7 +68,8 @@ namespace http
             if (fd == -1)
             {
                 clean_send();
-            } else
+            }
+            else
             {
                 struct stat st;
                 if (sys::fstat(fd, &st) == -1)
