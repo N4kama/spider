@@ -45,7 +45,7 @@ namespace http
          * \param begin remaining_iterator of received data.
          * \param end remaining_iterator of received data.
          */
-        virtual void respond(Request&, Connection, remaining_iterator,
+        virtual void respond(const Request&, Connection, remaining_iterator,
                              remaining_iterator) = 0;
 
         inline const VHostConfig& conf_get() const noexcept
@@ -58,7 +58,7 @@ namespace http
             return conf_;
         }
 
-    protected:
+    private:
         /**
          *  \brief VHost configuration.
          */
@@ -78,7 +78,7 @@ namespace http
          * Warning: with this unique_ptr syntax, you'll need to instanciate the
          * pointer with both a value and a Deleter function.
          */
-        std::unique_ptr<SSL_CTX, decltype(SSL_CTX_free)*> ssl_ctx_;
+        //std::unique_ptr<SSL_CTX, decltype(SSL_CTX_free)*> ssl_ctx_;
     };
 
     using shared_vhost = std::shared_ptr<VHost>;
