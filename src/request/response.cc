@@ -30,48 +30,48 @@ namespace http
         {
             keep_alive = true;
         }
-        if (r.head_size > r.config_ptr->header_max_size_)
+        if (r.config_ptr->header_max_size_ && r.head_size > r.config_ptr->header_max_size_)
         {
             keep_alive = false;
             status_code = HEADER_FIELDS_TOO_LARGE;
-            set_error_rep(r, status_code);
+            set_error_rep(status_code);
             return;
         }
-        if (r.uri.size() > r.config_ptr->uri_max_size_)
+        if (r.config_ptr->uri_max_size_ && r.uri.size() > r.config_ptr->uri_max_size_)
         {
             keep_alive = false;
             status_code = URI_TOO_LONG;
-            set_error_rep(r, status_code);
+            set_error_rep(status_code);
             return;
         }
-        if (r.message_body.size() > r.config_ptr->payload_max_size_)
+        if (r.config_ptr->payload_max_size_ && r.message_body.size() > r.config_ptr->payload_max_size_)
         {
             keep_alive = false;
             status_code = PAYLOAD_TOO_LARGE;
-            set_error_rep(r, status_code);
+            set_error_rep(status_code);
             return;
         }
         if (r.path_info.second == -400)
         {
             status_code = BAD_REQUEST;
-            set_error_rep(r, status_code);
+            set_error_rep(status_code);
             return;
         }
         if (error_405(r.method))
         {
-            set_error_rep(r, METHOD_NOT_ALLOWED);
+            set_error_rep(METHOD_NOT_ALLOWED);
             return;
         }
         if (r.path_info.second == -404)
         {
             status_code = NOT_FOUND;
-            set_error_rep(r, status_code);
+            set_error_rep(status_code);
             return;
         }
         if (r.path_info.second == -403)
         {
             status_code = FORBIDDEN;
-            set_error_rep(r, status_code);
+            set_error_rep(status_code);
             return;
         }
         if (r.http_version.size() != 0
@@ -95,7 +95,7 @@ namespace http
                     keep_alive = false;
                 }
             }
-            set_error_rep(r, status_code);
+            set_error_rep(status_code);
             return;
         }
         if (strncmp(r.method.c_str(), "GET", 3) == 0)
@@ -111,11 +111,11 @@ namespace http
         {
             status_code = BAD_REQUEST;
             keep_alive = false;
-            set_error_rep(r, status_code);
+            set_error_rep(status_code);
         }
     }
 
-    void Response::set_error_rep(const struct Request& r, const STATUS_CODE& s)
+    void Response::set_error_rep(const STATUS_CODE& s)
     {
         std::stringstream str;
         std::stringstream msg;
@@ -195,7 +195,7 @@ namespace http
             {
                 status_code = FORBIDDEN;
             }
-            set_error_rep(r, status_code);
+            set_error_rep(status_code);
         }
     }
 
