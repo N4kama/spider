@@ -19,8 +19,7 @@ namespace http
         /**
          * \brief Create a ListenerEW from a listener socket.
          */
-        SendEv(shared_socket socket, shared_vhost vhost,
-               std::shared_ptr<Response> resp);
+        SendEv(shared_socket socket, Connection &c);
 
         void clean_send();
 

@@ -8,17 +8,18 @@
 
 namespace http
 {
-    SendEv::SendEv(shared_socket socket, shared_vhost vhost, std::shared_ptr<Response> resp)
+        SendEv::SendEv(shared_socket socket, Connection &c)
         : EventWatcher(socket->fd_get()->fd_, EV_WRITE)
         , sock_{socket}
-        , vhost_{vhost}
+        , vhost_{c.vhost_}
     {
-        this->msg_ = resp->rep;
-        this->path_ = resp->file_p;
+        Response resp = c.rep_;
+        this->msg_ = resp.rep;
+        this->path_ = resp.file_p;
         this->count_ = this->msg_.size();
-        this->is_file_ = resp->is_file;
-        this->keep_alive = resp->keep_alive;
-        this->status = resp->status_code;
+        this->is_file_ = resp.is_file;
+        this->keep_alive = resp.keep_alive;
+        this->status = resp.status_code;
         struct sockaddr_in my_addr;
         socklen_t len = sizeof(my_addr);
         getsockname(socket->fd_get()->fd_, (struct sockaddr*)&my_addr, &len);
