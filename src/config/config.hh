@@ -35,6 +35,9 @@ namespace http
     {
         VHostConfig(const std::string& ip, const int port,
                     const std::string& server_name, const std::string& root,
+                    const int header_max_size,
+                    const int uri_max_size,
+                    const int payload_max_size,
                     const std::string& default_file = "index.html");
         VHostConfig() = default;
         VHostConfig(const VHostConfig&) = default;
@@ -50,6 +53,9 @@ namespace http
         const int port_ = 80;
         const std::string server_name_;
         const std::string root_;
+        const int header_max_size_;
+        const int uri_max_size_;
+        const int payload_max_size_;
         const std::string default_file_;
     };
 

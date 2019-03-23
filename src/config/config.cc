@@ -6,11 +6,17 @@ namespace http
     VHostConfig::VHostConfig(const std::string& ip, const int port,
                              const std::string& server_name,
                              const std::string& root,
+                             const int header_max_size,
+                             const int uri_max_size,
+                             const int payload_max_size,
                              const std::string& default_file)
         : ip_(ip)
         , port_(port)
         , server_name_(server_name)
         , root_(root)
+        , header_max_size_(header_max_size)
+        , uri_max_size_(uri_max_size)
+        , payload_max_size_(payload_max_size)
         , default_file_(default_file)
     {}
 
@@ -103,6 +109,11 @@ namespace http
                     std::cerr << "root is empty\n";
                     throw std::exception();
                 }
+
+                int header_max_size_i = cur.at("header_max_size").get<int>();
+                int uri_max_size_i = cur.at("uri_max_size").get<int>();
+                int payload_max_size_i = cur.at("payload_max_size").get<int>();
+
                 try
                 {
                     std::string def_s =
@@ -114,7 +125,8 @@ namespace http
                         throw std::exception();
                     }
                     VHostConfig v =
-                        VHostConfig(ip_s, port_i, serv_s, root_s, def_s);
+                        VHostConfig(ip_s, port_i, serv_s, root_s, header_max_size_i,
+                            uri_max_size_i, payload_max_size_i, def_s);
                     c.vhosts_.emplace_back(v);
                 } catch (const std::exception& e1)
                 {
@@ -125,7 +137,8 @@ namespace http
                             throw std::exception();
                         }
                         VHostConfig v =
-                            VHostConfig(ip_s, port_i, serv_s, root_s);
+                            VHostConfig(ip_s, port_i, serv_s, root_s, header_max_size_i,
+                                        uri_max_size_i, payload_max_size_i);
                         c.vhosts_.emplace_back(v);
                     } catch (const std::exception& e2)
                     {
