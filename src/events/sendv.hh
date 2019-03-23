@@ -41,5 +41,6 @@ namespace http
         std::string path_;
         bool is_file_;
         bool keep_alive;
+        STATUS_CODE status;
     };
 } // namespace http

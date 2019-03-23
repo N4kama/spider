@@ -49,10 +49,6 @@ namespace http
             set_error_rep(r, status_code);
             return;
         }
-        if (r.headers.find(std::string("Connection"))->second == "keep-alive")
-        {
-            keep_alive = true;
-        }
         if (r.http_version.size() != 0
             && strncmp(r.http_version.c_str(), "HTTP/1.1", 8) != 0)
         {
@@ -73,6 +69,10 @@ namespace http
             }
             set_error_rep(r, status_code);
             return;
+        }
+        if (r.headers.find(std::string("Connection"))->second == "keep-alive")
+        {
+            keep_alive = true;
         }
         if (strncmp(r.method.c_str(), "GET", 3) == 0)
         {

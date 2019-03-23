@@ -17,6 +17,7 @@ namespace http
         this->count_ = this->msg_.size();
         this->is_file_ = resp->is_file;
         this->keep_alive = resp->keep_alive;
+        this->status = resp->status_code;
         struct sockaddr_in my_addr;
         socklen_t len = sizeof(my_addr);
         getsockname(socket->fd_get()->fd_, (struct sockaddr*)&my_addr, &len);
@@ -44,7 +45,7 @@ namespace http
     {
         if (!count_)
         {
-            if (keep_alive)
+            if (keep_alive && status == OK)
             {
                 std::shared_ptr<DefaultSocket> new_s =
                     std::make_shared<http::DefaultSocket>(sock_->fd_get());
@@ -75,7 +76,6 @@ namespace http
                     std::cerr << "fstat: fail\n";
                 clean_send();
                 sock_->sendfile(f, p, st.st_size);
-                sys::close(fd);
             }
         }
     }
