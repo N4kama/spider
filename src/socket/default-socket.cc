@@ -23,6 +23,7 @@ namespace http
         : Socket{std::make_shared<misc::FileDescriptor>(
               sys::socket(domain, type, protocol))}
     {
+        ipv6_set(domain == AF_INET6);
         set_non_block();
         setsockopt(SOL_SOCKET, SO_REUSEPORT, 1);
         setsockopt(SOL_SOCKET, SO_REUSEADDR, 1);
@@ -59,7 +60,7 @@ namespace http
         sys::setsockopt(*fd_, level, optname, &optval, sizeof(int));
     }
 
-    std::shared_ptr<Socket> DefaultSocket::accept(sockaddr* addr,
+    shared_socket DefaultSocket::accept(sockaddr* addr,
                                                   socklen_t* addrlen)
     {
         return std::make_shared<DefaultSocket>(
