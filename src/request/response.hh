@@ -17,7 +17,7 @@ namespace http
     struct Response
     {
         explicit Response(const STATUS_CODE&);
-        Response(const struct Request&, const STATUS_CODE& = STATUS_CODE::OK);
+        Response(const struct Request&, const VHostConfig& config, const STATUS_CODE& = STATUS_CODE::OK);
 
         Response() = default;
         Response(const Response&) = default;

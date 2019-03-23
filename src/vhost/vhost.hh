@@ -11,6 +11,7 @@
 #include "error/not-implemented.hh"
 #include "request/request.hh"
 #include "vhost/connection.hh"
+#include "config/config.hh"
 
 namespace http
 {
@@ -46,7 +47,7 @@ namespace http
          * \param end remaining_iterator of received data.
          */
         virtual void respond(const Request&, Connection, remaining_iterator,
-                             remaining_iterator) = 0;
+                             remaining_iterator, const VHostConfig& config) = 0;
 
         inline const VHostConfig& conf_get() const noexcept
         {

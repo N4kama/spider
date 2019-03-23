@@ -22,7 +22,7 @@ namespace http
         : status_code(s)
     {}
 
-    Response::Response(const struct Request& r, const STATUS_CODE& s)
+    Response::Response(const struct Request& r, const VHostConfig& config, const STATUS_CODE& s)
         : status_code(s)
         , is_file(false)
     {
@@ -30,10 +30,27 @@ namespace http
         {
             keep_alive = true;
         }
-        /*if (r.headers.find(std::string("max_header_length")) != std::string::npos)
+        if (r.head_size > config.header_max_size_)
         {
-            keep_alive = true;
-        }*/
+            keep_alive = false;
+            status_code = HEADER_FIELDS_TOO_LARGE;
+            set_error_rep(r, status_code);
+            return;
+        }
+        if (r.uri.size() > config.uri_max_size_)
+        {
+            keep_alive = false;
+            status_code = URI_TOO_LONG;
+            set_error_rep(r, status_code);
+            return;
+        }
+        if (r.message_body.size() > config.payload_max_size_)
+        {
+            keep_alive = false;
+            status_code = PAYLOAD_TOO_LARGE;
+            set_error_rep(r, status_code);
+            return;
+        }
         if (r.path_info.second == -400)
         {
             status_code = BAD_REQUEST;
