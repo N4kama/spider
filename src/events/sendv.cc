@@ -45,7 +45,7 @@ namespace http
     {
         if (!count_)
         {
-            if (keep_alive && status == OK)
+            if (keep_alive)
             {
                 std::shared_ptr<DefaultSocket> new_s =
                     std::make_shared<http::DefaultSocket>(sock_->fd_get());

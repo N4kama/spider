@@ -26,6 +26,11 @@ namespace http
         : status_code(s)
         , is_file(false)
     {
+
+        if (r.headers.find(std::string("Connection"))->second == "keep-alive")
+        {
+            keep_alive = true;
+        }
         if (r.path_info.second == -400)
         {
             status_code = BAD_REQUEST;
@@ -65,14 +70,13 @@ namespace http
                 if (v < 1.1)
                     status_code = UPGRADE_REQUIRED;
                 else
+                {
                     status_code = HTTP_VERSION_NOT_SUPPORTED;
+                    keep_alive = false;
+                }
             }
             set_error_rep(r, status_code);
             return;
-        }
-        if (r.headers.find(std::string("Connection"))->second == "keep-alive")
-        {
-            keep_alive = true;
         }
         if (strncmp(r.method.c_str(), "GET", 3) == 0)
         {
@@ -86,6 +90,7 @@ namespace http
         } else
         {
             status_code = BAD_REQUEST;
+            keep_alive = false;
             set_error_rep(r, status_code);
         }
     }
@@ -103,8 +108,7 @@ namespace http
 
         str << "HTTP/1.1 " << err_n << " " << err_m << "\r\n";
         str << "Date: " << get_date() << "\r\n";
-        str << "Host: " << r.config_ptr->server_name_ << ':'
-            << r.config_ptr->port_ << "\r\n";
+
         str << "Content-Length: " << msg.str().size() << "\r\n";
 
         if (s == METHOD_NOT_ALLOWED)
