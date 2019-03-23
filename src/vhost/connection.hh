@@ -6,7 +6,7 @@
 #pragma once
 
 #include <memory>
-
+#include <string>
 #include "../request/request.hh"
 #include "../request/response.hh"
 
@@ -31,6 +31,8 @@ namespace http
 
         // Client socket
         shared_socket sock_;
+        u_int16_t port;
+        std::string host;
         // Request from client
         Request req_;
         Response rep_;

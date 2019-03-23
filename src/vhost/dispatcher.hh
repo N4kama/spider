@@ -27,7 +27,15 @@ namespace http
 
         void add_vhost(VHostConfig config);
         int dispatch_request(struct Connection& cnx);
+        shared_vhost get_vhost(int i)
+        {
+            return vhosts_[i];
+        }
 
+        size_t nb_of_vhost()
+        {
+            return vhosts_.size();
+        }
     private:
         /* FIXME: Add members to store the information relative to the
          ** Dispatcher.
@@ -36,6 +44,8 @@ namespace http
 
         // Dispatcher is a global variable which stores the server config
     };
+    void get_port(Connection& cnx);
+    shared_vhost find_vhost(Connection& cnx);
 
     /**
      * \brief Service object.
