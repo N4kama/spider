@@ -26,7 +26,7 @@ namespace http
         Dispatcher& operator=(Dispatcher&&) = delete;
 
         void add_vhost(VHostConfig config);
-        int dispatch_request(struct Connection& cnx);
+        int dispatch_request(shared_socket& s);
         shared_vhost get_vhost(int i)
         {
             return vhosts_[i];
@@ -36,6 +36,7 @@ namespace http
         {
             return vhosts_.size();
         }
+
     private:
         /* FIXME: Add members to store the information relative to the
          ** Dispatcher.

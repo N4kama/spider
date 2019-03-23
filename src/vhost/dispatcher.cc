@@ -1,6 +1,10 @@
 #include "dispatcher.hh"
 
+#include <events/recv.hh>
+
 #include "../main.hh"
+#include "socket/ssl-socket.hh"
+
 #include "vhost-factory.hh"
 
 namespace http
@@ -20,7 +24,8 @@ namespace http
             getsockname(s->fd_get()->fd_, (struct sockaddr*)&addr6, &len);
         else
             getsockname(s->fd_get()->fd_, (struct sockaddr*)&addr4, &len);
-        cnx.port = s->is_ipv6() ? ntohs(addr6.sin6_port) : ntohs(addr4.sin_port);
+        cnx.port =
+            s->is_ipv6() ? ntohs(addr6.sin6_port) : ntohs(addr4.sin_port);
         char str[INET_ADDRSTRLEN];
         char str6[INET6_ADDRSTRLEN];
         cnx.host = s->is_ipv6()
@@ -32,25 +37,28 @@ namespace http
     shared_vhost find_vhost(Connection& cnx)
     {
         shared_vhost s = dispatcher.get_vhost(0);
-        for(size_t i = 1; i >= dispatcher.nb_of_vhost(); i++)
+        for (size_t i = 1; i < dispatcher.nb_of_vhost(); i++)
         {
-            if(dispatcher.get_vhost(i)->get_conf().port_ == cnx.port &&
-            dispatcher.get_vhost(i)->get_conf().ip_ == cnx.host)
-                {
-                    s = dispatcher.get_vhost(i);
-                    break;
-                }
+            if (dispatcher.get_vhost(i)->get_conf().port_ == cnx.port
+                && dispatcher.get_vhost(i)->get_conf().ip_ == cnx.host)
+            {
+                s = dispatcher.get_vhost(i);
+                break;
+            }
         }
         return s;
     }
 
-    int Dispatcher::dispatch_request(Connection& cnx)
+    int Dispatcher::dispatch_request(shared_socket& s)
     {
+        Connection cnx = Connection();
+        cnx.sock_ = s;
         get_port(cnx);
         shared_vhost v = find_vhost(cnx);
-        cnx.req_.config_ptr = std::make_shared<VHostConfig>(v->get_conf());
-        cnx.req_.get_path();
-        v->respond(cnx.req_, cnx, 0, 0);
+        event_register.register_ew<http::RecvEv, shared_socket, shared_vhost>(
+            std::forward<shared_socket>(s), std::forward<shared_vhost>(v));
+        //event_register.register_ew<http::RecvEv, shared_socket, shared_vhost>(
+        //    std::make_shared<SSLSocket>(s->fd_get(), v->get_ctx()), std::forward<shared_vhost>(v));
         return 0;
     }
 } // namespace http
