@@ -53,9 +53,9 @@ namespace http
         const int port_ = 80;
         const std::string server_name_;
         const std::string root_;
-        const int header_max_size_;
-        const int uri_max_size_;
-        const int payload_max_size_;
+        const int header_max_size_ = 0;
+        const int uri_max_size_ = 0;
+        const int payload_max_size_ = 0;
         const std::string default_file_;
     };
 

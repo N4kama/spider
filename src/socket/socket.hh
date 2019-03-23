@@ -94,7 +94,7 @@ namespace http
         void set_vhost(http::VHostConfig& v)
         {
             vhost_ = std::make_shared<VHostConfig>(
-                v.ip_, v.port_, v.server_name_, v.root_, v.default_file_);
+                v.ip_, v.port_, v.server_name_, v.root_, v.header_max_size_, v.uri_max_size_, v.payload_max_size_, v.default_file_);
         }
 
         http::VHostConfig &get_vhost()

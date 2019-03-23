@@ -30,10 +30,10 @@ namespace http
         {
             keep_alive = true;
         }
-        if (r.headers.find(std::string("max_header_length")) != std::string::npos)
+        /*if (r.headers.find(std::string("max_header_length")) != std::string::npos)
         {
             keep_alive = true;
-        }
+        }*/
         if (r.path_info.second == -400)
         {
             status_code = BAD_REQUEST;
