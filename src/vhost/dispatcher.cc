@@ -16,7 +16,7 @@ namespace http
             std::make_shared<VHostStaticFile>(cnx.sock_->get_vhost());
         cnx.req_.config_ptr = std::make_shared<VHostConfig>(vhost->get_conf());
         cnx.req_.get_path();
-        vhost->respond(cnx.req_, cnx, 0, 0, vhost->get_conf());
+        vhost->respond(cnx.req_, cnx, 0, 0);
         return 0;
     }
 } // namespace http
