@@ -47,12 +47,9 @@ namespace http
         {
             if (keep_alive)
             {
-                std::shared_ptr<DefaultSocket> new_s =
-                    std::make_shared<http::DefaultSocket>(sock_->fd_get());
-                new_s->set_vhost(sock_->get_vhost());
                 std::cout << "Staying connected with client.\n";
                 event_register.register_ew<http::RecvEv, http::shared_socket>(
-                    new_s);
+                    std::forward<shared_socket>(sock_));
             } else
                 sys::close(sock_->fd_get()->fd_);
             event_register.unregister_ew(this);
