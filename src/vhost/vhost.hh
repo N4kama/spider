@@ -59,6 +59,12 @@ namespace http
             return conf_;
         }
 
+        SSL_CTX *get_ctx()
+        {
+            return ssl_ctx_.get();
+        }
+
+
     private:
         /**
          *  \brief VHost configuration.
@@ -79,7 +85,7 @@ namespace http
          * Warning: with this unique_ptr syntax, you'll need to instanciate the
          * pointer with both a value and a Deleter function.
          */
-        //std::unique_ptr<SSL_CTX, decltype(SSL_CTX_free)*> ssl_ctx_;
+        std::unique_ptr<SSL_CTX, decltype(SSL_CTX_free)*> ssl_ctx_;
     };
 
     using shared_vhost = std::shared_ptr<VHost>;

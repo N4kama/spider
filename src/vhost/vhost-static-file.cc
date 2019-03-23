@@ -14,8 +14,7 @@ VHostStaticFile::VHostStaticFile(const VHostConfig& ext_conf)
 void VHostStaticFile::respond(const Request& req, Connection conn,
                               remaining_iterator, remaining_iterator)
 {
-    event_register.register_ew<http::SendEv, http::shared_socket,
-                               std::shared_ptr<Response>>(
+    event_register.register_ew<http::SendEv, http::shared_socket, Connection>(
         std::forward<shared_socket>(conn.sock_),
-        std::make_shared<Response>(req));
+        std::forward<Connection>(conn));
 }
