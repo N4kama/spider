@@ -112,7 +112,7 @@ namespace http
                 size_t header_max_size_i;
                 try
                 {
-                    header_max_size_i = cur.at("header_max_size").get<int>();
+                    header_max_size_i = cur.at("header_max_size").get<size_t>();
                 }
                 catch(const std::exception& e)
                 {
@@ -121,7 +121,7 @@ namespace http
                 size_t uri_max_size_i;
                 try
                 {
-                    uri_max_size_i = cur.at("uri_max_size").get<int>();
+                    uri_max_size_i = cur.at("uri_max_size").get<size_t>();
                 }
                 catch(const std::exception& e)
                 {
@@ -130,7 +130,7 @@ namespace http
                 size_t payload_max_size_i;
                 try
                 {
-                    payload_max_size_i = cur.at("payload_max_size").get<int>();
+                    payload_max_size_i = cur.at("payload_max_size").get<size_t>();
                 }
                 catch(const std::exception& e)
                 {
@@ -155,7 +155,6 @@ namespace http
                     VHostConfig(ip_s, port_i, serv_s, root_s, header_max_size_i,
                         uri_max_size_i, payload_max_size_i, def_s);
                 c.vhosts_.emplace_back(v);
-                v.print_VHostConfig();
             } else
             {
                 std::cerr << "Invalid json" << '\n';

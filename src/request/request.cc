@@ -17,11 +17,13 @@ namespace http
     }
 
     Request::Request(std::string& s)
+        : head_size(0)
     {
         try
         {
             std::cout << "\n" << s << "\n";
             std::string line = getline(s);
+            head_size += line.size();
             auto start = line.begin();
             auto end = start;
             end += line.find_first_of(' ', 0);
@@ -44,7 +46,8 @@ namespace http
                     std::string(line.begin() + sep_idx + 2, line.end() - 2));
 
                 line = getline(s);
-                head_size += line.size();
+                if (line != "")
+                    head_size += line.size();
             }
             if (s.length())
             {

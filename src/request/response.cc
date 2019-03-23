@@ -25,8 +25,10 @@ namespace http
     Response::Response(const struct Request& r, const STATUS_CODE& s)
         : status_code(s)
         , is_file(false)
+        , keep_alive(false)
     {
-        if (r.headers.find(std::string("Connection"))->second == "keep-alive")
+        auto p = r.headers.find(std::string("Connection"));
+        if (p != r.headers.end() && p->second == "keep-alive")
         {
             keep_alive = true;
         }
@@ -39,6 +41,7 @@ namespace http
         }
         if (r.config_ptr->uri_max_size_ && r.uri.size() > r.config_ptr->uri_max_size_)
         {
+            std::cout << "URI MAX: " << r.config_ptr->uri_max_size_ << '\n';
             keep_alive = false;
             status_code = URI_TOO_LONG;
             set_error_rep(status_code);
