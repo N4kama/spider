@@ -4,6 +4,8 @@
 #include <misc/addrinfo/addrinfo.hh>
 #include <vector>
 
+#include "socket/ssl-socket.hh"
+
 namespace http
 {
     /* Dispatcher is routing the requests to the corresponding vhost */
@@ -14,6 +16,7 @@ namespace http
         try
         {
             http::ServerConfig config = http::parse_configuration(arg);
+            SSL_library_init();
             for (unsigned i = 0; i < config.vhosts_.size(); i++)
             {
                 dispatcher.add_vhost(config.vhosts_.at(i));
@@ -80,8 +83,7 @@ int main(int argc, char* argv[])
                 {
                     http::parse_configuration(argv[2]);
                     return 0;
-                }
-                catch (const std::exception &e)
+                } catch (const std::exception& e)
                 {
                     return 1;
                 }
