@@ -7,7 +7,8 @@ namespace http
                              std::string& server_name, std::string& root,
                              std::string& ssl_cert, std::string& ssl_key,
                              size_t header_max_size, size_t uri_max_size,
-                             size_t payload_max_size, std::string& default_file)
+                             size_t payload_max_size, std::string& default_file
+                             , bool auto_index)
         : ip_(ip)
         , port_(port)
         , server_name_(server_name)
@@ -18,6 +19,7 @@ namespace http
         , uri_max_size_(uri_max_size)
         , payload_max_size_(payload_max_size)
         , default_file_(default_file)
+        , auto_index_(auto_index)
     {
         if (ssl_cert == "" || ssl_key == "")
             no_ssl = 1;
@@ -167,10 +169,20 @@ namespace http
                     def_s = std::string("index.html");
                 }
 
+                bool auto_index_i;
+                try
+                {
+                    auto_index_i = cur.at("auto_index").get<bool>();
+                }
+                catch(const std::exception& e)
+                {
+                    auto_index_i = false;
+                }
+
                 VHostConfig v =
                     VHostConfig(ip_s, port_i, serv_s, root_s, ssl_cert_i,
                                 ssl_key_i, header_max_size_i, uri_max_size_i,
-                                payload_max_size_i, def_s);
+                                payload_max_size_i, def_s, auto_index_i);
                 c.vhosts_.emplace_back(v);
             } else
             {

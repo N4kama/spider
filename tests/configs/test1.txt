@@ -1,0 +1,20 @@
+{
+    "vhosts": [
+        {
+            "ip": "127.0.0.1",
+            "port": 8000,
+            "server_name": "localhost",
+            "root": ".",
+            "header_max_size": 1000,
+            "uri_max_size": 3,
+            "payload_max_size": 2000
+        },
+        {
+            "ip": "::1",
+            "port": 8001,
+            "server_name": "localhost",
+            "root": "./tests/configs/",
+            "default_file": "hello.html"
+        }
+    ]
+}

@@ -37,7 +37,7 @@ namespace http
                     std::string& root, std::string& ssl_cert,
                     std::string& ssl_key, size_t header_max_size,
                     size_t uri_max_size, size_t payload_max_size,
-                    std::string& default_file);
+                    std::string& default_file, bool auto_index);
         VHostConfig() = default;
         VHostConfig(const VHostConfig&) = default;
         VHostConfig& operator=(const VHostConfig&) = default;
@@ -58,7 +58,7 @@ namespace http
         size_t uri_max_size_ = 0;
         size_t payload_max_size_ = 0;
         std::string default_file_;
-
+        bool auto_index_;
 
         int no_ssl = 0;
     };
