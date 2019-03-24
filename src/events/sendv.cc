@@ -8,7 +8,8 @@
 
 namespace http
 {
-    SendEv::SendEv(shared_socket socket, shared_vhost vhost, std::shared_ptr<Response> resp)
+    SendEv::SendEv(shared_socket socket, shared_vhost vhost,
+                   std::shared_ptr<Response> resp)
         : EventWatcher(socket->fd_get()->fd_, EV_WRITE)
         , sock_{socket}
         , vhost_{vhost}
@@ -68,14 +69,22 @@ namespace http
             if (fd == -1)
             {
                 clean_send();
-            }
-            else
+            } else
             {
-                struct stat st;
-                if (sys::fstat(fd, &st) == -1)
-                    std::cerr << "fstat: fail\n";
-                clean_send();
-                sock_->sendfile(f, p, st.st_size);
+                try
+                {
+                    struct stat st;
+                    if (sys::fstat(fd, &st) == -1)
+                        std::cerr << "fstat: fail\n";
+                    clean_send();
+                    sock_->sendfile(f, p, st.st_size);
+                } catch (const std::exception& e)
+                {
+                    std::cerr << e.what() << '\n';
+                    sock_->~Socket();
+                    event_register.unregister_ew(this);
+                    return;
+                }
             }
         }
     }

@@ -2,22 +2,18 @@
     "vhosts": [
         {
             "ip": "127.0.0.1",
-            "port": 8000,
+            "port": 8002,
             "server_name": "localhost",
             "root": ".",
-            "uri_max_size": 0,
-            "payload_max_size": 0,
-            "header_max_size": 0
+            "ssl_cert": "./tests/cert/localhost.pem",
+            "ssl_key": "./tests/cert/localhost-key.pem"
+
         },
         {
             "ip": "::1",
-            "port": 8001,
+            "port": 8003,
             "server_name": "localhost",
             "root": "./tests/configs/",
-
-            "uri_max_size": 0,
-            "payload_max_size": 0,
-            "header_max_size": 0,
             "default_file": "hello.html"
         }
     ]

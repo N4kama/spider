@@ -4,7 +4,6 @@
 
 #include "../main.hh"
 #include "socket/ssl-socket.hh"
-
 #include "vhost-factory.hh"
 
 namespace http
@@ -46,8 +45,21 @@ namespace http
     int Dispatcher::dispatch_request(shared_socket& s)
     {
         shared_vhost v = find_vhost(s);
-        event_register.register_ew<http::RecvEv, shared_socket, shared_vhost>(
-            std::forward<shared_socket>(s), std::forward<shared_vhost>(v));
+        if (v->conf_get().no_ssl == 1)
+        {
+            event_register
+                .register_ew<http::RecvEv, shared_socket, shared_vhost>(
+                    std::forward<shared_socket>(s),
+                    std::forward<shared_vhost>(v));
+        }
+        else
+        {
+            event_register
+                .register_ew<http::RecvEv, shared_socket, shared_vhost>(
+                    std::make_shared<SSLSocket>(s->fd_get(), v->get_ctx()),
+                    std::forward<shared_vhost>(v));
+        }
+        
         return 0;
     }
 } // namespace http
