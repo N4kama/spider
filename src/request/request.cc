@@ -65,16 +65,38 @@ namespace http
     void Request::get_path()
     {
         path_info.first = config_ptr->root_ + uri;
-        if (path_info.first[path_info.first.length() - 1] == '/')
-            path_info.first += config_ptr->default_file_;
         struct stat buf;
-        if (!stat(path_info.first.c_str(), &buf))
+        int flags = S_IROTH + S_IRGRP + S_IRUSR;
+
+        if (path_info.first[path_info.first.length() - 1] == '/')
         {
-            int flags = S_IROTH + S_IRGRP + S_IRUSR;
-            if (buf.st_mode & flags)
-                path_info.second = buf.st_size;
+            auto tmp = path_info.first + config_ptr->default_file_;
+            if (!stat(tmp.c_str(), &buf))
+            {
+                if (buf.st_mode & flags)
+                    path_info.second = buf.st_size;
+                else
+                    path_info.second = -403;
+                path_info.first = tmp;
+            }
             else
-                path_info.second = -403;
+            {
+                if (!config_ptr->auto_index_)
+                {
+                    path_info.first = tmp;
+                    path_info.second = -404;
+                }
+            }
+        }
+        else
+        {
+            if (!stat(path_info.first.c_str(), &buf))
+            {
+                if (buf.st_mode & flags)
+                    path_info.second = buf.st_size;
+                else
+                    path_info.second = -403;
+            }
         }
     }
 
