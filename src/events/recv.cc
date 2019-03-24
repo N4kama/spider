@@ -59,13 +59,15 @@ namespace http
             {
                 header += body;
                 Request req = Request(header);
-                Connection cnx = Connection();
-                cnx.req_ = req;
-                cnx.sock_ = sock_;
-                cnx.req_.config_ptr =
+                req.config_ptr =
                     std::make_shared<VHostConfig>(vhost_->get_conf());
-                cnx.req_.get_path();
-                vhost_->respond(cnx.req_, cnx, 0, 0);
+                req.get_path();
+                event_register
+                    .register_ew<http::SendEv, http::shared_socket,
+                                 shared_vhost, std::shared_ptr<Response>>(
+                        std::forward<shared_socket>(sock_),
+                        std::forward<shared_vhost>(vhost_),
+                        std::make_shared<Response>(req));
                 event_register.unregister_ew(this);
             }
             return;
@@ -93,13 +95,15 @@ namespace http
                 } else
                 {
                     Request req = Request(header);
-                    Connection cnx = Connection();
-                    cnx.req_ = req;
-                    cnx.sock_ = sock_;
-                    cnx.req_.config_ptr =
+                    req.config_ptr =
                         std::make_shared<VHostConfig>(vhost_->get_conf());
-                    cnx.req_.get_path();
-                    vhost_->respond(cnx.req_, cnx, 0, 0);
+                    req.get_path();
+                    event_register
+                        .register_ew<http::SendEv, http::shared_socket,
+                                     shared_vhost, std::shared_ptr<Response>>(
+                            std::forward<shared_socket>(sock_),
+                            std::forward<shared_vhost>(vhost_),
+                            std::make_shared<Response>(req));
                     event_register.unregister_ew(this);
                 }
             }

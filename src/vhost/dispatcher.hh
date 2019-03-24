@@ -45,8 +45,7 @@ namespace http
 
         // Dispatcher is a global variable which stores the server config
     };
-    void get_port(Connection& cnx);
-    shared_vhost find_vhost(Connection& cnx);
+    shared_vhost find_vhost(shared_socket s);
 
     /**
      * \brief Service object.

@@ -31,7 +31,6 @@ namespace http
 
         // Client socket
         shared_socket sock_;
-        shared_vhost vhost_;
         u_int16_t port;
         std::string host;
         // Request from client

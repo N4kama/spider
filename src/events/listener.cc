@@ -3,7 +3,6 @@
 #include <events/register.hh>
 #include <vhost/connection.hh>
 #include "../main.hh"
-#include "callbacks.hh"
 
 namespace http
 {
