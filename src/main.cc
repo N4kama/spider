@@ -17,6 +17,8 @@ namespace http
         {
             http::ServerConfig config = http::parse_configuration(arg);
             SSL_library_init();
+            SSL_load_error_strings();
+            OpenSSL_add_all_algorithms();
             for (unsigned i = 0; i < config.vhosts_.size(); i++)
             {
                 dispatcher.add_vhost(config.vhosts_.at(i));

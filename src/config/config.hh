@@ -33,12 +33,11 @@ namespace http
      */
     struct VHostConfig
     {
-        VHostConfig(const std::string& ip, const int port,
-                    const std::string& server_name, const std::string& root,
-                    const size_t header_max_size,
-                    const size_t uri_max_size,
-                    const size_t payload_max_size,
-                    const std::string& default_file);
+        VHostConfig(std::string& ip, int port, std::string& server_name,
+                    std::string& root, std::string& ssl_cert,
+                    std::string& ssl_key, size_t header_max_size,
+                    size_t uri_max_size, size_t payload_max_size,
+                    std::string& default_file);
         VHostConfig() = default;
         VHostConfig(const VHostConfig&) = default;
         VHostConfig& operator=(const VHostConfig&) = default;
@@ -49,14 +48,19 @@ namespace http
 
         void print_VHostConfig(void);
 
-        const std::string ip_;
-        const int port_ = 80;
-        const std::string server_name_;
-        const std::string root_;
-        const size_t header_max_size_ = 0;
-        const size_t uri_max_size_ = 0;
-        const size_t payload_max_size_ = 0;
-        const std::string default_file_;
+        std::string ip_;
+        int port_ = 80;
+        std::string server_name_;
+        std::string root_;
+        std::string ssl_cert_;
+        std::string ssl_key_;
+        size_t header_max_size_ = 0;
+        size_t uri_max_size_ = 0;
+        size_t payload_max_size_ = 0;
+        std::string default_file_;
+
+
+        int no_ssl = 0;
     };
 
     /**

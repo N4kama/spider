@@ -3,22 +3,25 @@ using json = nlohmann::json;
 
 namespace http
 {
-    VHostConfig::VHostConfig(const std::string& ip, const int port,
-                             const std::string& server_name,
-                             const std::string& root,
-                             const size_t header_max_size,
-                             const size_t uri_max_size,
-                             const size_t payload_max_size,
-                             const std::string& default_file)
+    VHostConfig::VHostConfig(std::string& ip, int port,
+                             std::string& server_name, std::string& root,
+                             std::string& ssl_cert, std::string& ssl_key,
+                             size_t header_max_size, size_t uri_max_size,
+                             size_t payload_max_size, std::string& default_file)
         : ip_(ip)
         , port_(port)
         , server_name_(server_name)
         , root_(root)
+        , ssl_cert_(ssl_cert)
+        , ssl_key_(ssl_key)
         , header_max_size_(header_max_size)
         , uri_max_size_(uri_max_size)
         , payload_max_size_(payload_max_size)
         , default_file_(default_file)
-    {}
+    {
+        if (ssl_cert == "" || ssl_key == "")
+            no_ssl = 1;
+    }
 
     void VHostConfig::print_VHostConfig(void)
     {
@@ -113,8 +116,7 @@ namespace http
                 try
                 {
                     header_max_size_i = cur.at("header_max_size").get<size_t>();
-                }
-                catch(const std::exception& e)
+                } catch (const std::exception& e)
                 {
                     header_max_size_i = 0;
                 }
@@ -122,17 +124,32 @@ namespace http
                 try
                 {
                     uri_max_size_i = cur.at("uri_max_size").get<size_t>();
-                }
-                catch(const std::exception& e)
+                } catch (const std::exception& e)
                 {
                     uri_max_size_i = 0;
+                }
+                std::string ssl_cert_i;
+                try
+                {
+                    ssl_cert_i = cur.at("ssl_cert").get<std::string>();
+                } catch (const std::exception& e)
+                {
+                    ssl_cert_i = "";
+                }
+                std::string ssl_key_i;
+                try
+                {
+                    ssl_key_i = cur.at("ssl_key").get<std::string>();
+                } catch (const std::exception& e)
+                {
+                    ssl_key_i = "";
                 }
                 size_t payload_max_size_i;
                 try
                 {
-                    payload_max_size_i = cur.at("payload_max_size").get<size_t>();
-                }
-                catch(const std::exception& e)
+                    payload_max_size_i =
+                        cur.at("payload_max_size").get<size_t>();
+                } catch (const std::exception& e)
                 {
                     payload_max_size_i = 0;
                 }
@@ -145,15 +162,15 @@ namespace http
                     {
                         def_s = std::string("index.html");
                     }
-                }
-                catch(const std::exception& e)
+                } catch (const std::exception& e)
                 {
                     def_s = std::string("index.html");
                 }
 
                 VHostConfig v =
-                    VHostConfig(ip_s, port_i, serv_s, root_s, header_max_size_i,
-                        uri_max_size_i, payload_max_size_i, def_s);
+                    VHostConfig(ip_s, port_i, serv_s, root_s, ssl_cert_i,
+                                ssl_key_i, header_max_size_i, uri_max_size_i,
+                                payload_max_size_i, def_s);
                 c.vhosts_.emplace_back(v);
             } else
             {
