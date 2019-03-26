@@ -28,7 +28,7 @@ namespace http
     ssize_t SSLSocket::recv(void* dst, size_t len)
     {
         size_t res;
-        while ((res = SSL_read(ssl_.get(), dst, len)) <= 0)
+        while ((res = ssl::read(ssl_.get(), dst, len)) <= 0)
             ;
         return res;
     }
