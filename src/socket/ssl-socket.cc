@@ -1,5 +1,5 @@
 #include "socket/ssl-socket.hh"
-
+#include "misc/openssl/ssl.hh"
 namespace http
 {
     SSLSocket::SSLSocket(int domain, int type, int protocol, SSL_CTX* ssl_ctx)
@@ -43,17 +43,17 @@ namespace http
 
     ssize_t SSLSocket::sendfile(misc::shared_fd& in_fd, off_t& offset, size_t c)
     {
-        return sys::sendfile(*fd_, *in_fd, &offset, c);
+        return sys::sendfile(*fd_, *in_fd, &offset, c); //td
     }
 
     void SSLSocket::bind(const sockaddr* addr, socklen_t addrlen)
     {
-        sys::bind(*fd_, addr, addrlen);
+        sys::bind(*fd_, addr, addrlen); //ok
     }
 
     void SSLSocket::listen(int backlog)
     {
-        sys::listen(*fd_, backlog);
+        sys::listen(*fd_, backlog); //ok
     }
 
     void SSLSocket::setsockopt(int level, int optname, int optval)
@@ -77,3 +77,6 @@ namespace http
         return sys::fcntl_wrapper(fd_->fd_, O_NONBLOCK);
     }
 } // namespace http
+
+//ctx mthd 23 ou tls
+//send file
