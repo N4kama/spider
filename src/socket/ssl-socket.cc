@@ -36,7 +36,7 @@ namespace http
     ssize_t SSLSocket::send(const void* dst, size_t len)
     {
         size_t res;
-        while ((res = SSL_write(ssl_.get(), dst, len)) <= 0)
+        while ((res = ssl::write(ssl_.get(), dst, len)) <= 0)
             ;
         return res;
     }
