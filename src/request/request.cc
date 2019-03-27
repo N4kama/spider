@@ -81,11 +81,8 @@ namespace http
             }
             else
             {
-                if (!config_ptr->auto_index_)
-                {
-                    path_info.first = tmp;
-                    path_info.second = -404;
-                }
+                if (config_ptr->auto_index_)
+                    path_info.second = -1;
             }
         }
         else
