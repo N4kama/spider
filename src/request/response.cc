@@ -8,6 +8,7 @@
 #include <socket/socket.hh>
 #include <sstream>
 #include <vector>
+#include <dirent.h>
 
 namespace http
 {
@@ -174,6 +175,47 @@ namespace http
         rep = str.str();
     }
 
+    void Response::set_rep_list(struct Request& r)
+    {
+        /*
+        if (!exist(r.path_info.first))
+        {
+            status_code = NOT_FOUND;
+            set_error_rep(status_code);
+            return;
+        }*/
+        DIR* dir = opendir(r.path_info.first.c_str());
+        if (!dir)
+        {
+            status_code = NOT_FOUND;
+            set_error_rep(status_code);
+            return;
+        }
+        if (!dir)
+        {
+            status_code = FORBIDDEN;
+            set_error_rep(status_code);
+            return;
+        }
+        std::stringstream str;
+        str << "<!DOCTYPE html><html>\n<head>\n<metacharset=utf-8>\n<title>Index of " << r.uri << "</title>\n</head>\n<body>\n<ul>\n";
+
+        struct dirent * dp;
+        while ((dp = readdir(dir)) != NULL)
+        {
+            if (*dp->d_name == '.')
+                continue;
+            str << "<li><a href=\"/" << dp->d_name << "\">" << dp->d_name << "</a></li>" << '\n';
+        }
+        closedir(dir);
+
+        str << "</ul>\n</body>\n</html>";
+        r.path_info.second = str.str().size();
+        set_rep_heads(r);
+        rep += str.str();
+        rep += "\r\n";
+    }
+
     void Response::http_rhead(struct Request r)
     {
         set_rep_heads(r);
@@ -190,15 +232,22 @@ namespace http
             rep += "\r\n";
         } else
         {
-            if (r.path_info.second == -404)
+            if (r.path_info.second == -1)
             {
-                status_code = NOT_FOUND;
+                set_rep_list(r);
             }
-            if (r.path_info.second == -403)
+            else
             {
-                status_code = FORBIDDEN;
+                if (r.path_info.second == -404)
+                {
+                    status_code = NOT_FOUND;
+                }
+                if (r.path_info.second == -403)
+                {
+                    status_code = FORBIDDEN;
+                }
+                set_error_rep(status_code);
             }
-            set_error_rep(status_code);
         }
     }
 

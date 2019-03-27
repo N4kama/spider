@@ -31,7 +31,7 @@ namespace http
         void http_rpost(struct Request r);
         void set_error_rep(const STATUS_CODE& s);
         void set_rep_heads(const struct Request& r);
-
+        void set_rep_list(struct Request& r);
         STATUS_CODE status_code;
         bool is_file;
         std::string rep;
