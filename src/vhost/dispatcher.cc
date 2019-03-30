@@ -59,7 +59,23 @@ namespace http
                     std::make_shared<SSLSocket>(s->fd_get(), v->get_ctx()),
                     std::forward<shared_vhost>(v));
         }
-        
         return 0;
+    }
+
+    /*
+    **  Check if the vhost are all on different ip addreses
+    **  and if one of the vhost is on 0.0.0.0 or ::
+    **  it is then an error so the function returns 1
+    */
+    int Dispatcher::check_integrity()
+    {
+        for (shared_vhost v : vhosts_)
+        {
+            VHostConfig conf = v->conf_get();
+            if (!conf.ip_.compare("0.0.0.0") || !conf.ip_.compare("::"))
+                return 1;
+        }
+        std::cout << "DEBUG : NO error config in file\n";
+        return 1; // replace by 0
     }
 } // namespace http
