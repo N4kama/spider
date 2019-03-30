@@ -68,12 +68,6 @@ namespace http
     */
     int Dispatcher::check_integrity()
     {
-        for (shared_vhost v : vhosts_)
-        {
-            VHostConfig conf = v->conf_get();
-            if (!conf.ip_.compare("0.0.0.0") || !conf.ip_.compare("::"))
-                return 1;
-        }
         for (size_t i = 0; i < vhosts_.size() - 1; i++)
         {
             VHostConfig conf1 = vhosts_[i]->conf_get();
