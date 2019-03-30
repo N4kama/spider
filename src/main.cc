@@ -15,6 +15,7 @@ namespace http
     {
         try
         {
+            OpenSSL_add_all_algorithms();
 
 
             http::ServerConfig config = http::parse_configuration(arg);
