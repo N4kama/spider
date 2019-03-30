@@ -68,7 +68,7 @@ namespace http
         struct stat buf;
         int flags = S_IROTH + S_IRGRP + S_IRUSR;
 
-        if (path_info.first[path_info.first.length() - 1] == '/')
+        if (!stat(path_info.first.c_str(), &buf) && buf.st_mode & S_IFDIR)
         {
             auto tmp = path_info.first + config_ptr->default_file_;
             if (!stat(tmp.c_str(), &buf))
