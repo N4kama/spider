@@ -51,8 +51,7 @@ namespace http
                 .register_ew<http::RecvEv, shared_socket, shared_vhost>(
                     std::forward<shared_socket>(s),
                     std::forward<shared_vhost>(v));
-        }
-        else
+        } else
         {
             event_register
                 .register_ew<http::RecvEv, shared_socket, shared_vhost>(
@@ -74,6 +73,16 @@ namespace http
             VHostConfig conf = v->conf_get();
             if (!conf.ip_.compare("0.0.0.0") || !conf.ip_.compare("::"))
                 return 1;
+        }
+        for (size_t i = 0; i < vhosts_.size() - 1; i++)
+        {
+            VHostConfig conf1 = vhosts_[i]->conf_get();
+            for (size_t j = i + 1; j < vhosts_.size(); j++)
+            {
+                VHostConfig conf2 = vhosts_[j]->conf_get();
+                if (conf1.port_ == conf2.port_)
+                    return 1;
+            }
         }
         return 0;
     }
