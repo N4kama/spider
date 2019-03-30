@@ -75,7 +75,6 @@ namespace http
             if (!conf.ip_.compare("0.0.0.0") || !conf.ip_.compare("::"))
                 return 1;
         }
-        std::cout << "DEBUG : NO error config in file\n";
-        return 1; // replace by 0
+        return 0;
     }
 } // namespace http
