@@ -16,7 +16,7 @@ namespace http
 
     SSLSocket::SSLSocket(const misc::shared_fd& fd, SSL_CTX* ssl_ctx)
         : Socket{fd}
-        , ssl_{SSL_new(ssl_ctx), &SSL_free} //ko
+        , ssl_{SSL_new(ssl_ctx), &SSL_free}
     {
         set_non_block();
         setsockopt(SOL_SOCKET, SO_REUSEPORT, 1);
@@ -25,7 +25,7 @@ namespace http
         SSL_accept(ssl_.get());
     }
 
-    ssize_t SSLSocket::recv(void* dst, size_t len) //ko
+    ssize_t SSLSocket::recv(void* dst, size_t len)
     {
         size_t res;
         while ((res = ssl::read(ssl_.get(), dst, len)) <= 0)
@@ -43,17 +43,17 @@ namespace http
 
     ssize_t SSLSocket::sendfile(misc::shared_fd& in_fd, off_t& offset, size_t c)
     {
-        return sys::sendfile(*fd_, *in_fd, &offset, c); //td
+        return sys::sendfile(*fd_, *in_fd, &offset, c);
     }
 
     void SSLSocket::bind(const sockaddr* addr, socklen_t addrlen)
     {
-        sys::bind(*fd_, addr, addrlen); //ok
+        sys::bind(*fd_, addr, addrlen);
     }
 
     void SSLSocket::listen(int backlog)
     {
-        sys::listen(*fd_, backlog); //ok
+        sys::listen(*fd_, backlog);
     }
 
     void SSLSocket::setsockopt(int level, int optname, int optval)
@@ -61,13 +61,13 @@ namespace http
         sys::setsockopt(*fd_, level, optname, &optval, sizeof(int));
     }
 
-    shared_socket SSLSocket::accept(sockaddr* addr, socklen_t* addrlen) //ko
+    shared_socket SSLSocket::accept(sockaddr* addr, socklen_t* addrlen)
     {
         return std::make_shared<SSLSocket>(
             std::make_shared<misc::FileDescriptor>(
                 sys::accept(*fd_, addr, addrlen)), nullptr);
     }
-    void SSLSocket::connect(const sockaddr* addr, socklen_t l) //ko
+    void SSLSocket::connect(const sockaddr* addr, socklen_t l)
     {
         addr++;
         int okk = l;
