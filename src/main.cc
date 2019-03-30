@@ -19,10 +19,15 @@ namespace http
             SSL_library_init();
             SSL_load_error_strings();
             OpenSSL_add_all_algorithms();
+
+            //fills the dispatcher with the vhosts
             for (unsigned i = 0; i < config.vhosts_.size(); i++)
             {
                 dispatcher.add_vhost(config.vhosts_.at(i));
             }
+
+            //TODO check integrity
+
             std::vector<std::shared_ptr<http::ListenerEW>> listeners =
                 std::vector<std::shared_ptr<http::ListenerEW>>();
             for (unsigned i = 0; i < config.vhosts_.size(); i++)
