@@ -25,9 +25,9 @@ namespace http
             {
                 dispatcher.add_vhost(config.vhosts_.at(i));
             }
-
-            //TODO check integrity
-
+            //Check the integrity of the vhosts stored in dispatcher
+            if (dispatcher.check_integrity())
+                return 1;
             std::vector<std::shared_ptr<http::ListenerEW>> listeners =
                 std::vector<std::shared_ptr<http::ListenerEW>>();
             for (unsigned i = 0; i < config.vhosts_.size(); i++)
