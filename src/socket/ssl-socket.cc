@@ -16,7 +16,7 @@ namespace http
 
     SSLSocket::SSLSocket(const misc::shared_fd& fd, SSL_CTX* ssl_ctx)
         : Socket{fd}
-        , ssl_{SSL_new(ssl_ctx), &SSL_free}
+        , ssl_{SSL_new(ssl_ctx), &SSL_free} //ko
     {
         set_non_block();
         setsockopt(SOL_SOCKET, SO_REUSEPORT, 1);
@@ -25,7 +25,7 @@ namespace http
         SSL_accept(ssl_.get());
     }
 
-    ssize_t SSLSocket::recv(void* dst, size_t len)
+    ssize_t SSLSocket::recv(void* dst, size_t len) //ko
     {
         size_t res;
         while ((res = ssl::read(ssl_.get(), dst, len)) <= 0)
@@ -61,15 +61,19 @@ namespace http
         sys::setsockopt(*fd_, level, optname, &optval, sizeof(int));
     }
 
-    shared_socket SSLSocket::accept(sockaddr* addr, socklen_t* addrlen)
+    shared_socket SSLSocket::accept(sockaddr* addr, socklen_t* addrlen) //ko
     {
         return std::make_shared<SSLSocket>(
             std::make_shared<misc::FileDescriptor>(
                 sys::accept(*fd_, addr, addrlen)), nullptr);
     }
-    void SSLSocket::connect(const sockaddr* addr, socklen_t l)
+    void SSLSocket::connect(const sockaddr* addr, socklen_t l) //ko
     {
-        sys::connect(*fd_, addr, l);
+        addr++;
+        int okk = l;
+        okk++;
+        ssl::connect(ssl_.get());
+        //sys::connect(*fd_, addr, l);
     }
 
     int SSLSocket::set_non_block()
@@ -77,6 +81,3 @@ namespace http
         return sys::fcntl_wrapper(fd_->fd_, O_NONBLOCK);
     }
 } // namespace http
-
-//ctx mthd 23 ou tls
-//send file
