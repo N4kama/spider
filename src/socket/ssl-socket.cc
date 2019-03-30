@@ -69,11 +69,13 @@ namespace http
     }
     void SSLSocket::connect(const sockaddr* addr, socklen_t l)
     {
+        /*
         addr++;
         int okk = l;
         okk++;
         ssl::connect(ssl_.get());
-        //sys::connect(*fd_, addr, l);
+        */
+        sys::connect(*fd_, addr, l);
     }
 
     int SSLSocket::set_non_block()
