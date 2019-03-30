@@ -37,6 +37,8 @@ namespace http
             return vhosts_.size();
         }
 
+        int check_integrity();
+
     private:
         /* FIXME: Add members to store the information relative to the
          ** Dispatcher.
