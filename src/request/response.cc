@@ -199,7 +199,7 @@ namespace http
         }
         std::stringstream str;
         str << "<!DOCTYPE html><html>\n<head>\n<metacharset=utf-8>\n<title>Index of " << r.uri << "</title>\n</head>\n<body>\n<ul>\n";
-
+        str << "<li><a href=\"/..\">..</a></li>" << '\n';
         struct dirent * dp;
         while ((dp = readdir(dir)) != NULL)
         {
