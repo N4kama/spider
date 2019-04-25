@@ -44,56 +44,22 @@ namespace http
 
     void RecvEv::operator()()
     {
-        if (filled != 0)
+        try
         {
-            char c = ' ';
-            if (sock_->recv(&c, 1) > 0)
+            if (filled != 0)
             {
-                body.append(1, c);
-            } else
-            {
-                std::cerr << "Client Disconected\n";
-                event_register.unregister_ew(this);
-            }
-            if (filled == body.length())
-            {
-                header += body;
-                Request req = Request(header);
-                req.config_ptr =
-                    std::make_shared<VHostConfig>(vhost_->get_conf());
-                req.get_path();
-                event_register
-                    .register_ew<http::SendEv, http::shared_socket,
-                                 shared_vhost, std::shared_ptr<Response>>(
-                        std::forward<shared_socket>(sock_),
-                        std::forward<shared_vhost>(vhost_),
-                        std::make_shared<Response>(req));
-                event_register.unregister_ew(this);
-            }
-            return;
-        }
-        if (filled == 0)
-        {
-            char c = ' ';
-            if (sock_->recv(&c, 1) > 0)
-            {
-                header.append(1, c);
-            } else
-            {
-                std::cerr << "Client Disconected\n";
-                event_register.unregister_ew(this);
-            }
-            if (endby(header, std::string("\r\n\r\n")))
-            {
-                auto pos = header.find("Content-Length: ");
-                if (pos != std::string::npos)
+                char c = ' ';
+                if (sock_->recv(&c, 1) > 0)
                 {
-                    pos += 16;
-                    int value = read_int(header, pos);
-                    std::cout << "atoi: " << value << "\n";
-                    filled = value;
+                    body.append(1, c);
                 } else
                 {
+                    std::cerr << "Client Disconected\n";
+                    event_register.unregister_ew(this);
+                }
+                if (filled == body.length())
+                {
+                    header += body;
                     Request req = Request(header);
                     req.config_ptr =
                         std::make_shared<VHostConfig>(vhost_->get_conf());
@@ -106,7 +72,46 @@ namespace http
                             std::make_shared<Response>(req));
                     event_register.unregister_ew(this);
                 }
+                return;
             }
+            if (filled == 0)
+            {
+                char c = ' ';
+                if (sock_->recv(&c, 1) > 0)
+                {
+                    header.append(1, c);
+                } else
+                {
+                    std::cerr << "Client Disconected\n";
+                    event_register.unregister_ew(this);
+                }
+                if (endby(header, std::string("\r\n\r\n")))
+                {
+                    auto pos = header.find("Content-Length: ");
+                    if (pos != std::string::npos)
+                    {
+                        pos += 16;
+                        int value = read_int(header, pos);
+                        std::cout << "atoi: " << value << "\n";
+                        filled = value;
+                    } else
+                    {
+                        Request req = Request(header);
+                        req.config_ptr =
+                            std::make_shared<VHostConfig>(vhost_->get_conf());
+                        req.get_path();
+                        event_register.register_ew<
+                            http::SendEv, http::shared_socket, shared_vhost,
+                            std::shared_ptr<Response>>(
+                            std::forward<shared_socket>(sock_),
+                            std::forward<shared_vhost>(vhost_),
+                            std::make_shared<Response>(req));
+                        event_register.unregister_ew(this);
+                    }
+                }
+            }
+        } catch (const std::exception& e)
+        {
         }
     }
 } // namespace http
