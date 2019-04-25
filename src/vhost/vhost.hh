@@ -87,6 +87,6 @@ namespace http
          */
         std::unique_ptr<SSL_CTX, decltype(SSL_CTX_free)*> ssl_ctx_;
     };
-
+    int sni_cb(SSL* s, int* , http::VHost* arg);
     using shared_vhost = std::shared_ptr<VHost>;
 } // namespace http

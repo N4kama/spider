@@ -35,6 +35,14 @@ namespace http
             if (dispatcher.get_vhost(i)->get_conf().port_ == port
                 && dispatcher.get_vhost(i)->get_conf().ip_ == host)
             {
+                /*if (ssl)
+                {
+                    SSL_CTX_set_tlsext_servername_callback(dispatcher.get_vhost(i)->get_ctx(),
+                                                           sni_cb);
+                    SSL_CTX_set_tlsext_servername_arg(dispatcher.get_vhost(i)->get_ctx(),
+                    static_cast<void*>(&dispatcher.get_vhost(i)->get_conf().server_name_)
+                    );
+                }*/
                 res = dispatcher.get_vhost(i);
                 break;
             }
@@ -80,4 +88,6 @@ namespace http
         }
         return 0;
     }
+
+
 } // namespace http
