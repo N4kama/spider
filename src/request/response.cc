@@ -184,17 +184,18 @@ namespace http
             set_error_rep(status_code);
             return;
         }
-        if (r.path_info.first[r.path_info.first.size() - 1] == '/')
-            r.path_info.first.erase(r.path_info.first.size() - 1);
         std::stringstream str;
-        str << "<!DOCTYPE html><html>\n<head>\n<metacharset=utf-8>\n<title>Index of " << r.uri << "</title>\n</head>\n<body>\n<ul>\n";
+        str << "<!DOCTYPE html><html>\n<head>\n<metacharset=utf-8>\n<title>Index of " << r.path_info.first << "</title>\n</head>\n<body>\n<ul>\n";
         str << "<li><a href=\"/..\">..</a></li>" << '\n';
         struct dirent * dp;
         while ((dp = readdir(dir)) != NULL)
         {
             if (*dp->d_name == '.')
                 continue;
-            str << "<li><a href=\"/" << r.path_info.first + '/' + dp->d_name << "\">" << dp->d_name << "</a></li>" << '\n';
+            str << "<li><a href=\"" << r.uri;
+            if (r.uri[r.uri.size() - 1] != '/') 
+                str << "/";
+            str << dp->d_name << "\">" << dp->d_name << "</a></li>" << '\n';
         }
         closedir(dir);
 
