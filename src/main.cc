@@ -8,7 +8,7 @@
 
 namespace http
 {
-    /* Dispatcher is routing the requests to the corresponding vhost */
+    // Dispatcher is routing the requests to the corresponding vhost
     http::Dispatcher dispatcher = http::Dispatcher();
 
     int start_server(std::string arg)
@@ -66,6 +66,7 @@ namespace http
             {
                 event_register.unregister_ew(listeners.at(i).get());
             }
+            EVP_cleanup();
         } catch (const std::exception& e)
         {
             std::cerr << e.what() << "\n";
