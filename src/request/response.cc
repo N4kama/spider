@@ -177,13 +177,6 @@ namespace http
 
     void Response::set_rep_list(struct Request& r)
     {
-        /*
-        if (!exist(r.path_info.first))
-        {
-            status_code = NOT_FOUND;
-            set_error_rep(status_code);
-            return;
-        }*/
         DIR* dir = opendir(r.path_info.first.c_str());
         if (!dir)
         {
@@ -191,12 +184,8 @@ namespace http
             set_error_rep(status_code);
             return;
         }
-        if (!dir)
-        {
-            status_code = FORBIDDEN;
-            set_error_rep(status_code);
-            return;
-        }
+        if (r.path_info.first[r.path_info.first.size() - 1] == '/')
+            r.path_info.first.erase(r.path_info.first.size() - 1);
         std::stringstream str;
         str << "<!DOCTYPE html><html>\n<head>\n<metacharset=utf-8>\n<title>Index of " << r.uri << "</title>\n</head>\n<body>\n<ul>\n";
         str << "<li><a href=\"/..\">..</a></li>" << '\n';
@@ -205,7 +194,7 @@ namespace http
         {
             if (*dp->d_name == '.')
                 continue;
-            str << "<li><a href=\"/" << dp->d_name << "\">" << dp->d_name << "</a></li>" << '\n';
+            str << "<li><a href=\"/" << r.path_info.first + '/' + dp->d_name << "\">" << dp->d_name << "</a></li>" << '\n';
         }
         closedir(dir);
 

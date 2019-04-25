@@ -81,8 +81,13 @@ namespace http
             }
             else
             {
-                if (config_ptr->auto_index_)
-                    path_info.second = -1;
+                if (!stat(path_info.first.c_str(), &buf) && config_ptr->auto_index_)
+               {
+                   if (buf.st_mode & S_IRUSR) 
+                        path_info.second = -1;
+                    else
+                        path_info.second = -403;
+               } 
             }
         }
         else
