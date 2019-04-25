@@ -1,4 +1,5 @@
 #include "socket/ssl-socket.hh"
+
 #include "misc/openssl/ssl.hh"
 namespace http
 {
@@ -11,7 +12,6 @@ namespace http
         setsockopt(SOL_SOCKET, SO_REUSEPORT, 1);
         setsockopt(SOL_SOCKET, SO_REUSEADDR, 1);
         SSL_set_fd(ssl_.get(), fd_->fd_);
-        SSL_accept(ssl_.get());
     }
 
     SSLSocket::SSLSocket(const misc::shared_fd& fd, SSL_CTX* ssl_ctx)
@@ -22,23 +22,26 @@ namespace http
         setsockopt(SOL_SOCKET, SO_REUSEPORT, 1);
         setsockopt(SOL_SOCKET, SO_REUSEADDR, 1);
         SSL_set_fd(ssl_.get(), fd_->fd_);
-        SSL_accept(ssl_.get());
     }
 
     ssize_t SSLSocket::recv(void* dst, size_t len)
     {
-        size_t res;
-        while ((res = ssl::read(ssl_.get(), dst, len)) <= 0)
-            ;
-        return res;
+        if (!SSL_accept(ssl_.get()))
+            return -1;
+        int r = ssl::read(ssl_.get(), (char*)dst, len);
+        if (r <= 0)
+            return -1;
+        return r;
     }
 
     ssize_t SSLSocket::send(const void* dst, size_t len)
     {
-        size_t res;
-        while ((res = ssl::write(ssl_.get(), dst, len)) <= 0)
-            ;
-        return res;
+        if (!SSL_accept(ssl_.get()))
+            return -1;
+        int r = ssl::write(ssl_.get(), (char*)dst, len);
+        if (r <= 0)
+            return -1;
+        return r;
     }
 
     ssize_t SSLSocket::sendfile(misc::shared_fd& in_fd, off_t& offset, size_t c)
@@ -65,7 +68,8 @@ namespace http
     {
         return std::make_shared<SSLSocket>(
             std::make_shared<misc::FileDescriptor>(
-                sys::accept(*fd_, addr, addrlen)), nullptr);
+                sys::accept(*fd_, addr, addrlen)),
+            nullptr);
     }
     void SSLSocket::connect(const sockaddr* addr, socklen_t l)
     {
