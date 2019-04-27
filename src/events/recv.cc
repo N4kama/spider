@@ -55,7 +55,7 @@ namespace http
                 } else
                 {
                     std::cerr << "Client Disconected\n";
-                    //event_register.unregister_ew(this);
+                    // event_register.unregister_ew(this);
                 }
                 if (filled == body.length())
                 {
@@ -76,15 +76,18 @@ namespace http
             }
             if (filled == 0)
             {
-                char c[1024];
-                if (sock_->recv(&c, 1024) > 0)
+                char c[4096] = {0,};
+                if (sock_->recv(&c, 1) > 0)
                 {
-                    //header.append(1024, *c);
-                    header += c;
+                    if (sock_->is_ssl())
+                        header += c;
+                    else
+                        header.append(1, *c);
                 } else
                 {
+                    if (!sock_->is_ssl())
+                        event_register.unregister_ew(this);
                     std::cerr << "Client Disconected\n";
-                    //event_register.unregister_ew(this);
                 }
                 if (endby(header, std::string("\r\n\r\n")))
                 {
@@ -112,7 +115,6 @@ namespace http
                 }
             }
         } catch (const std::exception& e)
-        {
-        }
+        {}
     }
 } // namespace http

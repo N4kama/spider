@@ -11,6 +11,7 @@ namespace http
         set_non_block();
         SSL_set_fd(ssl_.get(), fd_->fd_);
         ssl::accept(ssl_.get());
+        is_ssl_ = true;
     }
 
     SSLSocket::SSLSocket(const misc::shared_fd& fd, SSL_CTX* ssl_ctx)
@@ -20,31 +21,35 @@ namespace http
         set_non_block();
         SSL_set_fd(ssl_.get(), fd_->fd_);
         ssl::accept(ssl_.get());
+        is_ssl_ = true;
     }
 
     ssize_t SSLSocket::recv(void* dst, size_t)
     {
-        ssl::accept(ssl_.get());
         SSL_accept(ssl_.get());
-        int r = ssl::read(ssl_.get(), (char*)dst, 1024);
-        if (r <= 0)
-            return -1;
+        ssl::accept(ssl_.get());
+        int r = ssl::read(ssl_.get(), (char*)dst, 4096);
         return r;
     }
 
     ssize_t SSLSocket::send(const void* dst, size_t len)
     {
-        ssl::accept(ssl_.get());
         SSL_accept(ssl_.get());
+        ssl::accept(ssl_.get());
         int r = ssl::write(ssl_.get(), (char*)dst, len);
-        if (r <= 0)
-            return -1;
         return r;
     }
 
     ssize_t SSLSocket::sendfile(misc::shared_fd& in_fd, off_t& offset, size_t c)
     {
-        return sys::sendfile(*fd_, *in_fd, &offset, c);
+        char buf[4096];
+        int r = 0;
+        int nb_read = read(in_fd->fd_, buf, 4096);
+		if (nb_read >= 0)
+		{
+			r = send(buf, (int)nb_read);
+		}
+        return r;
     }
 
     void SSLSocket::bind(const sockaddr* addr, socklen_t addrlen)

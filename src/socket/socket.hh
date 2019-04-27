@@ -84,6 +84,11 @@ namespace http
             return ipv6_;
         }
 
+        bool is_ssl() const noexcept
+        {
+            return is_ssl_;
+        }
+
         void ipv6_set(bool ipv6) noexcept
         {
             ipv6_ = ipv6;
@@ -100,6 +105,7 @@ namespace http
          * Either ipv4 or ipv6.
          */
         bool ipv6_ = false;
+        bool is_ssl_ = false;
         std::shared_ptr<http::VHostConfig> vhost_;
     };
 
