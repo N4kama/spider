@@ -15,8 +15,6 @@ namespace http
         : Socket{fd}
     {
         set_non_block();
-        setsockopt(SOL_SOCKET, SO_REUSEPORT, 1);
-        setsockopt(SOL_SOCKET, SO_REUSEADDR, 1);
     }
 
     DefaultSocket::DefaultSocket(int domain, int type, int protocol)
@@ -25,8 +23,6 @@ namespace http
     {
         ipv6_set(domain == AF_INET6);
         set_non_block();
-        setsockopt(SOL_SOCKET, SO_REUSEPORT, 1);
-        setsockopt(SOL_SOCKET, SO_REUSEADDR, 1);
     }
 
     void DefaultSocket::listen(int backlog)
@@ -75,6 +71,8 @@ namespace http
 
     int DefaultSocket::set_non_block()
     {
+        setsockopt(SOL_SOCKET, SO_REUSEPORT, 1);
+        setsockopt(SOL_SOCKET, SO_REUSEADDR, 1);
         return sys::fcntl_wrapper(fd_->fd_, O_NONBLOCK);
     }
 } // namespace http

@@ -9,9 +9,8 @@ namespace http
         , ssl_{SSL_new(ssl_ctx), &SSL_free}
     {
         set_non_block();
-        setsockopt(SOL_SOCKET, SO_REUSEPORT, 1);
-        setsockopt(SOL_SOCKET, SO_REUSEADDR, 1);
         SSL_set_fd(ssl_.get(), fd_->fd_);
+        ssl::accept(ssl_.get());
     }
 
     SSLSocket::SSLSocket(const misc::shared_fd& fd, SSL_CTX* ssl_ctx)
@@ -19,16 +18,15 @@ namespace http
         , ssl_{SSL_new(ssl_ctx), &SSL_free}
     {
         set_non_block();
-        setsockopt(SOL_SOCKET, SO_REUSEPORT, 1);
-        setsockopt(SOL_SOCKET, SO_REUSEADDR, 1);
         SSL_set_fd(ssl_.get(), fd_->fd_);
+        ssl::accept(ssl_.get());
     }
 
-    ssize_t SSLSocket::recv(void* dst, size_t len)
+    ssize_t SSLSocket::recv(void* dst, size_t)
     {
-        if (!SSL_accept(ssl_.get()))
-            return -1;
-        int r = ssl::read(ssl_.get(), (char*)dst, len);
+        ssl::accept(ssl_.get());
+        SSL_accept(ssl_.get());
+        int r = ssl::read(ssl_.get(), (char*)dst, 1024);
         if (r <= 0)
             return -1;
         return r;
@@ -36,8 +34,8 @@ namespace http
 
     ssize_t SSLSocket::send(const void* dst, size_t len)
     {
-        if (!SSL_accept(ssl_.get()))
-            return -1;
+        ssl::accept(ssl_.get());
+        SSL_accept(ssl_.get());
         int r = ssl::write(ssl_.get(), (char*)dst, len);
         if (r <= 0)
             return -1;
@@ -71,19 +69,21 @@ namespace http
                 sys::accept(*fd_, addr, addrlen)),
             nullptr);
     }
-    void SSLSocket::connect(const sockaddr* addr, socklen_t l)
+    void SSLSocket::connect(const sockaddr* , socklen_t )
     {
         /*
         addr++;
         int okk = l;
         okk++;
-        ssl::connect(ssl_.get());
         */
-        sys::connect(*fd_, addr, l);
+        ssl::connect(ssl_.get());
+        //sys::connect(*fd_, addr, l);
     }
 
     int SSLSocket::set_non_block()
     {
+        setsockopt(SOL_SOCKET, SO_REUSEPORT, 1);
+        setsockopt(SOL_SOCKET, SO_REUSEADDR, 1);
         return sys::fcntl_wrapper(fd_->fd_, O_NONBLOCK);
     }
 } // namespace http

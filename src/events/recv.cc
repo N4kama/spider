@@ -55,7 +55,7 @@ namespace http
                 } else
                 {
                     std::cerr << "Client Disconected\n";
-                    event_register.unregister_ew(this);
+                    //event_register.unregister_ew(this);
                 }
                 if (filled == body.length())
                 {
@@ -76,14 +76,15 @@ namespace http
             }
             if (filled == 0)
             {
-                char c = ' ';
-                if (sock_->recv(&c, 1) > 0)
+                char c[1024];
+                if (sock_->recv(&c, 1024) > 0)
                 {
-                    header.append(1, c);
+                    //header.append(1024, *c);
+                    header += c;
                 } else
                 {
                     std::cerr << "Client Disconected\n";
-                    event_register.unregister_ew(this);
+                    //event_register.unregister_ew(this);
                 }
                 if (endby(header, std::string("\r\n\r\n")))
                 {
