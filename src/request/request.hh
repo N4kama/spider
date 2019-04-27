@@ -21,7 +21,7 @@ namespace http
     struct Request
     {
         Request(std::string &s);
-        Request() = default;
+        Request();
         Request(const Request&) = default;
         Request& operator=(const Request&) = default;
         Request(Request&&) = default;
@@ -40,6 +40,7 @@ namespace http
         size_t head_size;
         std::shared_ptr<VHostConfig> config_ptr;
         std::pair<std::string, int> path_info;
+        http::shared_socket clientSocket;
     };
     void request_server(struct Request r, Socket& socketClient);
 

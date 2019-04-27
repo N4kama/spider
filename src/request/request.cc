@@ -16,6 +16,10 @@ namespace http
         return res;
     }
 
+    Request::Request()
+        : head_size(0) {
+    }
+
     Request::Request(std::string& s)
         : head_size(0)
     {
