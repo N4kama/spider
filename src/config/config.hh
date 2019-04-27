@@ -63,6 +63,25 @@ namespace http
         int no_ssl = 0;
     };
 
+    struct TimeoutConfig
+    {
+        TimeoutConfig(float to_ka, float to_tran, float to_thr_val, float to_thr_time);
+        TimeoutConfig() = default;
+        TimeoutConfig(const TimeoutConfig&) = default;
+        TimeoutConfig& operator=(const TimeoutConfig&) = default;
+        TimeoutConfig(TimeoutConfig&&) = default;
+        TimeoutConfig& operator=(TimeoutConfig&&) = default;
+
+        ~TimeoutConfig() = default;
+
+        float to_keep_alive_;
+        float to_transaction_;
+        float to_throughput_val_;
+        float to_throughput_time_;
+    };
+    struct TimeoutConfig set_TimeoutConfig(const std::string& str);
+    json get_timeouts(const std::string& s);
+
     /**
      * \struct ServerConfig
      * \brief Value object storing the server configuration.
@@ -81,6 +100,7 @@ namespace http
         ~ServerConfig() = default;
 
         std::vector<http::VHostConfig> vhosts_;
+        http::TimeoutConfig timeoutConf_;
     };
 
     /**
@@ -93,4 +113,5 @@ namespace http
     json get_vhosts(const std::string& s);
     int check_vhost(json j);
     struct ServerConfig parse_configuration(const std::string& path);
+
 } // namespace http

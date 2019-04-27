@@ -25,6 +25,13 @@ namespace http
             no_ssl = 1;
     }
 
+    TimeoutConfig::TimeoutConfig(float to_ka, float to_tran, float to_thr_val, float to_thr_time)
+    : to_keep_alive_(to_ka)
+    , to_transaction_(to_tran)
+    , to_throughput_val_(to_thr_val)
+    , to_throughput_time_(to_thr_time)
+    {}  
+
     void VHostConfig::print_VHostConfig(void)
     {
         std::cout << "IP:\t\t" << ip_ << "\n"
@@ -59,6 +66,29 @@ namespace http
         return nullptr;
     }
 
+    json get_timeouts(const std::string& s)
+    {
+        json j;
+        try
+        {
+            std::ifstream ifs(s);
+            if (!ifs.is_open())
+                return nullptr;
+            j = json::parse(ifs);
+        } catch (const std::exception& e)
+        {
+            std::cerr << "bad json\n";
+        }
+        try
+        {
+            auto& obj = j.at("timeout");
+            return obj;
+        } catch (const std::exception& e)
+        {
+            return nullptr;
+        }
+    }
+
     int check_vhost(json j)
     {
         if (j.find("ip") == j.end() || !j.find("ip")->is_string())
@@ -77,12 +107,60 @@ namespace http
             std::cerr << "Invalid json structure: missing server_name" << '\n';
             return 0;
         }
+        /*
         if (j.find("root") == j.end() || !j.find("root")->is_string())
         {
             std::cerr << "Invalid json structure: missing root" << '\n';
             return 0;
         }
+        */
         return 1;
+    }
+
+    struct TimeoutConfig set_TimeoutConfig(const std::string& str)
+    {
+        json j = get_timeouts(str.c_str());
+        if (j != nullptr)
+        {
+            float to_keep_alive;
+            try
+            {
+                to_keep_alive = j.at("keep_alive").get<float>();
+            } catch (const std::exception& e)
+            {
+                to_keep_alive = -1;
+            }
+
+            float to_transaction;
+            try
+            {
+                to_transaction = j.at("transaction").get<float>();
+            } catch (const std::exception& e)
+            {
+                to_transaction = -1;
+            }
+
+            float to_throughput_val;
+            try
+            {
+                to_throughput_val = j.at("throughput_val").get<float>();
+            } catch (const std::exception& e)
+            {
+                to_throughput_val = -1;
+            }
+
+            float to_throughput_time;
+            try
+            {
+                to_throughput_time = j.at("throughput_time").get<float>();
+            } catch (const std::exception& e)
+            {
+                to_throughput_time = -1;
+            }
+
+            return TimeoutConfig(to_keep_alive, to_transaction, to_throughput_val, to_throughput_time);
+        }
+        return TimeoutConfig(-1, -1, -1, -1);
     }
 
     struct ServerConfig parse_configuration(const std::string& path)
@@ -107,11 +185,15 @@ namespace http
                     std::cerr << "server name is empty\n";
                     throw std::exception();
                 }
-                std::string root_s = cur.at("root").get<std::string>();
-                if (root_s == "")
+
+                std::string root_s;
+                try
                 {
-                    std::cerr << "root is empty\n";
-                    throw std::exception();
+                    root_s = cur.at("root").get<std::string>();
+                }
+                catch(const std::exception& e)
+                {
+                    root_s = "";
                 }
 
                 size_t header_max_size_i;
@@ -146,6 +228,14 @@ namespace http
                 {
                     ssl_key_i = "";
                 }
+
+                if ((ssl_cert_i == "" && ssl_key_i != "")
+                    || (ssl_cert_i != "" && ssl_key_i == ""))
+                {
+                    std::cerr << "Invalid json" << '\n';
+                    throw std::exception();
+                } 
+
                 size_t payload_max_size_i;
                 try
                 {
@@ -190,6 +280,9 @@ namespace http
                 throw std::exception();
             }
         }
+
+        c.timeoutConf_ = set_TimeoutConfig(path);
+
         if (c.vhosts_.size() == 0)
         {
             std::cerr << "Invalid json" << '\n';
