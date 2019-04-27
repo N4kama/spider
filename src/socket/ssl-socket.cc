@@ -40,7 +40,7 @@ namespace http
         return r;
     }
 
-    ssize_t SSLSocket::sendfile(misc::shared_fd& in_fd, off_t& offset, size_t c)
+    ssize_t SSLSocket::sendfile(misc::shared_fd& in_fd, off_t&, size_t)
     {
         char buf[4096];
         int r = 0;
