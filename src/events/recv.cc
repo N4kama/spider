@@ -61,6 +61,7 @@ namespace http
                 {
                     header += body;
                     Request req = Request(header);
+                    req.clientSocket = sock_;
                     req.config_ptr =
                         std::make_shared<VHostConfig>(vhost_->get_conf());
                     req.get_path();
@@ -101,6 +102,7 @@ namespace http
                     } else
                     {
                         Request req = Request(header);
+                        req.clientSocket = sock_;
                         req.config_ptr =
                             std::make_shared<VHostConfig>(vhost_->get_conf());
                         req.get_path();
