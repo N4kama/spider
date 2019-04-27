@@ -98,6 +98,10 @@ SOURCES = \
           src/socket/ssl-socket.cc \
           src/socket/ssl-socket.hh \
           src/vhost/vhost-reverse-proxy.hh \
+          src/events/sendRequest.hh \
+          src/events/sendRequest.cc \
+          src/events/recvResponse.hh \
+          src/events/recvResponse.cc \
           $(NULL)
 
 
