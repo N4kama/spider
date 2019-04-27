@@ -1,14 +1,20 @@
+#include <arpa/inet.h>
 #include <cstring>
 #include <ctime>
+#include <dirent.h>
+#include <events/sendRequest.hh>
 #include <iostream>
 #include <netdb.h>
+#include <netinet/in.h>
 #include <request/request.hh>
 #include <request/response.hh>
 #include <request/types.hh>
 #include <socket/socket.hh>
+#include <socket/ssl-socket.hh>
 #include <sstream>
 #include <vector>
-#include <dirent.h>
+
+#include "../main.hh"
 
 namespace http
 {
@@ -28,19 +34,29 @@ namespace http
         , is_file(false)
         , keep_alive(false)
     {
+        // Handling reverse-proxy request
+        if (r.headers.find(std::string("Proxy-Connection")) != r.headers.end())
+        {
+            reverse_proxy_handler(r);
+            return;
+        }
+
+        // Not documented here:
         auto p = r.headers.find(std::string("Connection"));
         if (p != r.headers.end() && p->second == "keep-alive")
         {
             keep_alive = true;
         }
-        if (r.config_ptr->header_max_size_ && r.head_size > r.config_ptr->header_max_size_)
+        if (r.config_ptr->header_max_size_
+            && r.head_size > r.config_ptr->header_max_size_)
         {
             keep_alive = false;
             status_code = HEADER_FIELDS_TOO_LARGE;
             set_error_rep(status_code);
             return;
         }
-        if (r.config_ptr->uri_max_size_ && r.uri.size() > r.config_ptr->uri_max_size_)
+        if (r.config_ptr->uri_max_size_
+            && r.uri.size() > r.config_ptr->uri_max_size_)
         {
             std::cout << "URI MAX: " << r.config_ptr->uri_max_size_ << '\n';
             keep_alive = false;
@@ -48,7 +64,8 @@ namespace http
             set_error_rep(status_code);
             return;
         }
-        if (r.config_ptr->payload_max_size_ && r.message_body.size() > r.config_ptr->payload_max_size_)
+        if (r.config_ptr->payload_max_size_
+            && r.message_body.size() > r.config_ptr->payload_max_size_)
         {
             keep_alive = false;
             status_code = PAYLOAD_TOO_LARGE;
@@ -185,15 +202,17 @@ namespace http
             return;
         }
         std::stringstream str;
-        str << "<!DOCTYPE html><html>\n<head>\n<metacharset=utf-8>\n<title>Index of " << r.uri << "</title>\n</head>\n<body>\n<ul>\n";
+        str << "<!DOCTYPE "
+               "html><html>\n<head>\n<metacharset=utf-8>\n<title>Index of "
+            << r.uri << "</title>\n</head>\n<body>\n<ul>\n";
         str << "<li><a href=\"/..\">..</a></li>" << '\n';
-        struct dirent * dp;
+        struct dirent* dp;
         while ((dp = readdir(dir)) != NULL)
         {
             if (*dp->d_name == '.')
                 continue;
             str << "<li><a href=\"" << r.uri;
-            if (r.uri[r.uri.size() - 1] != '/') 
+            if (r.uri[r.uri.size() - 1] != '/')
                 str << "/";
             str << dp->d_name << "\">" << dp->d_name << "</a></li>" << '\n';
         }
@@ -225,8 +244,7 @@ namespace http
             if (r.path_info.second == -1)
             {
                 set_rep_list(r);
-            }
-            else
+            } else
             {
                 if (r.path_info.second == -404)
                 {
@@ -245,4 +263,70 @@ namespace http
     {
         http_rget(r);
     }
+
+    void reverse_proxy_handler(const struct Request& r)
+    {
+        // Create new request to send to the real target
+        Request req = Request(r);
+
+        // Add the proxy address to the "forwarded" entry
+        update_forwarded_header(req);
+
+        // send new request to target
+        if (req.config_ptr->no_ssl)
+        {
+            DefaultSocket mySock = DefaultSocket(AF_INET, SOCK_STREAM, 0);
+            // init client socket on http (no ssl)
+            event_register
+                .register_ew<http::SendRequest, Request, shared_socket>(
+                    std::forward<Request>(req),
+                    std::make_shared<DefaultSocket>(mySock));
+        } else
+        {
+            // fixme : same with ssl socket
+        }
+
+        // receive response from target
+
+        // send back response to client
+    }
+
+    void update_forwarded_header(Request& req)
+    {
+        if (req.headers.find("Forwarded") == req.headers.end())
+        {
+            std::string entry = "for=";
+            std::string ip = get_ip_address(req.clientSocket);
+            entry.append(ip);
+            entry.append(";host=" + req.config_ptr->server_name_);
+            if (!req.config_ptr->no_ssl)
+                entry.append(";proto=https");
+            req.headers.emplace("Forwarded", entry);
+        } else
+        {
+            std::string entry = req.headers.find("Forwarded")->second;
+            entry.append(";for=");
+            entry.append(get_ip_address(req.clientSocket));
+            if (!req.config_ptr->no_ssl)
+                entry.append(";proto=https");
+        }
+    }
+
+    std::string get_ip_address(shared_socket s)
+    {
+        struct sockaddr_in6 addr6;
+        struct sockaddr_in addr4;
+        socklen_t len = s->is_ipv6() ? sizeof(addr6) : sizeof(addr4);
+        if (s->is_ipv6())
+            getsockname(s->fd_get()->fd_, (struct sockaddr*)&addr6, &len);
+        else
+            getsockname(s->fd_get()->fd_, (struct sockaddr*)&addr4, &len);
+        char str[INET_ADDRSTRLEN];
+        char str6[INET6_ADDRSTRLEN];
+        std::string host = s->is_ipv6()
+            ? inet_ntop(AF_INET6, &addr6.sin6_addr, str6, INET6_ADDRSTRLEN)
+            : inet_ntop(AF_INET, &addr4.sin_addr, str, INET_ADDRSTRLEN);
+        return std::string(host);
+    }
+
 } // namespace http
