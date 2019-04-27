@@ -61,9 +61,10 @@ namespace http
                     std::forward<shared_vhost>(v));
         } else
         {
+            shared_socket sock = std::make_shared<SSLSocket>(s->fd_get(), v->get_ctx());
             event_register
                 .register_ew<http::RecvEv, shared_socket, shared_vhost>(
-                    std::make_shared<SSLSocket>(s->fd_get(), v->get_ctx()),
+                    std::forward<shared_socket>(sock),
                     std::forward<shared_vhost>(v));
         }
         return 0;

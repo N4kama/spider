@@ -66,6 +66,7 @@ namespace http
             {
                 event_register.unregister_ew(listeners.at(i).get());
             }
+            ERR_free_strings();
             EVP_cleanup();
         } catch (const std::exception& e)
         {
