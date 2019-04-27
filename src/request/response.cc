@@ -177,23 +177,10 @@ namespace http
 
     void Response::set_rep_list(struct Request& r)
     {
-        /*
-        if (!exist(r.path_info.first))
-        {
-            status_code = NOT_FOUND;
-            set_error_rep(status_code);
-            return;
-        }*/
         DIR* dir = opendir(r.path_info.first.c_str());
         if (!dir)
         {
             status_code = NOT_FOUND;
-            set_error_rep(status_code);
-            return;
-        }
-        if (!dir)
-        {
-            status_code = FORBIDDEN;
             set_error_rep(status_code);
             return;
         }
@@ -205,7 +192,10 @@ namespace http
         {
             if (*dp->d_name == '.')
                 continue;
-            str << "<li><a href=\"/" << dp->d_name << "\">" << dp->d_name << "</a></li>" << '\n';
+            str << "<li><a href=\"" << r.uri;
+            if (r.uri[r.uri.size() - 1] != '/') 
+                str << "/";
+            str << dp->d_name << "\">" << dp->d_name << "</a></li>" << '\n';
         }
         closedir(dir);
 
