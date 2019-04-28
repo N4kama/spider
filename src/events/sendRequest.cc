@@ -48,11 +48,11 @@ namespace http
         }
         sin.sin_family = AF_INET;
         sin.sin_port = htons(80);
-        if(sock_->is_ssl == 0 && connect(sock_->fd_get()->fd_,(sockaddr*)&sin, sizeof(sin)) < 0)
+        if(sock_->is_ssl() == 0 && connect(sock_->fd_get()->fd_,(sockaddr*)&sin, sizeof(sin)) < 0)
         {
             std::cout << "proxy can't connect to server (yet)";
         }
-        if(sock_->is_ssl == 1)
+        if(sock_->is_ssl() == 1)
         {
             sock_->connect((sockaddr*)&sin, sizeof(sin));
         }
