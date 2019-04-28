@@ -52,4 +52,13 @@ namespace http
         size_t filled;
     };
 
+    struct serv_to_prox_Resp
+    {
+        std::string requestLine;
+        std::map<std::string, std::string> headers;
+        std::string msg_piece; // start of the message,
+                               // get the end of the msg with sock.recv
+    };
+    struct serv_to_prox_Resp fill_serv_prox_Resp(shared_socket &s);
+
 } // namespace http

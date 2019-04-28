@@ -2,12 +2,71 @@
 #include <events/recvResponse.hh>
 #include <events/register.hh>
 #include <events/sendv.hh>
+#include <iostream>
+#include <string>
 #include <vhost/connection.hh>
 
 #include "main.hh"
 
 namespace http
 {
+    static std::string getline(std::string& s)
+    {
+        size_t delim = s.find_first_of("\r\n") + 2;
+        std::string res = s.substr(0, delim);
+        s = s.substr(delim);
+        return res;
+    }
+
+    struct serv_to_prox_Resp fill_serv_prox_Resp(shared_socket& sock_)
+    {
+        struct serv_to_prox_Resp rep;
+        // get request line and headers in a string;
+        std::string header = "";
+        while (true)
+        {
+            try
+            {
+                const size_t buf_size = 256;
+                char c[buf_size] = "";
+                int nb = sock_->recv(&c, buf_size);
+                if (nb > 0)
+                {
+                    header.append(c);
+                    if (header.find("\r\n\r\n") != std::string::npos)
+                        break;
+                } else
+                {
+                    return rep;
+                }
+            } catch (int e)
+            {
+                continue;
+            }
+        }
+        //// parse string into the struct
+        // parsing requestLine
+        rep.requestLine = getline(header);
+        // parsing headers
+        std::string line = getline(header);
+        while (line.size() && line.at(0) != '\r')
+        {
+            // creating pairs of two string separated by a semicolon and a
+            // space
+            size_t sep_idx = line.find_first_of(':', 0);
+            rep.headers.emplace(
+                std::string(line.begin(), line.begin() + sep_idx),
+                std::string(line.begin() + sep_idx + 2, line.end() - 2));
+
+            line = getline(header);
+        }
+        if (header.length())
+        {
+            rep.msg_piece = header;
+        }
+        return rep;
+    }
+
     RecvResponse::RecvResponse(shared_socket socket, Request r)
         : EventWatcher(socket->fd_get()->fd_, EV_READ)
         , sock_{socket}
@@ -44,6 +103,25 @@ namespace http
 
     void RecvResponse::operator()()
     {
+        struct serv_to_prox_Resp rep = fill_serv_prox_Resp(sock_);
+
+        // add/remove/modify headers according to config
+
+        // send ~updated~ values from the rep struct:
+        r_.clientSocket->send(rep.requestLine.c_str(),
+                              rep.requestLine.length());
+        for (auto tuple : rep.headers)
+        {
+            r_.clientSocket->send(tuple.first.c_str(), tuple.first.length());
+            r_.clientSocket->send(": ", 2);
+            r_.clientSocket->send(tuple.second.c_str(),
+                                  tuple.second.length());
+            r_.clientSocket->send("\r\n", 2);
+        }
+        r_.clientSocket->send("\r\n", 2);
+        r_.clientSocket->send(rep.msg_piece.c_str(), rep.msg_piece.length());
+
+        // send the rest of the server response to client through proxy
         while (true)
         {
             try
