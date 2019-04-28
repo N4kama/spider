@@ -44,61 +44,25 @@ namespace http
 
     void RecvResponse::operator()()
     {
-        try
+        while (true)
         {
-            while(true)
+            try
             {
-
-            if (filled != 0)
-            {
-                char c[4096];
-                if (sock_->recv(&c, 4096) > 0)
+                const size_t buf_size = 1024;
+                char c[buf_size] = {0};
+                int nb = sock_->recv(&c, buf_size);
+                if (nb > 0)
                 {
-                    header + c;
+                    r_.clientSocket->send(c, buf_size);
                 } else
                 {
-                    std::cerr << "Client Disconected\n";
                     event_register.unregister_ew(this);
+                    return;
                 }
-                if (filled == body.length())
-                {
-                    header += body;
-                    r_.clientSocket->send(header.c_str(), header.size());
-                    event_register.unregister_ew(this);
-                }
-                return;
-            }
-            if (filled == 0)
+            } catch (int e)
             {
-                char c[4096];
-                if (sock_->recv(&c, 4096) > 0)
-                {
-                    header + c;
-                } else
-                {
-                    std::cerr << "Client Disconected\n";
-                    event_register.unregister_ew(this);
-                }
-                if (endby(header, std::string("\r\n\r\n")))
-                {
-                    auto pos = header.find("Content-Length: ");
-                    if (pos != std::string::npos)
-                    {
-                        pos += 16;
-                        int value = read_int(header, pos);
-                        std::cout << "atoi: " << value << "\n";
-                        filled = value;
-                    } else
-                    {
-                    r_.clientSocket->send(header.c_str(), header.size());
-                        event_register.unregister_ew(this);
-                    }
-                }
+                continue;
             }
-
-            }
-        } catch (const std::exception& e)
-        {
         }
-    }
+    } // namespace http
 } // namespace http
