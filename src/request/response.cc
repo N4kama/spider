@@ -264,6 +264,43 @@ namespace http
         http_rget(r);
     }
 
+    shared_vhost select_vhost(shared_socket s)
+    {
+        struct sockaddr_in6 addr6;
+        struct sockaddr_in addr4;
+        socklen_t len = s->is_ipv6() ? sizeof(addr6) : sizeof(addr4);
+        if (s->is_ipv6())
+            getsockname(s->fd_get()->fd_, (struct sockaddr*)&addr6, &len);
+        else
+            getsockname(s->fd_get()->fd_, (struct sockaddr*)&addr4, &len);
+        uint16_t port =
+            s->is_ipv6() ? ntohs(addr6.sin6_port) : ntohs(addr4.sin_port);
+        char str[INET_ADDRSTRLEN];
+        char str6[INET6_ADDRSTRLEN];
+        std::string host = s->is_ipv6()
+            ? inet_ntop(AF_INET6, &addr6.sin6_addr, str6, INET6_ADDRSTRLEN)
+            : inet_ntop(AF_INET, &addr4.sin_addr, str, INET_ADDRSTRLEN);
+        shared_vhost res = dispatcher.get_vhost(0);
+        for (size_t i = 1; i < dispatcher.nb_of_vhost(); i++)
+        {
+            if (dispatcher.get_vhost(i)->get_conf().port_ == port
+                && dispatcher.get_vhost(i)->get_conf().ip_ == host)
+            {
+                /*if (ssl)
+                {
+                    SSL_CTX_set_tlsext_servername_callback(dispatcher.get_vhost(i)->get_ctx(),
+                                                           sni_cb);
+                    SSL_CTX_set_tlsext_servername_arg(dispatcher.get_vhost(i)->get_ctx(),
+                    static_cast<void*>(&dispatcher.get_vhost(i)->get_conf().server_name_)
+                    );
+                }*/
+                res = dispatcher.get_vhost(i);
+                break;
+            }
+        }
+        return res;
+    }
+
     void reverse_proxy_handler(const struct Request& r)
     {
         // Create new request to send to the real target
@@ -283,7 +320,13 @@ namespace http
                     std::make_shared<DefaultSocket>(mySock));
         } else
         {
-            // fixme : same with ssl socket
+            shared_vhost v = select_vhost(req.clientSocket);
+            SSLSocket mySock = SSLSocket(AF_INET, SOCK_STREAM, 0, v->get_ctx());
+            // init client socket on http (no ssl)
+            event_register
+                .register_ew<http::SendRequest, Request, shared_socket>(
+                    std::forward<Request>(req),
+                    std::make_shared<DefaultSocket>(mySock));
         }
 
         // receive response from target
