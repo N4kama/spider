@@ -25,7 +25,7 @@ namespace http
             no_ssl = 1;
     }
 
-    TimeoutConfig::TimeoutConfig(float to_ka, float to_tran, float to_thr_val, float to_thr_time)
+    TimeoutConfig::TimeoutConfig(double to_ka, double to_tran, double to_thr_val, double to_thr_time)
     : to_keep_alive_(to_ka)
     , to_transaction_(to_tran)
     , to_throughput_val_(to_thr_val)
@@ -122,37 +122,37 @@ namespace http
         json j = get_timeouts(str.c_str());
         if (j != nullptr)
         {
-            float to_keep_alive;
+            double to_keep_alive;
             try
             {
-                to_keep_alive = j.at("keep_alive").get<float>();
+                to_keep_alive = j.at("keep_alive").get<double>();
             } catch (const std::exception& e)
             {
                 to_keep_alive = -1;
             }
 
-            float to_transaction;
+            double to_transaction;
             try
             {
-                to_transaction = j.at("transaction").get<float>();
+                to_transaction = j.at("transaction").get<double>();
             } catch (const std::exception& e)
             {
                 to_transaction = -1;
             }
 
-            float to_throughput_val;
+            double to_throughput_val;
             try
             {
-                to_throughput_val = j.at("throughput_val").get<float>();
+                to_throughput_val = j.at("throughput_val").get<double>();
             } catch (const std::exception& e)
             {
                 to_throughput_val = -1;
             }
 
-            float to_throughput_time;
+            double to_throughput_time;
             try
             {
-                to_throughput_time = j.at("throughput_time").get<float>();
+                to_throughput_time = j.at("throughput_time").get<double>();
             } catch (const std::exception& e)
             {
                 to_throughput_time = -1;
