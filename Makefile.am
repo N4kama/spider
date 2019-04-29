@@ -102,6 +102,8 @@ SOURCES = \
           src/events/sendRequest.cc \
           src/events/recvResponse.hh \
           src/events/recvResponse.cc \
+          src/events/timer.hh \
+          src/events/timer.cc \
           $(NULL)
 
 
