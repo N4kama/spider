@@ -27,7 +27,17 @@ namespace http
 
     Response::Response(const STATUS_CODE& s)
         : status_code(s)
-    {}
+    {} 
+
+    Response::Response(const STATUS_CODE& s, int err)
+        : status_code(s)
+    {
+        if (err == 1)
+        {
+            keep_alive = false;
+            set_error_rep(s, err);
+        }
+    }
 
     Response::Response(const struct Request& r, const STATUS_CODE& s)
         : status_code(s)
@@ -52,7 +62,7 @@ namespace http
         {
             keep_alive = false;
             status_code = HEADER_FIELDS_TOO_LARGE;
-            set_error_rep(status_code);
+            set_error_rep(status_code, -1);
             return;
         }
         if (r.config_ptr->uri_max_size_
@@ -61,7 +71,7 @@ namespace http
             std::cout << "URI MAX: " << r.config_ptr->uri_max_size_ << '\n';
             keep_alive = false;
             status_code = URI_TOO_LONG;
-            set_error_rep(status_code);
+            set_error_rep(status_code, -1);
             return;
         }
         if (r.config_ptr->payload_max_size_
@@ -69,30 +79,30 @@ namespace http
         {
             keep_alive = false;
             status_code = PAYLOAD_TOO_LARGE;
-            set_error_rep(status_code);
+            set_error_rep(status_code, -1);
             return;
         }
         if (r.path_info.second == -400)
         {
             status_code = BAD_REQUEST;
-            set_error_rep(status_code);
+            set_error_rep(status_code, -1);
             return;
         }
         if (error_405(r.method))
         {
-            set_error_rep(METHOD_NOT_ALLOWED);
+            set_error_rep(METHOD_NOT_ALLOWED, -1);
             return;
         }
         if (r.path_info.second == -404)
         {
             status_code = NOT_FOUND;
-            set_error_rep(status_code);
+            set_error_rep(status_code, -1);
             return;
         }
         if (r.path_info.second == -403)
         {
             status_code = FORBIDDEN;
-            set_error_rep(status_code);
+            set_error_rep(status_code, -1);
             return;
         }
         if (r.http_version.size() != 0
@@ -116,7 +126,7 @@ namespace http
                     keep_alive = false;
                 }
             }
-            set_error_rep(status_code);
+            set_error_rep(status_code, -1);
             return;
         }
         if (strncmp(r.method.c_str(), "GET", 3) == 0)
@@ -132,11 +142,11 @@ namespace http
         {
             status_code = BAD_REQUEST;
             keep_alive = false;
-            set_error_rep(status_code);
+            set_error_rep(status_code, -1);
         }
     }
 
-    void Response::set_error_rep(const STATUS_CODE& s)
+    void Response::set_error_rep(const STATUS_CODE& s, int e)
     {
         std::stringstream str;
         std::stringstream msg;
@@ -154,6 +164,9 @@ namespace http
 
         if (s == METHOD_NOT_ALLOWED)
             str << "Allow: GET, HEAD, POST\r\n";
+
+        if (e == 1)
+            str << "X-Timeout-Reason: Keep-Alive\r\n";
 
         str << "Connection: " << (keep_alive ? "keep-alive" : "close");
         str << "\r\n\r\n";
@@ -198,7 +211,7 @@ namespace http
         if (!dir)
         {
             status_code = NOT_FOUND;
-            set_error_rep(status_code);
+            set_error_rep(status_code, -1);
             return;
         }
         std::stringstream str;
@@ -254,7 +267,7 @@ namespace http
                 {
                     status_code = FORBIDDEN;
                 }
-                set_error_rep(status_code);
+                set_error_rep(status_code, -1);
             }
         }
     }
