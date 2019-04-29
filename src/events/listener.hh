@@ -21,7 +21,7 @@ namespace http
         /**
          * \brief Create a ListenerEW from a listener socket.
          */
-        explicit ListenerEW(shared_socket socket);
+        explicit ListenerEW(shared_socket socket, TimeoutConfig toCon);
 
         /**
          * \brief Start accepting connections on listener socket.
@@ -33,6 +33,7 @@ namespace http
          * \brief Listener socket.
          */
         shared_socket sock_;
+        TimeoutConfig toConfig_;
         /**
          * \brief Port on which the socket is listening.
          */
