@@ -1,5 +1,7 @@
 
 #include "main.hh"
+#include "events/timer.hh"
+
 
 #include <misc/addrinfo/addrinfo.hh>
 #include <vector>
@@ -30,6 +32,7 @@ namespace http
                 return 1;
             std::vector<std::shared_ptr<http::ListenerEW>> listeners =
                 std::vector<std::shared_ptr<http::ListenerEW>>();
+            
             for (unsigned i = 0; i < config.vhosts_.size(); i++)
             {
                 addrinfo info = {};
@@ -53,7 +56,9 @@ namespace http
                     sock->ipv6_set(server_socket.is_ipv6());
                     std::shared_ptr<ListenerEW> listener =
                         event_register.register_ew<ListenerEW, shared_socket>(
-                            sock);
+                            sock,
+                            std::forward<TimeoutConfig>(config.timeoutConf_));
+                    
                     listeners.emplace_back(listener);
                 }
                 freeaddrinfo(result);
@@ -61,6 +66,7 @@ namespace http
             http::EventLoop event_loop = event_register.loop_get();
             ev_signal signal_watcher;
             event_loop.register_sigint_watcher(&signal_watcher);
+
             event_loop();
             for (unsigned i = 0; i < listeners.size(); i++)
             {
