@@ -13,7 +13,9 @@ namespace http
         std::map<std::string, std::string>& proxy_set_header,
         std::vector<std::string>& proxy_remove_header,
         std::map<std::string, std::string>& set_header,
-        std::vector<std::string>& remove_header)
+        std::vector<std::string>& remove_header, std::string& health_endpoint,
+        std::string& auth_basic, std::vector<std::string>& auth_basic_users,
+        bool& default_vhost)
         : ip_(ip)
         , port_(port)
         , server_name_(server_name)
@@ -31,6 +33,10 @@ namespace http
         , proxy_remove_header_(proxy_remove_header)
         , set_header_(set_header)
         , remove_header_(remove_header)
+        , health_endpoint_(health_endpoint)
+        , auth_basic_(auth_basic)
+        , auth_basic_users_(auth_basic_users)
+        , default_vhost_(default_vhost)
     {
         if (ssl_cert == "" || ssl_key == "")
             no_ssl = 1;
@@ -280,71 +286,87 @@ namespace http
                     auto_index_i = false;
                 }
 
+                // proxy values
                 std::string proxy_ip_;
-                try
-                {
-                    proxy_ip_ =
-                        cur.at("proxy_pass").at("ip").get<std::string>();
-                } catch (const std::exception& e)
-                {
-                    proxy_ip_ = "";
-                }
-
                 std::string proxy_port_;
-                try
+                std::map<std::string, std::string> proxy_set_header_;
+                std::vector<std::string> proxy_remove_header_;
+                std::map<std::string, std::string> set_header_;
+                std::vector<std::string> remove_header_;
+                // Check mandatory options for proxy
+                if (cur.find("proxy_pass") != cur.end())
                 {
-                    proxy_port_ = cur.at("proxy_pass").at("port").get<int>();
-                } catch (const std::exception& e)
-                {
-                    proxy_port_ = -1;
+                    if (cur["proxy_pass"].find("ip") == cur["proxy_pass"].end()
+                        || cur["proxy_pass"].find("port")
+                            == cur["proxy_pass"].end())
+                    {
+                        std::cerr
+                            << "Error during json parsing : "
+                            << "Proxy field : \'ip\' or \'port\' missing\n";
+                    }
+                    try
+                    {
+                        proxy_ip_ =
+                            cur.at("proxy_pass").at("ip").get<std::string>();
+                    } catch (const std::exception& e)
+                    {
+                        proxy_ip_ = "";
+                    }
+                    try
+                    {
+                        proxy_port_ =
+                            cur.at("proxy_pass").at("port").get<int>();
+                    } catch (const std::exception& e)
+                    {
+                        proxy_port_ = -1;
+                    }
+                    try
+                    {
+                        auto map = cur.at("proxy_pass").at("proxy_set_header");
+                        for (auto it = map.begin(); it != map.end(); it++)
+                        {
+                            proxy_set_header_.emplace(it.key(), it.value());
+                        }
+                    } catch (const std::exception& e)
+                    {}
+                    try
+                    {
+                        proxy_remove_header_ =
+                            cur.at("proxy_pass")
+                                .at("proxy_remove_header")
+                                .get<std::vector<std::string>>();
+                    } catch (const std::exception& e)
+                    {}
+                    try
+                    {
+                        auto map = cur.at("proxy_pass").at("set_header");
+                        for (auto it = map.begin(); it != map.end(); it++)
+                        {
+                            set_header_.emplace(it.key(), it.value());
+                        }
+                    } catch (const std::exception& e)
+                    {}
+                    try
+                    {
+                        remove_header_ = cur.at("proxy_pass")
+                                             .at("remove_header")
+                                             .get<std::vector<std::string>>();
+                    } catch (const std::exception& e)
+                    {}
                 }
 
-                std::map<std::string, std::string> proxy_set_header_;
-                try
-                {
-                    auto map = cur.at("proxy_pass").at("proxy_set_header");
-                    for (auto it = map.begin(); it != map.end(); it++)
-                    {
-                        proxy_set_header_.emplace(it.key(), it.value());
-                    }
-                } catch (const std::exception& e)
-                {}
-
-                std::vector<std::string> proxy_remove_header_;
-                try
-                {
-                    proxy_remove_header_ = cur.at("proxy_pass")
-                                               .at("proxy_remove_header")
-                                               .get<std::vector<std::string>>();
-                } catch (const std::exception& e)
-                {}
-
-                std::map<std::string, std::string> set_header_;
-                try
-                {
-                    auto map = cur.at("proxy_pass").at("set_header");
-                    for (auto it = map.begin(); it != map.end(); it++)
-                    {
-                        set_header_.emplace(it.key(), it.value());
-                    }
-                } catch (const std::exception& e)
-                {}
-
-                std::vector<std::string> remove_header_;
-                try
-                {
-                    remove_header_ = cur.at("proxy_pass")
-                                         .at("remove_header")
-                                         .get<std::vector<std::string>>();
-                } catch (const std::exception& e)
-                {}
+                std::string health_endpoint_;
+                std::string auth_basic_;
+                std::vector<std::string> auth_basic_users_;
+                bool default_vhost_;
 
                 VHostConfig v = VHostConfig(
                     ip_s, port_i, serv_s, root_s, ssl_cert_i, ssl_key_i,
                     header_max_size_i, uri_max_size_i, payload_max_size_i,
                     def_s, auto_index_i, proxy_ip_, proxy_port_,
                     proxy_set_header_, proxy_remove_header_, set_header_,
-                    remove_header_);
+                    remove_header_, health_endpoint_, auth_basic_,
+                    auth_basic_users_, default_vhost_);
                 c.vhosts_.emplace_back(v);
             } else
             {
