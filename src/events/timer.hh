@@ -5,10 +5,10 @@
 
 #pragma once
 
+#include "config/config.hh"
 #include "events/events.hh"
 #include "socket/socket.hh"
 #include "vhost/vhost.hh"
-#include "config/config.hh"
 
 namespace http
 {
@@ -22,13 +22,14 @@ namespace http
         /**
          * \brief Create a TimerEW from a listener socket.
          */
-        TimerEW(shared_socket socket, shared_vhost vhost,
-            struct ev_loop* loop, TimeoutConfig toConf, int st);
+        TimerEW(shared_socket socket, shared_vhost vhost, struct ev_loop* loop,
+                TimeoutConfig toConf, int st);
 
         void register_timer_watcher(ev_timer* timeout_watcher, double to);
 
         static void timeout_ka_cb(struct ev_loop* loop, ev_timer*, int);
         void rep_error(STATUS_CODE);
+        void unregister_timer_watcher();
 
         /**
          * \brief Start timer for each connection.

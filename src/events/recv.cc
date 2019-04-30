@@ -8,10 +8,11 @@
 
 namespace http
 {
- RecvEv::RecvEv(shared_socket socket, shared_vhost vhost)
+    RecvEv::RecvEv(shared_socket socket, shared_vhost vhost, TimerEW timer)
         : EventWatcher(socket->fd_get()->fd_, EV_READ)
         , sock_{socket}
         , vhost_{vhost}
+        , timer_{timer}
     {
         struct sockaddr_in my_addr;
         socklen_t len = sizeof(my_addr);
@@ -60,7 +61,6 @@ namespace http
                 } else
                 {
                     std::cerr << "Client Disconected\n";
-                    // event_register.unregister_ew(this);
                 }
                 if (filled == body.length())
                 {
@@ -76,6 +76,7 @@ namespace http
                             std::forward<shared_socket>(sock_),
                             std::forward<shared_vhost>(vhost_),
                             std::make_shared<Response>(req));
+                    timer_.unregister_timer_watcher();
                     event_register.unregister_ew(this);
                 }
                 return;
@@ -92,7 +93,10 @@ namespace http
                 } else
                 {
                     if (!sock_->is_ssl())
+                    {
                         event_register.unregister_ew(this);
+                        timer_.unregister_timer_watcher();
+                    }
                     std::cerr << "Client Disconected\n";
                 }
                 if (endby(header, std::string("\r\n\r\n")))
@@ -117,6 +121,7 @@ namespace http
                             std::forward<shared_socket>(sock_),
                             std::forward<shared_vhost>(vhost_),
                             std::make_shared<Response>(req));
+                        timer_.unregister_timer_watcher();
                         event_register.unregister_ew(this);
                     }
                 }

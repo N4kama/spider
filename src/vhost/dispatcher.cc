@@ -63,7 +63,8 @@ namespace http
         ev = event_register
                  .register_ew<http::RecvEv, shared_socket, shared_vhost>(
                      std::forward<shared_socket>(s),
-                     std::forward<shared_vhost>(v));
+                     std::forward<shared_vhost>(v),
+                     std::forward<TimerEW>(timer));
         return 0;
     }
 
