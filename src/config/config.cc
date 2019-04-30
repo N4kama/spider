@@ -1,4 +1,6 @@
 #include "config/config.hh"
+
+#include <list>
 using json = nlohmann::json;
 
 namespace http
@@ -281,15 +283,59 @@ namespace http
                 {
                     proxy_ip_ =
                         cur.at("proxy_pass").at("ip").get<std::string>();
-                }
-                catch (const std::exception& e) {
+                } catch (const std::exception& e)
+                {
                     proxy_ip_ = "";
-                
+                }
+
                 std::string proxy_port_;
-                std::string proxy_set_header_;
-                std::string proxy_remove_header_;
-                std::string set_header_;
-                std::string remove_header_;
+                try
+                {
+                    proxy_port_ = cur.at("proxy_pass").at("port").get<int>();
+                } catch (const std::exception& e)
+                {
+                    proxy_port_ = -1;
+                }
+
+                std::map<std::string, std::string> proxy_set_header_;
+                try
+                {
+                    auto map = cur.at("proxy_pass").at("proxy_set_header");
+                    for (auto it = map.begin(); it != map.end(); it++)
+                    {
+                        proxy_set_header_.emplace(it.key(), it.value());
+                    }
+                } catch (const std::exception& e)
+                {}
+
+                std::vector<std::string> proxy_remove_header_;
+                try
+                {
+                    proxy_remove_header_ = cur.at("proxy_pass")
+                                               .at("proxy_remove_header")
+                                               .get<std::vector>;
+                } catch (const std::exception& e)
+                {}
+
+                std::map<std::string, std::string> set_header_;
+                try
+                {
+                    auto map = cur.at("proxy_pass").at("set_header");
+                    for (auto it = map.begin(); it != map.end(); it++)
+                    {
+                        set_header_.emplace(it.key(), it.value());
+                    }
+                } catch (const std::exception& e)
+                {}
+
+                std::vector<std::string> remove_header_;
+                try
+                {
+                    remove_header_ = cur.at("proxy_pass")
+                                         .at("remove_header")
+                                         .get<std::vector>;
+                } catch (const std::exception& e)
+                {}
 
                 VHostConfig v = VHostConfig(
                     ip_s, port_i, serv_s, root_s, ssl_cert_i, ssl_key_i,
