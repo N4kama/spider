@@ -53,13 +53,13 @@ namespace http
         }
         if (!count_)
         {
-            if (keep_alive)
+            /*if (keep_alive)
             {
-                std::cout << "Staying connected with client.\n";
+                //std::cout << "Staying connected with client.\n";
                 event_register.register_ew<http::RecvEv, http::shared_socket>(
                     std::forward<shared_socket>(sock_),
                     std::forward<shared_vhost>(vhost_));
-            }
+            }*/
             event_register.unregister_ew(this);
             return;
         }

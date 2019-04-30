@@ -19,27 +19,25 @@ namespace http
 
     void TimerEW::timeout_ka_cb(struct ev_loop*, ev_timer* ev, int)
     {
-        std::cout << "TIMEOUT !!!!!!!!!!!!!!!!!!!!!!!!\n";
-
-        // ev_timer_stop(loop, ev);
-        auto timer = reinterpret_cast<TimerEW*>(ev->data);
-        (*timer)();
+        //ev_timer_stop(loop, ev);
+        TimerEW* timer = reinterpret_cast<TimerEW*>(ev->data);
+        shared_socket s = timer->sock_;
+        shared_vhost v = timer->vhost_;
+         std::shared_ptr<Response> r =
+            std::make_shared<Response>(TIMEOUT, timer->state_);
+        //s->killed_set(true);
+        event_register.register_ew<http::SendEv, http::shared_socket,
+                                   shared_vhost, std::shared_ptr<Response>>(
+            std::forward<shared_socket>(s), std::forward<shared_vhost>(v),
+            std::forward<std::shared_ptr<Response>>(r));
+        //std::cout << "TIMEOUT\n";
     }
 
     void TimerEW::register_timer_watcher(ev_timer* timeout_watcher, double to)
     {
-        ev_timer_init(timeout_watcher, TimerEW::timeout_ka_cb, to, 0.);
+        ev_timer_init(timeout_watcher, TimerEW::timeout_ka_cb, to, 0);
         timeout_watcher->data = reinterpret_cast<void*>(this);
         ev_timer_start(loop_, timeout_watcher);
     }
 
-
-    void TimerEW::operator()()
-    {
-        event_register.register_ew<http::SendEv, http::shared_socket,
-                                   shared_vhost, std::shared_ptr<Response>>(
-            std::forward<shared_socket>(sock_),
-            std::forward<shared_vhost>(vhost_),
-            std::make_shared<Response>(TIMEOUT, state_));
-    }
 } // namespace http
