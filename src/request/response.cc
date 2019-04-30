@@ -27,7 +27,7 @@ namespace http
 
     Response::Response(const STATUS_CODE& s)
         : status_code(s)
-    {} 
+    {}
 
     Response::Response(const STATUS_CODE& s, int err)
         : status_code(s)
@@ -45,7 +45,8 @@ namespace http
         , keep_alive(false)
     {
         // Handling reverse-proxy request
-        if (r.headers.find(std::string("Proxy-Connection")) != r.headers.end())
+        if (r.headers.find(std::string("Proxy-Connection")) != r.headers.end()
+            && r.config_ptr->is_proxy_)
         {
             reverse_proxy_handler(r);
             return;
@@ -299,14 +300,16 @@ namespace http
         {
             SSL_CTX* ssl_ctx_ = SSL_CTX_new(SSLv23_server_method());
             SSL_CTX_set_ecdh_auto(ssl_ctx_, 1);
-            if (SSL_CTX_use_certificate_file(
-                    ssl_ctx_, req.config_ptr->ssl_cert_.c_str(), SSL_FILETYPE_PEM)
+            if (SSL_CTX_use_certificate_file(ssl_ctx_,
+                                             req.config_ptr->ssl_cert_.c_str(),
+                                             SSL_FILETYPE_PEM)
                 <= 0)
             {
                 exit(EXIT_FAILURE);
             }
 
-            if (SSL_CTX_use_PrivateKey_file(ssl_ctx_, req.config_ptr->ssl_key_.c_str(),
+            if (SSL_CTX_use_PrivateKey_file(ssl_ctx_,
+                                            req.config_ptr->ssl_key_.c_str(),
                                             SSL_FILETYPE_PEM)
                 <= 0)
             {
@@ -320,7 +323,8 @@ namespace http
             event_register
                 .register_ew<http::SendRequest, Request, shared_socket>(
                     std::forward<Request>(req),
-                    std::make_shared<SSLSocket>(AF_INET, SOCK_STREAM, 0, ssl_ctx_));
+                    std::make_shared<SSLSocket>(AF_INET, SOCK_STREAM, 0,
+                                                ssl_ctx_));
         }
 
         // receive response from target
@@ -368,10 +372,10 @@ namespace http
 
     void modify_headers(Request& r)
     {
-        //delete
+        // delete
         for (auto it : r.config_ptr->proxy_remove_header_)
             r.headers.erase(it);
-        //add
+        // add
         for (auto it : r.config_ptr->proxy_set_header_)
             r.headers[it.first] = it.second;
     }
