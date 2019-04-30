@@ -1,6 +1,7 @@
 #include "dispatcher.hh"
 
 #include <events/recv.hh>
+#include <events/timer.hh>
 
 #include "../main.hh"
 #include "socket/ssl-socket.hh"
@@ -50,23 +51,20 @@ namespace http
         return res;
     }
 
-    int Dispatcher::dispatch_request(shared_socket& s)
+    int Dispatcher::dispatch_request(shared_socket& s, TimeoutConfig t)
     {
         shared_vhost v = find_vhost(s);
-        if (v->conf_get().no_ssl == 1)
+        std::shared_ptr<EventWatcher> ev;
+        if (v->conf_get().no_ssl == 0)
         {
-            event_register
-                .register_ew<http::RecvEv, shared_socket, shared_vhost>(
-                    std::forward<shared_socket>(s),
-                    std::forward<shared_vhost>(v));
-        } else
-        {
-            shared_socket sock = std::make_shared<SSLSocket>(s->fd_get(), v->get_ctx());
-            event_register
-                .register_ew<http::RecvEv, shared_socket, shared_vhost>(
-                    std::forward<shared_socket>(sock),
-                    std::forward<shared_vhost>(v));
+            s = std::make_shared<SSLSocket>(s->fd_get(), v->get_ctx());
         }
+        TimerEW timer = TimerEW(s, v, event_register.loop_get().loop, t, 1);
+        timer.start();
+        ev = event_register.register_ew<http::RecvEv, shared_socket,
+                                        shared_vhost, TimeoutConfig>(
+            std::forward<shared_socket>(s), std::forward<shared_vhost>(v),
+            std::forward<TimeoutConfig>(t));
         return 0;
     }
 
@@ -89,6 +87,5 @@ namespace http
         }
         return 0;
     }
-
 
 } // namespace http

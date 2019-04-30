@@ -26,7 +26,7 @@ namespace http
         Dispatcher& operator=(Dispatcher&&) = delete;
 
         void add_vhost(VHostConfig config);
-        int dispatch_request(shared_socket& s);
+        int dispatch_request(shared_socket& s, TimeoutConfig toCon);
         shared_vhost get_vhost(int i)
         {
             return vhosts_[i];

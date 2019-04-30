@@ -16,7 +16,7 @@ namespace http
      * \class TimerEW
      * \brief Workflow for timeout socket.
      */
-    class TimerEW : public EventWatcher
+    class TimerEW
     {
     public:
         /**
@@ -33,7 +33,6 @@ namespace http
         /**
          * \brief Start timer for each connection.
          */
-        void operator()() final;
 
     private:
         shared_socket sock_;
