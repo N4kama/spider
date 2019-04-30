@@ -277,6 +277,14 @@ namespace http
                 }
 
                 std::string proxy_ip_;
+                try
+                {
+                    proxy_ip_ =
+                        cur.at("proxy_pass").at("ip").get<std::string>();
+                }
+                catch (const std::exception& e) {
+                    proxy_ip_ = "";
+                
                 std::string proxy_port_;
                 std::string proxy_set_header_;
                 std::string proxy_remove_header_;
