@@ -3,12 +3,13 @@ using json = nlohmann::json;
 
 namespace http
 {
-    VHostConfig::VHostConfig(std::string& ip, int port,
-                             std::string& server_name, std::string& root,
-                             std::string& ssl_cert, std::string& ssl_key,
-                             size_t header_max_size, size_t uri_max_size,
-                             size_t payload_max_size, std::string& default_file
-                             , bool auto_index)
+    VHostConfig::VHostConfig(
+        std::string& ip, int port, std::string& server_name, std::string& root,
+        std::string& ssl_cert, std::string& ssl_key, size_t header_max_size,
+        size_t uri_max_size, size_t payload_max_size, std::string& default_file,
+        bool auto_index, std::string& proxy_ip, std::string& proxy_port,
+        std::string& proxy_set_header, std::string& proxy_remove_header,
+        std::string& set_header, std::string& remove_header)
         : ip_(ip)
         , port_(port)
         , server_name_(server_name)
@@ -20,17 +21,24 @@ namespace http
         , payload_max_size_(payload_max_size)
         , default_file_(default_file)
         , auto_index_(auto_index)
+        , proxy_ip_(proxy_ip)
+        , proxy_port_(proxy_port)
+        , proxy_set_header_(proxy_set_header)
+        , proxy_remove_header_(proxy_remove_header)
+        , set_header_(set_header)
+        , remove_header_(remove_header)
     {
         if (ssl_cert == "" || ssl_key == "")
             no_ssl = 1;
     }
 
-    TimeoutConfig::TimeoutConfig(double to_ka, double to_tran, double to_thr_val, double to_thr_time)
-    : to_keep_alive_(to_ka)
-    , to_transaction_(to_tran)
-    , to_throughput_val_(to_thr_val)
-    , to_throughput_time_(to_thr_time)
-    {}  
+    TimeoutConfig::TimeoutConfig(float to_ka, float to_tran, float to_thr_val,
+                                 float to_thr_time)
+        : to_keep_alive_(to_ka)
+        , to_transaction_(to_tran)
+        , to_throughput_val_(to_thr_val)
+        , to_throughput_time_(to_thr_time)
+    {}
 
     void VHostConfig::print_VHostConfig(void)
     {
@@ -158,7 +166,8 @@ namespace http
                 to_throughput_time = -1;
             }
 
-            return TimeoutConfig(to_keep_alive, to_transaction, to_throughput_val, to_throughput_time);
+            return TimeoutConfig(to_keep_alive, to_transaction,
+                                 to_throughput_val, to_throughput_time);
         }
         return TimeoutConfig(-1, -1, -1, -1);
     }
@@ -190,8 +199,7 @@ namespace http
                 try
                 {
                     root_s = cur.at("root").get<std::string>();
-                }
-                catch(const std::exception& e)
+                } catch (const std::exception& e)
                 {
                     root_s = "";
                 }
@@ -234,7 +242,7 @@ namespace http
                 {
                     std::cerr << "Invalid json" << '\n';
                     throw std::exception();
-                } 
+                }
 
                 size_t payload_max_size_i;
                 try
@@ -263,16 +271,24 @@ namespace http
                 try
                 {
                     auto_index_i = cur.at("auto_index").get<bool>();
-                }
-                catch(const std::exception& e)
+                } catch (const std::exception& e)
                 {
                     auto_index_i = false;
                 }
 
-                VHostConfig v =
-                    VHostConfig(ip_s, port_i, serv_s, root_s, ssl_cert_i,
-                                ssl_key_i, header_max_size_i, uri_max_size_i,
-                                payload_max_size_i, def_s, auto_index_i);
+                std::string proxy_ip_;
+                std::string proxy_port_;
+                std::string proxy_set_header_;
+                std::string proxy_remove_header_;
+                std::string set_header_;
+                std::string remove_header_;
+
+                VHostConfig v = VHostConfig(
+                    ip_s, port_i, serv_s, root_s, ssl_cert_i, ssl_key_i,
+                    header_max_size_i, uri_max_size_i, payload_max_size_i,
+                    def_s, auto_index_i, proxy_ip_, proxy_port_,
+                    proxy_set_header_, proxy_remove_header_, set_header_,
+                    remove_header_);
                 c.vhosts_.emplace_back(v);
             } else
             {

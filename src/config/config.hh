@@ -37,7 +37,11 @@ namespace http
                     std::string& root, std::string& ssl_cert,
                     std::string& ssl_key, size_t header_max_size,
                     size_t uri_max_size, size_t payload_max_size,
-                    std::string& default_file, bool auto_index);
+                    std::string& default_file, bool auto_index,
+                    std::string& proxy_ip, std::string& proxy_port,
+                    std::string& proxy_set_header,
+                    std::string& proxy_remove_header, std::string& set_header,
+                    std::string& remove_header);
         VHostConfig() = default;
         VHostConfig(const VHostConfig&) = default;
         VHostConfig& operator=(const VHostConfig&) = default;
@@ -59,13 +63,23 @@ namespace http
         size_t payload_max_size_ = 0;
         std::string default_file_;
         bool auto_index_;
-
+        std::string proxy_ip_;
+        std::string proxy_port_;
+        std::string proxy_set_header_;
+        std::string proxy_remove_header_;
+        std::string set_header_;
+        std::string remove_header_;
         int no_ssl = 0;
     };
 
     struct TimeoutConfig
     {
+<<<<<<< HEAD
         TimeoutConfig(double to_ka, double to_tran, double to_thr_val, double to_thr_time);
+=======
+        TimeoutConfig(float to_ka, float to_tran, float to_thr_val,
+                      float to_thr_time);
+>>>>>>> [CONFIG] proxy config attributes added
         TimeoutConfig() = default;
         TimeoutConfig(const TimeoutConfig&) = default;
         TimeoutConfig& operator=(const TimeoutConfig&) = default;
