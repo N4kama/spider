@@ -43,5 +43,6 @@ namespace http
     std::string get_date(void);
     void reverse_proxy_handler(const struct Request& r);
     std::string get_ip_address(shared_socket s);
-    void update_forwarded_header(Request &req);
+    void update_forwarded_header(Request& req);
+    void modify_headers(Request& r);
 } // namespace http

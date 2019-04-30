@@ -282,6 +282,8 @@ namespace http
         // Create new request to send to the real target
         Request req = Request(r);
 
+        modify_headers(req);
+
         // Add the proxy address to the "forwarded" entry
         update_forwarded_header(req);
 
@@ -362,6 +364,16 @@ namespace http
             ? inet_ntop(AF_INET6, &addr6.sin6_addr, str6, INET6_ADDRSTRLEN)
             : inet_ntop(AF_INET, &addr4.sin_addr, str, INET_ADDRSTRLEN);
         return std::string(host);
+    }
+
+    void modify_headers(Request& r)
+    {
+        //delete
+        for (auto it : r.config_ptr->proxy_remove_header_)
+            r.headers.erase(it);
+        //add
+        for (auto it : r.config_ptr->proxy_set_header_)
+            r.headers[it.first] = it.second;
     }
 
 } // namespace http
