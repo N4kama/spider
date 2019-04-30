@@ -60,11 +60,10 @@ namespace http
             s = std::make_shared<SSLSocket>(s->fd_get(), v->get_ctx());
         }
         TimerEW timer = TimerEW(s, v, event_register.loop_get().loop, t, 1);
-        timer.start();
-        ev = event_register.register_ew<http::RecvEv, shared_socket,
-                                        shared_vhost, TimeoutConfig>(
-            std::forward<shared_socket>(s), std::forward<shared_vhost>(v),
-            std::forward<TimeoutConfig>(t));
+        ev = event_register
+                 .register_ew<http::RecvEv, shared_socket, shared_vhost>(
+                     std::forward<shared_socket>(s),
+                     std::forward<shared_vhost>(v));
         return 0;
     }
 
