@@ -42,7 +42,10 @@ namespace http
                     std::map<std::string, std::string>& proxy_set_header,
                     std::vector<std::string>& proxy_remove_header,
                     std::map<std::string, std::string>& set_header,
-                    std::vector<std::string>& remove_header);
+                    std::vector<std::string>& remove_header,
+                    std::string& health_endpoint_, std::string& auth_basic_,
+                    std::vector<std::string>& auth_basic_users_,
+                    bool& default_vhost_);
         VHostConfig() = default;
         VHostConfig(const VHostConfig&) = default;
         VHostConfig& operator=(const VHostConfig&) = default;
@@ -70,6 +73,10 @@ namespace http
         std::vector<std::string> proxy_remove_header_;
         std::map<std::string, std::string> set_header_;
         std::vector<std::string> remove_header_;
+        std::string health_endpoint_;
+        std::string auth_basic_;
+        std::vector<std::string> auth_basic_users_;
+        bool default_vhost_;
         int no_ssl = 0;
     };
 
