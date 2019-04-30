@@ -326,10 +326,6 @@ namespace http
                     std::make_shared<SSLSocket>(AF_INET, SOCK_STREAM, 0,
                                                 ssl_ctx_));
         }
-
-        // receive response from target
-
-        // send back response to client
     }
 
     void update_forwarded_header(Request& req)
