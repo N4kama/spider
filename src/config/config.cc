@@ -10,8 +10,10 @@ namespace http
         std::string& ssl_cert, std::string& ssl_key, size_t header_max_size,
         size_t uri_max_size, size_t payload_max_size, std::string& default_file,
         bool auto_index, std::string& proxy_ip, std::string& proxy_port,
-        std::string& proxy_set_header, std::string& proxy_remove_header,
-        std::string& set_header, std::string& remove_header)
+        std::map<std::string, std::string>& proxy_set_header,
+        std::vector<std::string>& proxy_remove_header,
+        std::map<std::string, std::string>& set_header,
+        std::vector<std::string>& remove_header)
         : ip_(ip)
         , port_(port)
         , server_name_(server_name)
@@ -313,7 +315,7 @@ namespace http
                 {
                     proxy_remove_header_ = cur.at("proxy_pass")
                                                .at("proxy_remove_header")
-                                               .get<std::vector>;
+                                               .get<std::vector<std::string>>();
                 } catch (const std::exception& e)
                 {}
 
@@ -333,7 +335,7 @@ namespace http
                 {
                     remove_header_ = cur.at("proxy_pass")
                                          .at("remove_header")
-                                         .get<std::vector>;
+                                         .get<std::vector<std::string>>();
                 } catch (const std::exception& e)
                 {}
 
