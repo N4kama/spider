@@ -45,7 +45,7 @@ namespace http
                     std::vector<std::string>& remove_header,
                     std::string& health_endpoint_, std::string& auth_basic_,
                     std::vector<std::string>& auth_basic_users_,
-                    bool& default_vhost_);
+                    bool& default_vhost_, bool& is_proxy_);
         VHostConfig() = default;
         VHostConfig(const VHostConfig&) = default;
         VHostConfig& operator=(const VHostConfig&) = default;
@@ -77,6 +77,7 @@ namespace http
         std::string auth_basic_;
         std::vector<std::string> auth_basic_users_;
         bool default_vhost_;
+        bool is_proxy_;
         int no_ssl = 0;
     };
 

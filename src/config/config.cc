@@ -15,7 +15,7 @@ namespace http
         std::map<std::string, std::string>& set_header,
         std::vector<std::string>& remove_header, std::string& health_endpoint,
         std::string& auth_basic, std::vector<std::string>& auth_basic_users,
-        bool& default_vhost)
+        bool& default_vhost, bool& is_proxy)
         : ip_(ip)
         , port_(port)
         , server_name_(server_name)
@@ -37,6 +37,7 @@ namespace http
         , auth_basic_(auth_basic)
         , auth_basic_users_(auth_basic_users)
         , default_vhost_(default_vhost)
+        , is_proxy_(is_proxy)
     {
         if (ssl_cert == "" || ssl_key == "")
             no_ssl = 1;
@@ -287,6 +288,7 @@ namespace http
                 }
 
                 // proxy values
+                bool is_proxy_ = false;
                 std::string proxy_ip_;
                 std::string proxy_port_;
                 std::map<std::string, std::string> proxy_set_header_;
@@ -303,56 +305,62 @@ namespace http
                         std::cerr
                             << "Error during json parsing : "
                             << "Proxy field : \'ip\' or \'port\' missing\n";
-                    }
-                    try
+                    } else
                     {
-                        proxy_ip_ =
-                            cur.at("proxy_pass").at("ip").get<std::string>();
-                    } catch (const std::exception& e)
-                    {
-                        proxy_ip_ = "";
-                    }
-                    try
-                    {
-                        proxy_port_ =
-                            cur.at("proxy_pass").at("port").get<int>();
-                    } catch (const std::exception& e)
-                    {
-                        proxy_port_ = -1;
-                    }
-                    try
-                    {
-                        auto map = cur.at("proxy_pass").at("proxy_set_header");
-                        for (auto it = map.begin(); it != map.end(); it++)
+                        is_proxy_ = true;
+                        try
                         {
-                            proxy_set_header_.emplace(it.key(), it.value());
-                        }
-                    } catch (const std::exception& e)
-                    {}
-                    try
-                    {
-                        proxy_remove_header_ =
-                            cur.at("proxy_pass")
-                                .at("proxy_remove_header")
-                                .get<std::vector<std::string>>();
-                    } catch (const std::exception& e)
-                    {}
-                    try
-                    {
-                        auto map = cur.at("proxy_pass").at("set_header");
-                        for (auto it = map.begin(); it != map.end(); it++)
+                            proxy_ip_ = cur.at("proxy_pass")
+                                            .at("ip")
+                                            .get<std::string>();
+                        } catch (const std::exception& e)
                         {
-                            set_header_.emplace(it.key(), it.value());
+                            proxy_ip_ = "";
                         }
-                    } catch (const std::exception& e)
-                    {}
-                    try
-                    {
-                        remove_header_ = cur.at("proxy_pass")
-                                             .at("remove_header")
-                                             .get<std::vector<std::string>>();
-                    } catch (const std::exception& e)
-                    {}
+                        try
+                        {
+                            proxy_port_ =
+                                cur.at("proxy_pass").at("port").get<int>();
+                        } catch (const std::exception& e)
+                        {
+                            proxy_port_ = -1;
+                        }
+                        try
+                        {
+                            auto map =
+                                cur.at("proxy_pass").at("proxy_set_header");
+                            for (auto it = map.begin(); it != map.end(); it++)
+                            {
+                                proxy_set_header_.emplace(it.key(), it.value());
+                            }
+                        } catch (const std::exception& e)
+                        {}
+                        try
+                        {
+                            proxy_remove_header_ =
+                                cur.at("proxy_pass")
+                                    .at("proxy_remove_header")
+                                    .get<std::vector<std::string>>();
+                        } catch (const std::exception& e)
+                        {}
+                        try
+                        {
+                            auto map = cur.at("proxy_pass").at("set_header");
+                            for (auto it = map.begin(); it != map.end(); it++)
+                            {
+                                set_header_.emplace(it.key(), it.value());
+                            }
+                        } catch (const std::exception& e)
+                        {}
+                        try
+                        {
+                            remove_header_ =
+                                cur.at("proxy_pass")
+                                    .at("remove_header")
+                                    .get<std::vector<std::string>>();
+                        } catch (const std::exception& e)
+                        {}
+                    }
                 }
 
                 std::string health_endpoint_;
@@ -366,7 +374,7 @@ namespace http
                     def_s, auto_index_i, proxy_ip_, proxy_port_,
                     proxy_set_header_, proxy_remove_header_, set_header_,
                     remove_header_, health_endpoint_, auth_basic_,
-                    auth_basic_users_, default_vhost_);
+                    auth_basic_users_, default_vhost_, is_proxy_);
                 c.vhosts_.emplace_back(v);
             } else
             {
