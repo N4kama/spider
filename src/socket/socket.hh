@@ -79,6 +79,11 @@ namespace http
             return fd_;
         }
 
+        bool killed() const noexcept
+        {
+            return killed_;
+        }
+
         bool is_ipv6() const noexcept
         {
             return ipv6_;
@@ -93,6 +98,10 @@ namespace http
         {
             ipv6_ = ipv6;
         }
+        void killed_set(bool k) noexcept
+        {
+            killed_ = k;
+        }
 
         virtual int set_non_block() = 0;
 
@@ -104,6 +113,7 @@ namespace http
         /**
          * Either ipv4 or ipv6.
          */
+        bool killed_ = false;
         bool ipv6_ = false;
         bool is_ssl_ = false;
         std::shared_ptr<http::VHostConfig> vhost_;

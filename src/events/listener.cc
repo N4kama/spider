@@ -1,7 +1,6 @@
 #include <events/listener.hh>
 #include <events/recv.hh>
 #include <events/register.hh>
-#include <events/timer.hh>
 #include <vhost/connection.hh>
 #include "../main.hh"
 
@@ -25,9 +24,6 @@ namespace http
         shared_socket sock = sock_->accept((struct sockaddr*)&addr, &addr_len);
         sock->ipv6_set(sock_->is_ipv6());
         std::cout << "Successfully connected with client.\n";
-
-        TimerEW timer = TimerEW(sock_, find_vhost(sock_), event_register.loop_get().loop, toConfig_, 1);
-        
-        http::dispatcher.dispatch_request(sock);
+        http::dispatcher.dispatch_request(sock, toConfig_);
     }
 } // namespace http

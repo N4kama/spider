@@ -8,7 +8,7 @@
 
 namespace http
 {
-    RecvEv::RecvEv(shared_socket socket, shared_vhost vhost)
+ RecvEv::RecvEv(shared_socket socket, shared_vhost vhost)
         : EventWatcher(socket->fd_get()->fd_, EV_READ)
         , sock_{socket}
         , vhost_{vhost}
@@ -44,6 +44,11 @@ namespace http
 
     void RecvEv::operator()()
     {
+        if (sock_->killed())
+        {
+            event_register.unregister_ew(this);
+            return;
+        }
         try
         {
             if (filled != 0)
@@ -77,7 +82,7 @@ namespace http
             }
             if (filled == 0)
             {
-                char c[4096] = {0,};
+                char c[4096] = {0};
                 if (sock_->recv(&c, 1) > 0)
                 {
                     if (sock_->is_ssl())
