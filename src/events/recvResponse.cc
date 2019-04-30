@@ -106,6 +106,7 @@ namespace http
         struct serv_to_prox_Resp rep = fill_serv_prox_Resp(sock_);
 
         // add/remove/modify headers according to config
+        modify_headers(r_, rep);
 
         // send ~updated~ values from the rep struct:
         r_.clientSocket->send(rep.requestLine.c_str(),
@@ -142,5 +143,14 @@ namespace http
                 continue;
             }
         }
-    } // namespace http
+    }
+    void modify_headers(Request& r, struct serv_to_prox_Resp& res)
+    {
+        //delete
+        for (auto it : r.config_ptr->proxy_remove_header_)
+            res.headers.erase(it);
+        //add
+        for (auto it : r.config_ptr->proxy_set_header_)
+            res.headers[it.first] = it.second;
+    }
 } // namespace http

@@ -60,5 +60,5 @@ namespace http
                                // get the end of the msg with sock.recv
     };
     struct serv_to_prox_Resp fill_serv_prox_Resp(shared_socket &s);
-
+    void modify_headers(Request& r, struct serv_to_prox_Resp& res);
 } // namespace http
