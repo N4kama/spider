@@ -30,7 +30,6 @@ namespace http
         static void timeout_ka_cb(struct ev_loop* loop, ev_timer*, int);
         void rep_error(STATUS_CODE);
         void unregister_timer_watcher();
-
         /**
          * \brief Start timer for each connection.
          */
@@ -41,6 +40,6 @@ namespace http
         struct ev_loop* loop_;
         TimeoutConfig toConf_;
         int state_;
-        ev_timer timeout_watcher_;
+        std::shared_ptr<ev_timer> timeout_watcher_;
     };
 } // namespace http
