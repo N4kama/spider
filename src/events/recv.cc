@@ -91,6 +91,11 @@ namespace http
                 char c[4096] = {0};
                 if (sock_->recv(&c, 1) > 0)
                 {
+                    if (header.size() == 0)
+                    {
+                        auto t = timer_.get();
+                        t->reset_timer_watcher(toConf.to_transaction_);
+                    }
                     if (sock_->is_ssl())
                         header += c;
                     else
