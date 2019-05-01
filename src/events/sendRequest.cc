@@ -37,7 +37,8 @@ namespace http
 
     void SendRequest::operator()()
     {
-        std::string serverAddr = r_.headers.find("Host")->second;
+        //old std::string serverAddr = r_.headers.find("Host")->second;
+        std::string serverAddr = r_.config_ptr->proxy_ip_;
         sockaddr_in sin;
         sin.sin_addr.s_addr = inet_addr(serverAddr.c_str());
         if (sin.sin_addr.s_addr == INADDR_NONE)
@@ -47,7 +48,8 @@ namespace http
                 sin.sin_addr = *(in_addr*)(phost->h_addr);
         }
         sin.sin_family = AF_INET;
-        sin.sin_port = htons(80);
+        //old sin.sin_port = htons(80);
+        sin.sin_port = htons(std::atoi(r_.config_ptr->proxy_ip_.c_str()));
         if(sock_->is_ssl() == 0 && connect(sock_->fd_get()->fd_,(sockaddr*)&sin, sizeof(sin)) < 0)
         {
             std::cout << "proxy can't connect to server (yet)";
@@ -70,12 +72,8 @@ namespace http
             }
             size_left -= send_nb;
         }
+
         //receiving
-
-        //recois sur sock_
-        //envoi sur r_.clientSocket
-
-
         event_register.register_ew<http::RecvResponse, http::shared_socket,
                                      http::Request>(
                             std::forward<shared_socket>(sock_),

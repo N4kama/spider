@@ -283,10 +283,12 @@ namespace http
         // Create new request to send to the real target
         Request req = Request(r);
 
-        modify_headers(req);
-
         // Add the proxy address to the "forwarded" entry
+        // modify Host field by default
         update_forwarded_header(req);
+
+        // modify headers (may change "Host" field)
+        modify_headers(req);
 
         // send new request to target
         if (req.config_ptr->no_ssl)
@@ -330,6 +332,7 @@ namespace http
 
     void update_forwarded_header(Request& req)
     {
+        req.headers["Host"] = req.config_ptr->proxy_ip_;
         if (req.headers.find("Forwarded") == req.headers.end())
         {
             std::string entry = "for=";
@@ -338,14 +341,19 @@ namespace http
             entry.append(";host=" + req.config_ptr->server_name_);
             if (!req.config_ptr->no_ssl)
                 entry.append(";proto=https");
+            else
+                entry.append(";proto=http");
             req.headers.emplace("Forwarded", entry);
         } else
         {
-            std::string entry = req.headers.find("Forwarded")->second;
+            std::string entry = req.headers["Forwarded"];
             entry.append(";for=");
             entry.append(get_ip_address(req.clientSocket));
             if (!req.config_ptr->no_ssl)
                 entry.append(";proto=https");
+            else
+                entry.append(";proto=http");
+            req.headers["Forwarded"] = entry;
         }
     }
 

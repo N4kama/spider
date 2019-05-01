@@ -8,8 +8,14 @@
             "proxy_pass" :
             {
                 "ip": "127.0.0.1",
-                "port": 8000
+                "port": 8001
             }
+        },
+        {
+            "ip": "127.0.0.1",
+            "port": 8001,
+            "server_name": "localhost2",
+            "root": "./tests/configs/"
         }
     ]
 }
