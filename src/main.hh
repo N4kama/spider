@@ -18,10 +18,22 @@ namespace http
     extern http::Dispatcher dispatcher;
     int start_server(std::string arg);
     void init_ssl();
-    void init_vhost(http::ServerConfig config);
+    void init_vhost();
     void
     init_listeners(std::vector<std::shared_ptr<http::ListenerEW>>& listeners,
-                   http::ServerConfig config, int i);
+                   int i);
     void end_loop(std::vector<std::shared_ptr<http::ListenerEW>>& listeners);
+
+    void child_cb(EV_P_ ev_child* ec, int revents);
+    void watch_child(shared_socket sock, pid_t pid,
+                     std::vector<std::shared_ptr<http::ListenerEW>>& listeners);
+
+    void
+    unwatch_childs(shared_socket sock,
+                   std::vector<std::shared_ptr<http::ListenerEW>>& listeners);
+
+    pid_t
+    create_child(shared_socket sock,
+                 std::vector<std::shared_ptr<http::ListenerEW>>& listeners);
 
 } // namespace http
