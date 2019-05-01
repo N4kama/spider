@@ -6,8 +6,8 @@
 #pragma once
 
 #include <arpa/inet.h>
-#include <socket/socket.hh>
 #include <events/timer.hh>
+#include <socket/socket.hh>
 
 #include "events.hh"
 #include "vhost/connection.hh"
@@ -25,12 +25,14 @@ namespace http
         /**
          * \brief Create a ListenerEW from a listener socket.
          */
-        explicit RecvEv(shared_socket socket, shared_vhost vhost, std::shared_ptr<TimerEW> timer);
+        explicit RecvEv(shared_socket socket, shared_vhost vhost,
+                        std::shared_ptr<TimerEW> timer);
 
         /**
          * \brief Start accepting connections on listener socket.
          */
         void operator()() final;
+        void sendit();
 
     private:
         /**
