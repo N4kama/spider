@@ -28,6 +28,41 @@ namespace http
         }
     }
 
+    pid_t
+    create_child(shared_socket sock,
+                 std::vector<std::shared_ptr<http::ListenerEW>>& listeners)
+    {
+        pid_t pid = fork();
+        if (pid == 0)
+        {
+            std::cout << "new child:" << getpid() << "\n";
+
+            ev_loop_fork(event_register.loop_get().loop);
+
+            unwatch_childs(sock, listeners);
+            TimeoutConfig t = event_register.config().timeoutConf_;
+            std::shared_ptr<ListenerEW> listener =
+                event_register
+                    .register_ew<ListenerEW, shared_socket, TimeoutConfig>(
+                        std::forward<shared_socket>(sock),
+                        std::forward<TimeoutConfig>(t));
+            listeners.emplace_back(listener);
+
+            ev_run(listener->loop(), 0);
+        } else if (pid > 0)
+        {
+            std::cout << "created child for "
+                      << "\n";
+            watch_child(sock, pid, listeners);
+        } else
+        {
+            std::cout << "failed to create child for "
+                      << "\n";
+        }
+
+        return pid;
+    }
+
     void
     init_listeners(std::vector<std::shared_ptr<http::ListenerEW>>& listeners,
                    int i)
