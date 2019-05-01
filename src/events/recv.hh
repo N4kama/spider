@@ -25,7 +25,7 @@ namespace http
         /**
          * \brief Create a ListenerEW from a listener socket.
          */
-        explicit RecvEv(shared_socket socket, shared_vhost vhost, TimerEW timer);
+        explicit RecvEv(shared_socket socket, shared_vhost vhost/*, TimerEW timer*/);
 
         /**
          * \brief Start accepting connections on listener socket.
@@ -45,7 +45,7 @@ namespace http
         shared_vhost vhost_;
         std::string header;
         std::string body;
-        TimerEW timer_;
+        //TimerEW timer_;
 
         size_t filled;
     };
