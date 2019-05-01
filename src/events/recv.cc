@@ -56,7 +56,6 @@ namespace http
             std::forward<shared_vhost>(vhost_),
             std::make_shared<Response>(req));
         timer_->unregister_timer_watcher();
-        timer_->~TimerEW();
         event_register.unregister_ew(this);
     }
 
