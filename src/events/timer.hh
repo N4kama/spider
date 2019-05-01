@@ -25,6 +25,7 @@ namespace http
         TimerEW(shared_socket socket, shared_vhost vhost, struct ev_loop* loop,
                 TimeoutConfig toConf, int st);
         void register_timer_watcher(ev_timer* timeout_watcher, double to);
+        void reset_timer_watcher(ev_timer* timeout_watcher, double to);
 
         static void timeout_ka_cb(struct ev_loop* loop, ev_timer*, int);
         void rep_error(STATUS_CODE);
