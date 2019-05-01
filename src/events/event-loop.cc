@@ -39,5 +39,7 @@ void EventLoop::register_sigint_watcher(ev_signal* evt_sig) const
 
 void EventLoop::operator()() const
 {
+    ev_signal signal_watcher;
+    register_sigint_watcher(&signal_watcher);
     ev_run(loop, 0);
 }
