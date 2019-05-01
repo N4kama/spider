@@ -60,7 +60,7 @@ namespace http
             s = std::make_shared<SSLSocket>(s->fd_get(), v->get_ctx());
         }
         int st = 0;
-        if(t.to_keep_alive_)
+        if(t.to_keep_alive_ >= 0)
             st = 1;
         std::shared_ptr<TimerEW> timer = std::make_shared<TimerEW>(
             s, v, event_register.loop_get().loop, t, st);
