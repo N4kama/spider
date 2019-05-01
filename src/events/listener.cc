@@ -15,6 +15,7 @@ namespace http
         socklen_t len = sizeof(my_addr);
         getsockname(socket->fd_get()->fd_, (struct sockaddr*)&my_addr, &len);
         this->port_ = ntohs(my_addr.sin_port);
+        child_ = std::make_shared<ev_child>();
     }
 
     void ListenerEW::operator()()
