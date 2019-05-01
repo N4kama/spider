@@ -8,7 +8,8 @@
 
 namespace http
 {
-    RecvEv::RecvEv(shared_socket socket, shared_vhost vhost, std::shared_ptr<TimerEW> timer)
+    RecvEv::RecvEv(shared_socket socket, shared_vhost vhost,
+                   std::shared_ptr<TimerEW> timer)
         : EventWatcher(socket->fd_get()->fd_, EV_READ)
         , sock_{socket}
         , vhost_{vhost}
@@ -43,13 +44,28 @@ namespace http
         return std::atoi(sub.c_str());
     }
 
+    void RecvEv::sendit()
+    {
+        Request req = Request(header);
+        req.clientSocket = sock_;
+        req.config_ptr = std::make_shared<VHostConfig>(vhost_->get_conf());
+        req.get_path();
+        event_register.register_ew<http::SendEv, http::shared_socket,
+                                   shared_vhost, std::shared_ptr<Response>>(
+            std::forward<shared_socket>(sock_),
+            std::forward<shared_vhost>(vhost_),
+            std::make_shared<Response>(req));
+        timer_->unregister_timer_watcher();
+        timer_->~TimerEW();
+        event_register.unregister_ew(this);
+    }
+
     void RecvEv::operator()()
     {
         if (sock_->killed())
         {
-            // TimerEW *timer = reinterpret_cast<TimerEW*>(sock_->timer());
-            // timer->unregister_timer_watcher();
             event_register.unregister_ew(this);
+            std::cout << "timeout!\n";
             return;
         }
         try
@@ -67,20 +83,7 @@ namespace http
                 if (filled == body.length())
                 {
                     header += body;
-                    Request req = Request(header);
-                    req.clientSocket = sock_;
-                    req.config_ptr =
-                        std::make_shared<VHostConfig>(vhost_->get_conf());
-                    req.get_path();
-                    event_register
-                        .register_ew<http::SendEv, http::shared_socket,
-                                     shared_vhost, std::shared_ptr<Response>>(
-                            std::forward<shared_socket>(sock_),
-                            std::forward<shared_vhost>(vhost_),
-                            std::make_shared<Response>(req));
-                    timer_->unregister_timer_watcher();
-                    timer_->~TimerEW();
-                    event_register.unregister_ew(this);
+                    sendit();
                 }
                 return;
             }
@@ -113,20 +116,7 @@ namespace http
                         filled = value;
                     } else
                     {
-                        Request req = Request(header);
-                        req.clientSocket = sock_;
-                        req.config_ptr =
-                            std::make_shared<VHostConfig>(vhost_->get_conf());
-                        req.get_path();
-                        event_register.register_ew<
-                            http::SendEv, http::shared_socket, shared_vhost,
-                            std::shared_ptr<Response>>(
-                            std::forward<shared_socket>(sock_),
-                            std::forward<shared_vhost>(vhost_),
-                            std::make_shared<Response>(req));
-                        timer_->unregister_timer_watcher();
-                        timer_->~TimerEW();
-                        event_register.unregister_ew(this);
+                        sendit();
                     }
                 }
             }
