@@ -45,12 +45,6 @@ namespace http
 
     void SendEv::operator()()
     {
-        if (sock_->killed() && status != TIMEOUT)
-        {
-            std::cout << "haha";
-            event_register.unregister_ew(this);
-            return;
-        }
         if (!count_)
         {
             /*if (keep_alive)
