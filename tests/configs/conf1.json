@@ -6,5 +6,11 @@
             "server_name": "localhost",
             "root": "."
         }
-    ]
+    ],
+    "timeout": {
+        "keep_alive": 5,
+        "transaction": 10,
+        "throughput_val": 1000,
+        "throughput_time": 5
+    }
 }
