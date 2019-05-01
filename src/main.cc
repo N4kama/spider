@@ -63,6 +63,39 @@ namespace http
         return pid;
     }
 
+    void child_cb(EV_P_ ev_child* ec, int)
+    {
+        if (getpid() != event_register.g_master_pid())
+            return;
+
+        std::vector<std::shared_ptr<http::ListenerEW>>* listeners =
+            reinterpret_cast<std::vector<std::shared_ptr<http::ListenerEW>>*>(
+                ec->data);
+        std::shared_ptr<http::ListenerEW> cur;
+        for (std::shared_ptr<http::ListenerEW> l : *listeners)
+        {
+            if (l->child().get()->rpid == ec->rpid)
+            {
+                cur = l;
+                break;
+            }
+        }
+
+        std::cout << "child process " << ec->rpid << " exited with status "
+                  << ec->rstatus << "\n",
+
+            ev_child_stop(EV_A_ ec);
+
+        pid_t pid = create_child(cur->socket(), *listeners);
+        if (pid > 0)
+        {
+            std::cout << "respawed new child " << pid << "\n";
+        } else
+        {
+            std::cout << "failed to recreate child: " << pid << "\n";
+        }
+    }
+    
     void
     init_listeners(std::vector<std::shared_ptr<http::ListenerEW>>& listeners,
                    int i)
