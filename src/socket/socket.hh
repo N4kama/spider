@@ -79,11 +79,6 @@ namespace http
             return fd_;
         }
 
-        bool killed() const noexcept
-        {
-            return killed_;
-        }
-
         bool is_ipv6() const noexcept
         {
             return ipv6_;
@@ -98,6 +93,12 @@ namespace http
         {
             ipv6_ = ipv6;
         }
+
+        bool killed() const noexcept
+        {
+            return killed_;
+        }
+
         void killed_set(bool k) noexcept
         {
             killed_ = k;
