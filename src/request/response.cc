@@ -32,11 +32,8 @@ namespace http
     Response::Response(const STATUS_CODE& s, int err)
         : status_code(s)
     {
-        if (err == 1)
-        {
-            keep_alive = false;
-            set_error_rep(s, err);
-        }
+        keep_alive = false;
+        set_error_rep(s, err);
     }
 
     Response::Response(const struct Request& r, const STATUS_CODE& s)
@@ -167,6 +164,8 @@ namespace http
 
         if (e == 1)
             str << "X-Timeout-Reason: Keep-Alive\r\n";
+        else if (e == 2)
+            str << "X-Timeout-Reason: Transaction\r\n";
 
         str << "Connection: " << (keep_alive ? "keep-alive" : "close");
         str << "\r\n\r\n";
