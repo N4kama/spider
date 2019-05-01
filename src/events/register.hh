@@ -11,6 +11,7 @@
 
 #include "events/event-loop.hh"
 #include "events/events.hh"
+#include "config/config.hh"
 
 namespace http
 {
@@ -72,6 +73,26 @@ namespace http
             return loop_;
         }
 
+        const pid_t& g_master_pid()
+        {
+            return g_master_pid_;
+        }
+
+        void set_pid(pid_t pid)
+        {
+            g_master_pid_ = pid;
+        }
+
+        void set_config(http::ServerConfig conf)
+        {
+            config_ = conf;
+        }
+
+        const http::ServerConfig config()
+        {
+            return config_;
+        }
+
     private:
         /**
          * \brief Map used to store EventWatchers
@@ -85,7 +106,9 @@ namespace http
         /**
          * \brief Registry's event loop.
          */
+        http::ServerConfig config_;
         EventLoop loop_;
+        pid_t g_master_pid_ = 0;
     };
 
     /**
