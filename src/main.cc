@@ -19,18 +19,18 @@ namespace http
         SSL_library_init();
     }
 
-    void init_vhost(http::ServerConfig config)
+    void init_vhost()
     {
         // fills the dispatcher with the vhosts
-        for (unsigned i = 0; i < config.vhosts_.size(); i++)
+        for (unsigned i = 0; i < event_register.config().vhosts_.size(); i++)
         {
-            dispatcher.add_vhost(config.vhosts_.at(i));
+            dispatcher.add_vhost(event_register.config().vhosts_.at(i));
         }
     }
 
     void
     init_listeners(std::vector<std::shared_ptr<http::ListenerEW>>& listeners,
-                   http::ServerConfig config, int i)
+                   int i)
     {
         addrinfo info = {};
         info.ai_family = PF_UNSPEC;
@@ -38,9 +38,10 @@ namespace http
         info.ai_protocol = IPPROTO_TCP;
         info.ai_flags = AI_PASSIVE;
         addrinfo* result;
-        getaddrinfo(config.vhosts_.at(i).ip_.c_str(),
-                    std::to_string(config.vhosts_.at(i).port_).c_str(), &info,
-                    &result);
+        getaddrinfo(
+            event_register.config().vhosts_.at(i).ip_.c_str(),
+            std::to_string(event_register.config().vhosts_.at(i).port_).c_str(),
+            &info, &result);
         for (addrinfo* addr = result; addr != NULL; addr = addr->ai_next)
         {
             http::DefaultSocket server_socket = http::DefaultSocket(
@@ -50,10 +51,7 @@ namespace http
             sock->bind(addr->ai_addr, addr->ai_addrlen);
             sock->listen(3000);
             sock->ipv6_set(server_socket.is_ipv6());
-            std::shared_ptr<ListenerEW> listener =
-                event_register.register_ew<ListenerEW, shared_socket>(
-                    sock, std::forward<TimeoutConfig>(config.timeoutConf_));
-            listeners.emplace_back(listener);
+            create_child(sock, listeners);
         }
         freeaddrinfo(result);
     }
@@ -72,9 +70,10 @@ namespace http
         try
         {
             init_ssl();
-
+            event_register.set_pid(getpid());
             http::ServerConfig config = http::parse_configuration(arg);
-            init_vhost(config);
+            event_register.set_config(config);
+            init_vhost();
 
             // Check the integrity of the vhosts stored in dispatcher
             if (dispatcher.check_integrity())
@@ -85,7 +84,7 @@ namespace http
 
             for (unsigned i = 0; i < config.vhosts_.size(); i++)
             {
-                init_listeners(listeners, config, i);
+                init_listeners(listeners, i);
             }
 
             // run loop
