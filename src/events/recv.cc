@@ -8,11 +8,11 @@
 
 namespace http
 {
-    RecvEv::RecvEv(shared_socket socket, shared_vhost vhost/*, TimerEW timer*/)
+    RecvEv::RecvEv(shared_socket socket, shared_vhost vhost, std::shared_ptr<TimerEW> timer)
         : EventWatcher(socket->fd_get()->fd_, EV_READ)
         , sock_{socket}
         , vhost_{vhost}
-        //, timer_{timer}
+        , timer_{timer}
     {
         struct sockaddr_in my_addr;
         socklen_t len = sizeof(my_addr);
@@ -47,6 +47,8 @@ namespace http
     {
         if (sock_->killed())
         {
+            // TimerEW *timer = reinterpret_cast<TimerEW*>(sock_->timer());
+            // timer->unregister_timer_watcher();
             event_register.unregister_ew(this);
             return;
         }
@@ -76,7 +78,8 @@ namespace http
                             std::forward<shared_socket>(sock_),
                             std::forward<shared_vhost>(vhost_),
                             std::make_shared<Response>(req));
-                    //timer_.unregister_timer_watcher();
+                    timer_->unregister_timer_watcher();
+                    timer_->~TimerEW();
                     event_register.unregister_ew(this);
                 }
                 return;
@@ -95,7 +98,7 @@ namespace http
                     if (!sock_->is_ssl())
                     {
                         event_register.unregister_ew(this);
-                        //timer_.unregister_timer_watcher();
+                        timer_->unregister_timer_watcher();
                     }
                     std::cerr << "Client Disconected\n";
                 }
@@ -121,7 +124,8 @@ namespace http
                             std::forward<shared_socket>(sock_),
                             std::forward<shared_vhost>(vhost_),
                             std::make_shared<Response>(req));
-                        //timer_.unregister_timer_watcher();
+                        timer_->unregister_timer_watcher();
+                        timer_->~TimerEW();
                         event_register.unregister_ew(this);
                     }
                 }
