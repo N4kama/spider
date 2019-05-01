@@ -5,10 +5,12 @@
 
 #pragma once
 
+#include <arpa/inet.h>
+
 #include "events/events.hh"
+#include "events/event-loop.hh"
 #include "socket/socket.hh"
 #include "vhost/connection.hh"
-#include <arpa/inet.h>
 namespace http
 {
     /**
@@ -28,11 +30,28 @@ namespace http
          */
         void operator()() final;
 
+        shared_socket socket()
+        {
+            return sock_;
+        }
+
+        std::shared_ptr<ev_child> child()
+        {
+            return child_;
+        }
+
+        struct ev_loop* loop()
+        {
+            return loop_.loop;
+        }
+
     private:
         /**
          * \brief Listener socket.
          */
         shared_socket sock_;
+        std::shared_ptr<ev_child> child_;
+        EventLoop loop_;
         TimeoutConfig toConfig_;
         /**
          * \brief Port on which the socket is listening.
