@@ -1,8 +1,8 @@
 #include "timer.hh"
 
+#include <config/config.hh>
 #include <events/register.hh>
 #include <events/sendv.hh>
-#include <config/config.hh>
 
 namespace http
 {
@@ -13,11 +13,12 @@ namespace http
         , loop_{loop}
         , state_{st}
     {
-        timeout_watcher_ = std::make_shared<ev_timer>();
         if (state_ == 1)
-            register_timer_watcher(timeout_watcher_.get(),
-                                   toConf.to_keep_alive_);
-    }
+        {
+            timeout_watcher_ = std::make_shared<ev_timer>();
+            register_timer_watcher(timeout_watcher_.get(), toConf.to_keep_alive_);
+        }
+    } 
 
     void TimerEW::timeout_ka_cb(struct ev_loop*, ev_timer* ev, int)
     {
@@ -38,6 +39,11 @@ namespace http
         }
     }
 
+    void TimerEW::set_state(int st)
+    {
+        state_ = st;
+    }
+
     void TimerEW::register_timer_watcher(ev_timer* timeout_watcher, double to)
     {
         ev_timer_init(timeout_watcher, TimerEW::timeout_ka_cb, to, 0.);
@@ -45,11 +51,11 @@ namespace http
         ev_timer_start(loop_, timeout_watcher);
     }
 
-    void TimerEW::reset_timer_watcher(ev_timer* timeout_watcher, double to)
+    void TimerEW::reset_timer_watcher(double to)
     {
-        ev_timer_stop(loop_, timeout_watcher);
-        ev_timer_set(timeout_watcher, to, 0.);
-        ev_timer_start(loop_, timeout_watcher);
+        ev_timer_stop(loop_, timeout_watcher_.get());
+        ev_timer_set(timeout_watcher_.get(), to, 0.);
+        ev_timer_start(loop_, timeout_watcher_.get());
     }
 
     void TimerEW::unregister_timer_watcher()
