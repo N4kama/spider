@@ -93,10 +93,10 @@ namespace http
 
         ~TimeoutConfig() = default;
 
-        double to_keep_alive_;
-        double to_transaction_;
-        double to_throughput_val_;
-        double to_throughput_time_;
+        double to_keep_alive_ = 0;
+        double to_transaction_ = 0;
+        double to_throughput_val_ = 0;
+        double to_throughput_time_ = 0;
     };
     struct TimeoutConfig set_TimeoutConfig(const std::string& str);
     json get_timeouts(const std::string& s);

@@ -59,8 +59,11 @@ namespace http
         {
             s = std::make_shared<SSLSocket>(s->fd_get(), v->get_ctx());
         }
+        int st = 0;
+        if(t.to_keep_alive_)
+            st = 1;
         std::shared_ptr<TimerEW> timer = std::make_shared<TimerEW>(
-            s, v, event_register.loop_get().loop, t, 1);
+            s, v, event_register.loop_get().loop, t, st);
         ev = event_register
                  .register_ew<http::RecvEv, shared_socket, shared_vhost>(
                      std::forward<shared_socket>(s),
