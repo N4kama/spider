@@ -41,9 +41,8 @@ namespace http
 
             unwatch_childs(sock, listeners);
             std::shared_ptr<ListenerEW> listener =
-                event_register
-                    .register_ew<ListenerEW, shared_socket>(
-                        std::forward<shared_socket>(sock));
+                event_register.register_ew<ListenerEW, shared_socket>(
+                    std::forward<shared_socket>(sock));
             listeners.emplace_back(listener);
 
             ev_run(listener->loop(), 0);
@@ -153,6 +152,10 @@ namespace http
 
     void end_loop(std::vector<std::shared_ptr<http::ListenerEW>>& listeners)
     {
+        for (std::shared_ptr<http::ListenerEW> l : listeners)
+        {
+            ev_child_stop(l->loop(), l->child().get());
+        }
         for (unsigned i = 0; i < listeners.size(); i++)
         {
             event_register.unregister_ew(listeners.at(i).get());
