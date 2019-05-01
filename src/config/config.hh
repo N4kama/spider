@@ -119,7 +119,6 @@ namespace http
         ~ServerConfig() = default;
 
         std::vector<http::VHostConfig> vhosts_;
-        http::TimeoutConfig timeoutConf_;
     };
 
     /**
@@ -134,3 +133,4 @@ namespace http
     struct ServerConfig parse_configuration(const std::string& path);
 
 } // namespace http
+extern http::TimeoutConfig toConf;

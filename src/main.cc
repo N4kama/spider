@@ -40,12 +40,10 @@ namespace http
             ev_loop_fork(event_register.loop_get().loop);
 
             unwatch_childs(sock, listeners);
-            TimeoutConfig t = event_register.config().timeoutConf_;
             std::shared_ptr<ListenerEW> listener =
                 event_register
-                    .register_ew<ListenerEW, shared_socket, TimeoutConfig>(
-                        std::forward<shared_socket>(sock),
-                        std::forward<TimeoutConfig>(t));
+                    .register_ew<ListenerEW, shared_socket>(
+                        std::forward<shared_socket>(sock));
             listeners.emplace_back(listener);
 
             ev_run(listener->loop(), 0);

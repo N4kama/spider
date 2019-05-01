@@ -22,8 +22,7 @@ namespace http
         /**
          * \brief Create a TimerEW from a listener socket.
          */
-        TimerEW(shared_socket socket, shared_vhost vhost, struct ev_loop* loop,
-                TimeoutConfig toConf, int st);
+        TimerEW(shared_socket socket, shared_vhost vhost, struct ev_loop* loop, int st);
         void register_timer_watcher(ev_timer* timeout_watcher, double to);
         void reset_timer_watcher(ev_timer* timeout_watcher, double to);
 
@@ -38,7 +37,6 @@ namespace http
         shared_socket sock_;
         shared_vhost vhost_;
         struct ev_loop* loop_;
-        TimeoutConfig toConf_;
         int state_;
         std::shared_ptr<ev_timer> timeout_watcher_;
     };

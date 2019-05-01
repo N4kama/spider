@@ -23,7 +23,7 @@ namespace http
         /**
          * \brief Create a ListenerEW from a listener socket.
          */
-        explicit ListenerEW(shared_socket socket, TimeoutConfig toCon);
+        explicit ListenerEW(shared_socket socket);
 
         /**
          * \brief Start accepting connections on listener socket.
@@ -52,7 +52,6 @@ namespace http
         shared_socket sock_;
         std::shared_ptr<ev_child> child_;
         EventLoop loop_;
-        TimeoutConfig toConfig_;
         /**
          * \brief Port on which the socket is listening.
          */

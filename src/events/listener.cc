@@ -6,10 +6,9 @@
 
 namespace http
 {
-    ListenerEW::ListenerEW(shared_socket socket, TimeoutConfig toCon)
+    ListenerEW::ListenerEW(shared_socket socket)
         : EventWatcher(socket->fd_get()->fd_, EV_READ)
         , sock_{socket}
-        , toConfig_{toCon}
     {
         struct sockaddr_in my_addr;
         socklen_t len = sizeof(my_addr);
@@ -25,6 +24,6 @@ namespace http
         shared_socket sock = sock_->accept((struct sockaddr*)&addr, &addr_len);
         sock->ipv6_set(sock_->is_ipv6());
         std::cout << "Successfully connected with client.\n";
-        http::dispatcher.dispatch_request(sock, toConfig_);
+        http::dispatcher.dispatch_request(sock);
     }
 } // namespace http

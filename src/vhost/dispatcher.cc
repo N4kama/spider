@@ -6,6 +6,7 @@
 #include "../main.hh"
 #include "socket/ssl-socket.hh"
 #include "vhost-factory.hh"
+#include "config/config.hh"
 
 namespace http
 {
@@ -51,7 +52,7 @@ namespace http
         return res;
     }
 
-    int Dispatcher::dispatch_request(shared_socket& s, TimeoutConfig t)
+    int Dispatcher::dispatch_request(shared_socket& s)
     {
         shared_vhost v = find_vhost(s);
         std::shared_ptr<EventWatcher> ev;
@@ -60,10 +61,10 @@ namespace http
             s = std::make_shared<SSLSocket>(s->fd_get(), v->get_ctx());
         }
         int st = 0;
-        if(t.to_keep_alive_ >= 0)
+        if(toConf.to_keep_alive_ >= 0)
             st = 1;
         std::shared_ptr<TimerEW> timer = std::make_shared<TimerEW>(
-            s, v, event_register.loop_get().loop, t, st);
+            s, v, event_register.loop_get().loop, st);
         ev = event_register
                  .register_ew<http::RecvEv, shared_socket, shared_vhost>(
                      std::forward<shared_socket>(s),

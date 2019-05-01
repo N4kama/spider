@@ -2,6 +2,7 @@
 
 #include <list>
 using json = nlohmann::json;
+http::TimeoutConfig toConf;
 
 namespace http
 {
@@ -383,7 +384,7 @@ namespace http
             }
         }
 
-        c.timeoutConf_ = set_TimeoutConfig(path);
+        toConf = set_TimeoutConfig(path);
 
         if (c.vhosts_.size() == 0)
         {

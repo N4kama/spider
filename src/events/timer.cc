@@ -2,21 +2,21 @@
 
 #include <events/register.hh>
 #include <events/sendv.hh>
+#include <config/config.hh>
 
 namespace http
 {
     TimerEW::TimerEW(shared_socket socket, shared_vhost vhost,
-                     struct ev_loop* loop, TimeoutConfig t, int st)
+                     struct ev_loop* loop, int st)
         : sock_{socket}
         , vhost_{vhost}
         , loop_{loop}
-        , toConf_{t}
         , state_{st}
     {
         timeout_watcher_ = std::make_shared<ev_timer>();
         if (state_ == 1)
             register_timer_watcher(timeout_watcher_.get(),
-                                   toConf_.to_keep_alive_);
+                                   toConf.to_keep_alive_);
     }
 
     void TimerEW::timeout_ka_cb(struct ev_loop*, ev_timer* ev, int)
