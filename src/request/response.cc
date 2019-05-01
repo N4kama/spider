@@ -45,8 +45,7 @@ namespace http
         , keep_alive(false)
     {
         // Handling reverse-proxy request
-        if (r.headers.find(std::string("Proxy-Connection")) != r.headers.end()
-            && r.config_ptr->is_proxy_)
+        if (r.config_ptr->is_proxy_)
         {
             reverse_proxy_handler(r);
             return;
