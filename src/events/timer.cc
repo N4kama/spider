@@ -15,30 +15,25 @@ namespace http
     {
         timeout_watcher_ = std::make_shared<ev_timer>();
         if (state_ == 1)
-        {
-            register_timer_watcher(timeout_watcher_.get(), toConf.to_keep_alive_);
-        }
-        if (state_ == 2)
-            register_timer_watcher(timeout_watcher_.get(), toConf.to_transaction_);
-    } 
+            register_timer_watcher(timeout_watcher_.get(),
+                                   toConf.to_keep_alive_);
+        else if (state_ == 2)
+            register_timer_watcher(timeout_watcher_.get(),
+                                   toConf.to_transaction_);
+    }
 
     void TimerEW::timeout_ka_cb(struct ev_loop*, ev_timer* ev, int)
     {
         TimerEW* timer = reinterpret_cast<TimerEW*>(ev->data);
-        if (timer->state_ == 1)
-        {
-            // ev_timer_stop(loop, ev);
-            shared_socket s = timer->sock_;
-            shared_vhost v = timer->vhost_;
-            std::shared_ptr<Response> r =
-                std::make_shared<Response>(TIMEOUT, timer->state_);
-            s->killed_set(true);
-            event_register.register_ew<http::SendEv, http::shared_socket,
-                                       shared_vhost, std::shared_ptr<Response>>(
-                std::forward<shared_socket>(s), std::forward<shared_vhost>(v),
-                std::forward<std::shared_ptr<Response>>(r));
-            // std::cout << "TIMEOUT\n";
-        }
+        shared_socket s = timer->sock_;
+        shared_vhost v = timer->vhost_;
+        std::shared_ptr<Response> r =
+            std::make_shared<Response>(TIMEOUT, timer->state_);
+        s->killed_set(true);
+        event_register.register_ew<http::SendEv, http::shared_socket,
+                                   shared_vhost, std::shared_ptr<Response>>(
+            std::forward<shared_socket>(s), std::forward<shared_vhost>(v),
+            std::forward<std::shared_ptr<Response>>(r));
     }
 
     void TimerEW::register_timer_watcher(ev_timer* timeout_watcher, double to)
@@ -57,8 +52,7 @@ namespace http
 
     void TimerEW::unregister_timer_watcher()
     {
-        if (state_ == 1)
-            ev_timer_stop(loop_, timeout_watcher_.get());
+        ev_timer_stop(loop_, timeout_watcher_.get());
     }
 
 } // namespace http
