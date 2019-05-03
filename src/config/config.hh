@@ -83,7 +83,7 @@ namespace http
 
     struct TimeoutConfig
     {
-        TimeoutConfig(float to_ka, float to_tran, float to_thr_val,
+        TimeoutConfig(double to_ka, double to_tran, unsigned to_thr_val,
                       float to_thr_time);
         TimeoutConfig() = default;
         TimeoutConfig(const TimeoutConfig&) = default;
@@ -95,8 +95,8 @@ namespace http
 
         double to_keep_alive_ = 0;
         double to_transaction_ = 0;
-        double to_throughput_val_ = 0;
-        double to_throughput_time_ = 0;
+        unsigned to_throughput_val_ = 0;
+        float to_throughput_time_ = 0;
     };
     struct TimeoutConfig set_TimeoutConfig(const std::string& str);
     json get_timeouts(const std::string& s);

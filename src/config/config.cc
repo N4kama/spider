@@ -44,7 +44,7 @@ namespace http
             no_ssl = 1;
     }
 
-    TimeoutConfig::TimeoutConfig(float to_ka, float to_tran, float to_thr_val,
+    TimeoutConfig::TimeoutConfig(double to_ka, double to_tran, unsigned to_thr_val,
                                  float to_thr_time)
         : to_keep_alive_(to_ka)
         , to_transaction_(to_tran)
@@ -143,13 +143,6 @@ namespace http
             std::cerr << "Invalid json structure: missing server_name" << '\n';
             return 0;
         }
-        /*
-        if (j.find("root") == j.end() || !j.find("root")->is_string())
-        {
-            std::cerr << "Invalid json structure: missing root" << '\n';
-            return 0;
-        }
-        */
         return 1;
     }
 
@@ -194,19 +187,19 @@ namespace http
                 to_transaction = 3600;
             }
 
-            double to_throughput_val;
+            unsigned to_throughput_val;
             try
             {
-                to_throughput_val = j.at("throughput_val").get<double>();
+                to_throughput_val = j.at("throughput_val").get<unsigned>();
             } catch (const std::exception& e)
             {
                 to_throughput_val = 3600;
             }
 
-            double to_throughput_time;
+            float to_throughput_time;
             try
             {
-                to_throughput_time = j.at("throughput_time").get<double>();
+                to_throughput_time = j.at("throughput_time").get<float>();
             } catch (const std::exception& e)
             {
                 to_throughput_time = 3600;
@@ -227,8 +220,6 @@ namespace http
             json cur = *vhost;
             if (check_vhost(cur))
             {
-                //double test = get_proxy_timeout(cur);
-                //std::cout << "toto: " << test <<  std::endl;
                 std::string ip_s = cur.at("ip").get<std::string>();
                 if (ip_s == "")
                 {
