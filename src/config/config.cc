@@ -85,6 +85,22 @@ namespace http
         }
         return nullptr;
     }
+    json get_proxy_pass(json j)
+    {
+        if (j != nullptr)
+        {
+            try
+            {
+                auto& proxy_pass = j.at("proxy_pass");
+                return proxy_pass;
+            } catch (const std::exception& e)
+            {
+                std::cerr << "Invalid json structure: no vhosts" << '\n';
+            }
+            return nullptr;
+        }
+        return nullptr;
+    }
 
     json get_timeouts(const std::string& s)
     {
@@ -136,6 +152,8 @@ namespace http
         */
         return 1;
     }
+
+
 
     struct TimeoutConfig set_TimeoutConfig(const std::string& str)
     {
@@ -193,6 +211,8 @@ namespace http
             json cur = *vhost;
             if (check_vhost(cur))
             {
+                //double test = get_proxy_timeout(cur);
+                //std::cout << "toto: " << test <<  std::endl;
                 std::string ip_s = cur.at("ip").get<std::string>();
                 if (ip_s == "")
                 {
