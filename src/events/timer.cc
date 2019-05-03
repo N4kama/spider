@@ -13,11 +13,13 @@ namespace http
         , loop_{loop}
         , state_{st}
     {
+        timeout_watcher_ = std::make_shared<ev_timer>();
         if (state_ == 1)
         {
-            timeout_watcher_ = std::make_shared<ev_timer>();
             register_timer_watcher(timeout_watcher_.get(), toConf.to_keep_alive_);
         }
+        if (state_ == 2)
+            register_timer_watcher(timeout_watcher_.get(), toConf.to_transaction_);
     } 
 
     void TimerEW::timeout_ka_cb(struct ev_loop*, ev_timer* ev, int)
@@ -37,11 +39,6 @@ namespace http
                 std::forward<std::shared_ptr<Response>>(r));
             // std::cout << "TIMEOUT\n";
         }
-    }
-
-    void TimerEW::set_state(int st)
-    {
-        state_ = st;
     }
 
     void TimerEW::register_timer_watcher(ev_timer* timeout_watcher, double to)
