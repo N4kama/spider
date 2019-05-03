@@ -47,8 +47,8 @@ namespace http
         shared_vhost vhost_;
         std::string header;
         std::string body;
-        std::shared_ptr<TimerEW> timer_;
-
+        std::shared_ptr<TimerEW> ka_timer_;
+        std::shared_ptr<TimerEW> transaction_timer_;
         size_t filled;
     };
     int read_int(std::string s, size_t pos);

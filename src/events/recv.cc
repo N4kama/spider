@@ -13,7 +13,7 @@ namespace http
         : EventWatcher(socket->fd_get()->fd_, EV_READ)
         , sock_{socket}
         , vhost_{vhost}
-        , timer_{timer}
+        , ka_timer_{timer}
     {
         struct sockaddr_in my_addr;
         socklen_t len = sizeof(my_addr);
@@ -55,7 +55,7 @@ namespace http
             std::forward<shared_socket>(sock_),
             std::forward<shared_vhost>(vhost_),
             std::make_shared<Response>(req));
-        timer_->unregister_timer_watcher();
+        //ka_timer_->unregister_timer_watcher();
         event_register.unregister_ew(this);
     }
 
@@ -82,6 +82,8 @@ namespace http
                 if (filled == body.length())
                 {
                     header += body;
+                    if(toConf.to_transaction_ >= 0)
+                        transaction_timer_->unregister_timer_watcher();
                     //iciiiiiiiiiiiiiiiiiiiiii dernier bit
                     sendit();
                 }
@@ -95,18 +97,10 @@ namespace http
                     if (header.size() == 0)
                     {
                         if (toConf.to_keep_alive_ >= 0)
-                            timer_->unregister_timer_watcher();
-                        int st = 0;
+                            ka_timer_->unregister_timer_watcher();
                         if(toConf.to_transaction_ >= 0)
-                            st = 2;
-                        std::shared_ptr<TimerEW> timer = std::make_shared<TimerEW>(
-                            sock_, vhost_, event_register.loop_get().loop, st);
-                        timer_ = timer;
-                        /*
-                        auto t = timer_.get();
-                        t->set_state(2);
-                        t->reset_timer_watcher(toConf.to_transaction_);
-                        */
+                            transaction_timer_ = std::make_shared<TimerEW>(
+                                sock_, vhost_, event_register.loop_get().loop, 2);
                     }
                     if (sock_->is_ssl())
                         header += c;
@@ -117,8 +111,6 @@ namespace http
                     if (!sock_->is_ssl())
                     {
                         event_register.unregister_ew(this);
-                        if (toConf.to_keep_alive_ >= 0)
-                            timer_->unregister_timer_watcher();
                     }
                     std::cerr << "Client Disconected\n";
                 }
