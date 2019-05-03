@@ -129,6 +129,9 @@ namespace http
      * \return The server configuration.
      */
     json get_vhosts(const std::string& s);
+    double get_proxy_timeout(json j);
+    json get_proxy_pass(json s);
+
     int check_vhost(json j);
     struct ServerConfig parse_configuration(const std::string& path);
 
