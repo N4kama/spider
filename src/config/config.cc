@@ -153,7 +153,23 @@ namespace http
         return 1;
     }
 
-
+    double get_proxy_timeout(json cur)
+    {
+        json j = get_proxy_pass(cur);
+        if (j != nullptr)
+        {
+            double timeout;
+            try
+            {
+                timeout = j.at("timeout").get<double>();
+            } catch (const std::exception& e)
+            {
+                timeout = -1;
+            }
+            return timeout;
+        }
+        return -1;
+    }
 
     struct TimeoutConfig set_TimeoutConfig(const std::string& str)
     {
