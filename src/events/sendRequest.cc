@@ -49,7 +49,7 @@ namespace http
         }
         sin.sin_family = AF_INET;
         //old sin.sin_port = htons(80);
-        sin.sin_port = htons(std::atoi(r_.config_ptr->proxy_ip_.c_str()));
+        sin.sin_port = htons(r_.config_ptr->proxy_port_);
         if(sock_->is_ssl() == 0 && connect(sock_->fd_get()->fd_,(sockaddr*)&sin, sizeof(sin)) < 0)
         {
             std::cout << "proxy can't connect to server (yet)";
