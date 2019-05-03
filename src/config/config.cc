@@ -10,7 +10,7 @@ namespace http
         std::string& ip, int port, std::string& server_name, std::string& root,
         std::string& ssl_cert, std::string& ssl_key, size_t header_max_size,
         size_t uri_max_size, size_t payload_max_size, std::string& default_file,
-        bool auto_index, std::string& proxy_ip, std::string& proxy_port,
+        bool auto_index, std::string& proxy_ip, int& proxy_port,
         std::map<std::string, std::string>& proxy_set_header,
         std::vector<std::string>& proxy_remove_header,
         std::map<std::string, std::string>& set_header,
@@ -327,7 +327,7 @@ namespace http
                 // proxy values
                 bool is_proxy_ = false;
                 std::string proxy_ip_;
-                std::string proxy_port_;
+                int proxy_port_;
                 std::map<std::string, std::string> proxy_set_header_;
                 std::vector<std::string> proxy_remove_header_;
                 std::map<std::string, std::string> set_header_;
