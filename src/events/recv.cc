@@ -94,6 +94,7 @@ namespace http
                     if (header.size() == 0)
                     {
                         auto t = timer_.get();
+                        t->set_state(2);
                         t->reset_timer_watcher(toConf.to_transaction_);
                     }
                     if (sock_->is_ssl())
