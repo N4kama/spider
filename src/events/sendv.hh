@@ -5,9 +5,9 @@
 #include <socket/socket.hh>
 
 #include "events.hh"
+#include "timer.hh"
 #include "vhost/connection.hh"
 #include "vhost/vhost.hh"
-#include "timer.hh"
 
 namespace http
 {
@@ -22,12 +22,13 @@ namespace http
          * \brief Create a ListenerEW from a listener socket.
          */
         SendEv(shared_socket socket, shared_vhost vhost,
-                       std::shared_ptr<Response> resp);
+               std::shared_ptr<Response> resp);
 
         SendEv(shared_socket socket, shared_vhost vhost,
-                       std::shared_ptr<Response> resp, std::shared_ptr<TimerEW> timer);
+               std::shared_ptr<Response> resp, std::shared_ptr<TimerEW> timer);
 
         void clean_send();
+        void check_keep_alive();
 
         /**
          * \brief Start accepting connections on listener socket.

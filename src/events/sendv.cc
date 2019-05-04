@@ -27,7 +27,8 @@ namespace http
     }
 
     SendEv::SendEv(shared_socket socket, shared_vhost vhost,
-                   std::shared_ptr<Response> resp, std::shared_ptr<TimerEW> timer)
+                   std::shared_ptr<Response> resp,
+                   std::shared_ptr<TimerEW> timer)
         : EventWatcher(socket->fd_get()->fd_, EV_WRITE)
         , sock_{socket}
         , vhost_{vhost}
@@ -62,25 +63,32 @@ namespace http
         count_ = 0;
     }
 
+    void SendEv::check_keep_alive()
+    {
+        if (keep_alive)
+        {
+            std::cout << "Staying connected with client.\n";
+            event_register.register_ew<http::RecvEv, http::shared_socket>(
+                std::forward<shared_socket>(sock_),
+                std::forward<shared_vhost>(vhost_),
+                std::forward<std::shared_ptr<TimerEW>>(ka_timer_));
+        } else
+            event_register.unregister_ew(this);
+    }
+
     void SendEv::operator()()
     {
         if (!count_)
         {
-            /*if (keep_alive)
-            {
-                //std::cout << "Staying connected with client.\n";
-                event_register.register_ew<http::RecvEv, http::shared_socket>(
-                    std::forward<shared_socket>(sock_),
-                    std::forward<shared_vhost>(vhost_));
-            }*/
-            event_register.unregister_ew(this);
+            check_keep_alive();
             return;
         }
         if (!is_file_)
         {
             clean_send();
-        }
-        else
+            check_keep_alive();
+            return;
+        } else
         {
             int fd = sys::open_wrapper(path_.c_str(), O_RDONLY);
             auto f = std::make_shared<misc::FileDescriptor>(
@@ -108,6 +116,8 @@ namespace http
                     event_register.unregister_ew(this);
                     return;
                 }
+                check_keep_alive();
+                return;
             }
         }
     }
