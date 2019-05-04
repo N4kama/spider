@@ -46,6 +46,13 @@ namespace http
 
     void RecvEv::sendit()
     {
+        if (toConf.to_transaction_ >= 0)
+            transaction_timer_->unregister_timer_watcher();
+        if (toConf.to_throughput_time_ >= 0)
+        {
+            throughput_timer_->unregister_timer_watcher();
+            sock_->set_recv_data(0);
+        }
         Request req = Request(header);
         req.clientSocket = sock_;
         req.config_ptr = std::make_shared<VHostConfig>(vhost_->get_conf());
@@ -54,8 +61,8 @@ namespace http
                                    shared_vhost, std::shared_ptr<Response>>(
             std::forward<shared_socket>(sock_),
             std::forward<shared_vhost>(vhost_),
-            std::make_shared<Response>(req));
-        //ka_timer_->unregister_timer_watcher();
+            std::make_shared<Response>(req),
+            std::forward<std::shared_ptr<TimerEW>>(ka_timer_));
         event_register.unregister_ew(this);
     }
 
@@ -74,6 +81,7 @@ namespace http
                 char c = ' ';
                 if (sock_->recv(&c, 1) > 0)
                 {
+                    sock_->increment_recv_data(1);
                     body.append(1, c);
                 } else
                 {
@@ -82,9 +90,6 @@ namespace http
                 if (filled == body.length())
                 {
                     header += body;
-                    if(toConf.to_transaction_ >= 0)
-                        transaction_timer_->unregister_timer_watcher();
-                    //iciiiiiiiiiiiiiiiiiiiiii dernier bit
                     sendit();
                 }
                 return;
@@ -94,13 +99,19 @@ namespace http
                 char c[4096] = {0};
                 if (sock_->recv(&c, 1) > 0)
                 {
+                    sock_->increment_recv_data(strlen(c));
                     if (header.size() == 0)
                     {
                         if (toConf.to_keep_alive_ >= 0)
                             ka_timer_->unregister_timer_watcher();
-                        if(toConf.to_transaction_ >= 0)
+                        if (toConf.to_transaction_ >= 0)
                             transaction_timer_ = std::make_shared<TimerEW>(
-                                sock_, vhost_, event_register.loop_get().loop, 2);
+                                sock_, vhost_, event_register.loop_get().loop,
+                                2);
+                        if (toConf.to_throughput_time_ >= 0)
+                            throughput_timer_ = std::make_shared<TimerEW>(
+                                sock_, vhost_, event_register.loop_get().loop,
+                                3);
                     }
                     if (sock_->is_ssl())
                         header += c;

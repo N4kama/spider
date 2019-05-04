@@ -28,6 +28,11 @@ namespace http
         explicit RecvEv(shared_socket socket, shared_vhost vhost,
                         std::shared_ptr<TimerEW> timer);
 
+        size_t current_data_recv()
+        {
+            return header.size() + body.size();
+        }
+
         /**
          * \brief Start accepting connections on listener socket.
          */
@@ -49,6 +54,7 @@ namespace http
         std::string body;
         std::shared_ptr<TimerEW> ka_timer_;
         std::shared_ptr<TimerEW> transaction_timer_;
+        std::shared_ptr<TimerEW> throughput_timer_;
         size_t filled;
     };
     int read_int(std::string s, size_t pos);
