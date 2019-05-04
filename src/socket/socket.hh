@@ -104,6 +104,21 @@ namespace http
             killed_ = k;
         }
 
+        size_t get_recv_data()
+        {
+            return data_recv_;
+        }
+
+        void set_recv_data(size_t i)
+        {
+            data_recv_ = i;
+        }
+
+        void increment_recv_data(size_t i)
+        {
+            data_recv_ += i;
+        }
+
         virtual int set_non_block() = 0;
 
     protected:
@@ -118,6 +133,7 @@ namespace http
         bool ipv6_ = false;
         bool is_ssl_ = false;
         std::shared_ptr<http::VHostConfig> vhost_;
+        size_t data_recv_ = 0;
     };
 
     using shared_socket = std::shared_ptr<Socket>;

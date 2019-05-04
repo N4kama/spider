@@ -166,6 +166,8 @@ namespace http
             str << "X-Timeout-Reason: Keep-Alive\r\n";
         else if (e == 2)
             str << "X-Timeout-Reason: Transaction\r\n";
+        else if (e == 3)
+            str << "X-Timeout-Reason: Troughput\r\n";
 
         str << "Connection: " << (keep_alive ? "keep-alive" : "close");
         str << "\r\n\r\n";
