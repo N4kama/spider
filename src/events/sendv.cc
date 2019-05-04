@@ -72,8 +72,8 @@ namespace http
                 std::forward<shared_socket>(sock_),
                 std::forward<shared_vhost>(vhost_),
                 std::forward<std::shared_ptr<TimerEW>>(ka_timer_));
-        } else
-            event_register.unregister_ew(this);
+        }
+        event_register.unregister_ew(this);
     }
 
     void SendEv::operator()()
