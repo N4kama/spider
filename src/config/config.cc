@@ -175,7 +175,7 @@ namespace http
                 to_keep_alive = j.at("keep_alive").get<double>();
             } catch (const std::exception& e)
             {
-                to_keep_alive = 3600;
+                to_keep_alive = -1;
             }
 
             double to_transaction;
@@ -184,7 +184,7 @@ namespace http
                 to_transaction = j.at("transaction").get<double>();
             } catch (const std::exception& e)
             {
-                to_transaction = 3600;
+                to_transaction = -1;
             }
 
             unsigned to_throughput_val;
@@ -193,7 +193,7 @@ namespace http
                 to_throughput_val = j.at("throughput_val").get<unsigned>();
             } catch (const std::exception& e)
             {
-                to_throughput_val = 3600;
+                to_throughput_val = 0;
             }
 
             float to_throughput_time;
@@ -202,13 +202,13 @@ namespace http
                 to_throughput_time = j.at("throughput_time").get<float>();
             } catch (const std::exception& e)
             {
-                to_throughput_time = 3600;
+                to_throughput_time = -1;
             }
 
             return TimeoutConfig(to_keep_alive, to_transaction,
                                  to_throughput_val, to_throughput_time);
         }
-        return TimeoutConfig(3600, 3600, 3600, 3600);
+        return TimeoutConfig(-1, -1, 0, -1);
     }
 
     struct ServerConfig parse_configuration(const std::string& path)

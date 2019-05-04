@@ -7,6 +7,7 @@
 #include "events.hh"
 #include "vhost/connection.hh"
 #include "vhost/vhost.hh"
+#include "timer.hh"
 
 namespace http
 {
@@ -22,6 +23,9 @@ namespace http
          */
         SendEv(shared_socket socket, shared_vhost vhost,
                        std::shared_ptr<Response> resp);
+
+        SendEv(shared_socket socket, shared_vhost vhost,
+                       std::shared_ptr<Response> resp, std::shared_ptr<TimerEW> timer);
 
         void clean_send();
 
@@ -46,5 +50,6 @@ namespace http
         bool is_file_;
         bool keep_alive;
         STATUS_CODE status;
+        std::shared_ptr<TimerEW> ka_timer_;
     };
 } // namespace http

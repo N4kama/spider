@@ -26,6 +26,25 @@ namespace http
         this->port_ = ntohs(my_addr.sin_port);
     }
 
+    SendEv::SendEv(shared_socket socket, shared_vhost vhost,
+                   std::shared_ptr<Response> resp, std::shared_ptr<TimerEW> timer)
+        : EventWatcher(socket->fd_get()->fd_, EV_WRITE)
+        , sock_{socket}
+        , vhost_{vhost}
+        , ka_timer_{timer}
+    {
+        this->msg_ = resp->rep;
+        this->path_ = resp->file_p;
+        this->count_ = this->msg_.size();
+        this->is_file_ = resp->is_file;
+        this->keep_alive = resp->keep_alive;
+        this->status = resp->status_code;
+        struct sockaddr_in my_addr;
+        socklen_t len = sizeof(my_addr);
+        getsockname(socket->fd_get()->fd_, (struct sockaddr*)&my_addr, &len);
+        this->port_ = ntohs(my_addr.sin_port);
+    }
+
     void SendEv::clean_send()
     {
         int size_left = count_ - 2;
@@ -58,7 +77,9 @@ namespace http
             return;
         }
         if (!is_file_)
+        {
             clean_send();
+        }
         else
         {
             int fd = sys::open_wrapper(path_.c_str(), O_RDONLY);
@@ -68,6 +89,8 @@ namespace http
             if (fd == -1)
             {
                 clean_send();
+                if (toConf.to_keep_alive_ >= 0 && keep_alive)
+                    ka_timer_->restart_timer_watcher(toConf.to_keep_alive_);
             } else
             {
                 try
@@ -77,6 +100,8 @@ namespace http
                         std::cerr << "fstat: fail\n";
                     clean_send();
                     sock_->sendfile(f, p, st.st_size);
+                    if (toConf.to_keep_alive_ >= 0 && keep_alive)
+                        ka_timer_->restart_timer_watcher(toConf.to_keep_alive_);
                 } catch (const std::exception& e)
                 {
                     std::cerr << e.what() << '\n';
