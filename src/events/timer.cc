@@ -76,12 +76,6 @@ namespace http
         ev_timer_start(loop_, timeout_watcher_.get());
     }
 
-    void TimerEW::restart_timer_watcher(double to)
-    {
-        ev_timer_set(timeout_watcher_.get(), to, 0.);
-        ev_timer_start(loop_, timeout_watcher_.get());
-    }
-
     void TimerEW::unregister_timer_watcher()
     {
         ev_timer_stop(loop_, timeout_watcher_.get());

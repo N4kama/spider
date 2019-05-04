@@ -24,9 +24,6 @@ namespace http
         SendEv(shared_socket socket, shared_vhost vhost,
                std::shared_ptr<Response> resp);
 
-        SendEv(shared_socket socket, shared_vhost vhost,
-               std::shared_ptr<Response> resp, std::shared_ptr<TimerEW> timer);
-
         void clean_send();
         void check_keep_alive();
 

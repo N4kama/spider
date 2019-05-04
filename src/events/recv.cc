@@ -61,8 +61,7 @@ namespace http
                                    shared_vhost, std::shared_ptr<Response>>(
             std::forward<shared_socket>(sock_),
             std::forward<shared_vhost>(vhost_),
-            std::make_shared<Response>(req),
-            std::forward<std::shared_ptr<TimerEW>>(ka_timer_));
+            std::make_shared<Response>(req));
         event_register.unregister_ew(this);
     }
 
