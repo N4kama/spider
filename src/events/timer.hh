@@ -25,6 +25,7 @@ namespace http
         TimerEW(shared_socket socket, shared_vhost vhost, struct ev_loop* loop, int st);
         void register_timer_watcher(ev_timer* timeout_watcher, double to);
         void reset_timer_watcher(double to);
+        void restart_timer_watcher(double to);
         static void timeout_ka_cb(struct ev_loop* loop, ev_timer*, int);
         void rep_error(STATUS_CODE);
         void unregister_timer_watcher();
@@ -38,5 +39,6 @@ namespace http
         struct ev_loop* loop_;
         int state_;
         std::shared_ptr<ev_timer> timeout_watcher_;
+        size_t prev_data_;
     };
 } // namespace http
